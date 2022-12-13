@@ -1,28 +1,37 @@
-;; Default fontsize
+;; Basic UI Config ---------------------------
+
 (defvar geokkjer/default-font-size 140)
 
 ;; Thanks, but no thanks to the startup-message
 (setq inhibit-startup-message t)
+
 (scroll-bar-mode -1)  ; Disable visible scrollbar
 (tool-bar-mode -1)    ; Disable the toolbar
 (tooltip-mode -1)     ; Disable tooltips
 (set-fringe-mode 10)  ; Give us some breathing room
 
-(menu-bar-mode -1)
+(menu-bar-mode -1)    ; Disable the menu bar
 
 ;; Set up the visual bell
 (setq visible-bell t)
 
+;; Font Configuration -----------------------------
+
 (set-face-attribute 'default nil :font "MesloLGS NF" :height geokkjer/default-font-size)
 
-(load-theme 'wombat)
+;; Set the fixed pitch face
+(set-face-attribute 'fixed-pitch :font "MesloLGS NF" :height 130)
+
 
 ;; Meke ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-		
+
+;; Package Manager Configuration -------------------
+
 ;; Initialize package sources
 (require 'package)
 
+;; Set the repos
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
 			 ("org" . "https://orgmode.org/elpa/")
 			 ("elpa" . "https://elpa.gnu.org/packages/")))
@@ -31,7 +40,7 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
-;; Initialize use-package
+;; Initialize use-package in case we are on non-Linux platform
 (unless (package-installed-p 'use-package)
    (package-install 'use-package))
 
@@ -42,14 +51,15 @@
 (column-number-mode)
 (global-display-line-numbers-mode t)
 
-;; Disable line numbers dor some modes
+;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
 		term-mode-hook
 		shell-mode-hook
 		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-;; Keybindings 
+;; Ivy Configuration --------------------------
+
 (use-package swiper)
 (use-package ivy
   :diminish
@@ -170,10 +180,11 @@
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
-;; Magit
+;; TODO learn git and Magit
 (use-package magit
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
