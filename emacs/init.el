@@ -1,4 +1,5 @@
-
+;; Default fontsize
+(defvar geokkjer/default-font-size 140)
 
 ;; Thanks, but no thanks to the startup-message
 (setq inhibit-startup-message t)
@@ -12,7 +13,7 @@
 ;; Set up the visual bell
 (setq visible-bell t)
 
-(set-face-attribute 'default nil :font "MesloLGS NF" :height 140)
+(set-face-attribute 'default nil :font "MesloLGS NF" :height geokkjer/default-font-size)
 
 (load-theme 'wombat)
 
@@ -44,6 +45,7 @@
 ;; Disable line numbers dor some modes
 (dolist (mode '(org-mode-hook
 		term-mode-hook
+		shell-mode-hook
 		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
@@ -157,6 +159,7 @@
 (use-package projectile
   :diminish
   :config
+  :custom ((projectile-completion-system 'ivy))
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
