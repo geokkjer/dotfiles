@@ -68,7 +68,6 @@
 	 ("C-d" . ivy-reversee-i-search-kill))
   :config
   (ivy-mode 1))
-
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
 	 ("C-x b" . counsel-ibuffer)
@@ -170,7 +169,12 @@
 
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
-	  
+
+;; Magit
+(use-package magit
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -179,7 +183,7 @@
  '(custom-safe-themes
    '("944d52450c57b7cbba08f9b3d08095eb7a5541b0ecfb3a0a9ecd4a18f3c28948" default))
  '(package-selected-packages
-   '(counsel-projectile projectile hydra evil general doom-themes helpful ivy-rich which-key rainbow-delimiters counsel doom-modeline swiper ivy zenburn-theme command-log-mode use-package yaml-mode rust-mode python nix-mode monokai-theme memory-usage markdown-mode dracula-theme)))
+   '(magit evil-magit counsel-projectile projectile hydra evil general doom-themes helpful ivy-rich which-key rainbow-delimiters counsel doom-modeline swiper ivy zenburn-theme command-log-mode use-package yaml-mode rust-mode python nix-mode monokai-theme memory-usage markdown-mode dracula-theme)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
