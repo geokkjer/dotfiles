@@ -1,7 +1,5 @@
 ;; Basic UI Config ---------------------------
 
-(defvar geokkjer/default-font-size 140)
-
 ;; Thanks, but no thanks to the startup-message
 (setq inhibit-startup-message t)
 
@@ -17,10 +15,11 @@
 
 ;; Font Configuration -----------------------------
 
+(defvar geokkjer/default-font-size 140)
+
 (set-face-attribute 'default nil :font "MesloLGS NF" :height geokkjer/default-font-size)
 
 ;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch :font "MesloLGS NF" :height 130)
 
 
 ;; Meke ESC quit prompts
@@ -185,6 +184,22 @@
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
+(defun efs/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (auto-fill-mode 0)
+  (visual-line-mode 1)
+  (setq evil-auto-indent nil))
+
+(use-package org
+  :config
+  (setq org-ellipsis " ▾"
+	org-hide-emphasis-markers t))
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -194,7 +209,7 @@
  '(custom-safe-themes
    '("944d52450c57b7cbba08f9b3d08095eb7a5541b0ecfb3a0a9ecd4a18f3c28948" default))
  '(package-selected-packages
-   '(magit evil-magit counsel-projectile projectile hydra evil general doom-themes helpful ivy-rich which-key rainbow-delimiters counsel doom-modeline swiper ivy zenburn-theme command-log-mode use-package yaml-mode rust-mode python nix-mode monokai-theme memory-usage markdown-mode dracula-theme)))
+   '(org-bullets magit evil-magit counsel-projectile projectile hydra evil general doom-themes helpful ivy-rich which-key rainbow-delimiters counsel doom-modeline swiper ivy zenburn-theme command-log-mode use-package yaml-mode rust-mode python nix-mode monokai-theme memory-usage markdown-mode dracula-theme)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
