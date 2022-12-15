@@ -1,0 +1,15 @@
+
+
+* 2022
+
+** 2022-12 December
+
+*** 2022-12-15 Thursday
+
+**** 10:09 PM - Journal                                          :journal:
+:LOGBOOK:
+CLOCK: [2022-12-15 Thu 22:09]--[2022-12-15 Thu 22:10] =>  0:01
+:END:
+Hello World!
+
+
