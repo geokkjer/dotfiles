@@ -1,0 +1,9 @@
+* Active
+** DONE Finish documentation
+SCHEDULED: <2022-12-16 Fri>
+** TODO Learn Emacs
+DEADLINE: <2022-12-19 Mon>
+* Backlog
+** Get a job
+** where I can use emacs!
+

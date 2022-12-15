@@ -49,6 +49,9 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+;; Enable yaml-mode
+(use-package yaml-mode)
+
 ;; Enable line numbers
 (column-number-mode)
 (global-display-line-numbers-mode t)
@@ -190,8 +193,7 @@
 (defun efs/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
-  (visual-line-mode 1)
-
+  (visual-line-mode 1))
 ;; Org Mode Configuration ------------------------------------------------------
   ;; TODO learn more about org-mode
   
@@ -228,8 +230,15 @@
 (use-package org
   :hook (org-mode . efs/org-mode-setup)
   :config
-  (setq org-ellipsis " ▾"
-	org-hide-emphasis-markers t)
+  (setq org-ellipsis " ▾")
+  
+  ;; Org-agenda config 
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+  (setq org-agenda-files
+	'("~/Projects/Code/dotfiles/emacs/OrgFiles/Tasks.org"))
+  
   (efs/org-font-setup))
 
 
