@@ -1,0 +1,64 @@
+#+title: Emacs Configuration
+#+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
+
+* Emacs Configuration for Geir O. Jerstad
+
+This is my current emacs configuration. It is written as an Org Mode document. The [[file:init.el][init.el]] file is generated from this file.
+
+*NOTE:* Inspired by [[https://github.com/daviwil/emacs-from-scratch/][Emacs from scratch by System Crafters
+]]
+** Font configuration
+
+I like the MesloLGS font, it fits nicely with the theme and my zsh prompt.
+
+#+begin_src emacs-lisp
+;; Font Configuration
+
+(defvar geokkjer/default-font-size 140)
+
+(set-face-attribute 'default nil :font "MesloLGS NF" :height geokkjer/default-font-size)
+
+;; Set the fixed pitch face
+(set-face-attribute 'fixed-pitch nil :font "MesloLGS NF" :height 140)
+
+;; Set the variable pitch face
+(set-face-attribute 'variable-pitch nil :font "MesloLGS NF" :height 130 :weight 'regular)
+#+end_src
+
+** Package System setup
+
+#+begin_src emacs-lisp
+  ;; Package Manager Configuration
+
+  ;; Initialize package sources
+  (require 'package)
+
+  ;; Set the repos
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("org" . "https://orgmode.org/elpa/")
+                           ("elpa" . "https://elpa.gnu.org/packages/")))
+
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+  ;; Initialize use-package in case we are on non-Linux platform
+  (unless (package-installed-p 'use-package)
+     (package-install 'use-package))
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+
+
+#+end_src
+
+#+begin_src emacs-lisp
+#+end_src
+#+begin_src emacs-lisp
+#+end_src
+#+begin_src emacs-lisp
+#+end_src
+#+begin_src emacs-lisp
+#+end_src
+#+begin_src emacs-lisp
+#+end_src
