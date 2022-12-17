@@ -50,8 +50,18 @@ I like the MesloLGS font, it fits nicely with the theme and my zsh prompt.
   (setq use-package-always-ensure t)
 #+end_src
 
-** Structure tamplates
+** Org-babel Config
+*** Config
+#+begin_src emacs-lisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t)))
+#+end_src
 
+#+RESULTS:
+
+*** Templates
 #+begin_src emacs-lisp
   ;; This is needed as of Org 9.2
   (require 'org-tempo)
@@ -63,6 +73,7 @@ I like the MesloLGS font, it fits nicely with the theme and my zsh prompt.
 #+end_src
 
 #+begin_src emacs-lisp
-
+  
 #+end_src
+
 
