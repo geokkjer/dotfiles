@@ -5,8 +5,32 @@
 
 This is my current emacs configuration. It is written as an Org Mode document. The [[file:init.el][init.el]] file is generated from this file.
 
-*NOTE:* Inspired by [[https://github.com/daviwil/emacs-from-scratch/][Emacs from scratch by System Crafters
-]]
+*NOTE:* Inspired by [[https://github.com/daviwil/emacs-from-scratch/][Emacs from scratch by System Crafters]
+
+** Basic UI config
+Turn off the startup-message makes emcas launch into the scratch buffer.
+Turn off some UI elements, like scroll-bar and menu-bar.
+And turn off the bell to visual, no audible bell.
+
+#+begin_src emacs-lisp
+
+  ;; Basic UI Config ---------------------------
+
+  ;; Turns off the startup-message
+  (setq inhibit-startup-message t)
+
+  ;; Disable UI-elements
+  (scroll-bar-mode -1)  ; Disable visible scrollbar
+  (tool-bar-mode -1)    ; Disable the toolbar
+  (tooltip-mode -1)     ; Disable tooltips
+  (set-fringe-mode 10)  ; Give us some breathing room
+
+  (menu-bar-mode -1)    ; Disable the menu bar
+
+  ;; Set up the visual bell
+  (setq visible-bell t)
+
+#+end_src
 ** Font configuration
 
 I like the MesloLGS font, it fits nicely with the theme and my zsh prompt.
@@ -50,30 +74,139 @@ I like the MesloLGS font, it fits nicely with the theme and my zsh prompt.
   (setq use-package-always-ensure t)
 #+end_src
 
-** Org-babel Config
-*** Config
+** Line numbers
+Set emacs to show line-numbers, some modes excluded.
+
+#+begin_src emacs-lisp
+;; Enable line numbers
+
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+		term-mode-hook
+		shell-mode-hook
+		eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+#+end_src
+
+** Swiper and Ivy
+Install and setup Ivy and swiper. Some keybindings for both swiper and counsel.
+
+#+begin_src emacs-lisp
+  (use-package swiper)
+
+  ;; Ivy Configuration --------------------------
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+           :map ivy-minibuffer-map
+           ("TAB" . ivy-alt-done)
+           ("C-l" . ivy-alt-done)
+           ("C-j" . ivy-next-line)
+           ("C-k" . ivy-previous-line)
+           :map ivy-switch-buffer-map
+           ("C-k" . ivy-previous-line)
+           ("C-l" . ivy-done)
+           ("C-d" . ivy-reverse-buffer-kill)
+           :map ivy-reverse-i-search-map
+           ("C-k" . ivy-previous-line)
+           ("C-d" . ivy-reversee-i-search-kill))
+    :config
+    (ivy-mode 1))
+
+  (use-package ivy-rich
+    :init
+    (ivy-rich-mode 1))
+
+
+  (use-package counsel
+    :bind (("M-x" . counsel-M-x)
+           ("C-x b" . counsel-ibuffer)
+           ("C-x C-f" . counsel-find-file)
+           :map minibuffer-local-map
+           ("C-r" .'counsel-minibuffer-history))
+    :config
+    (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
+
+#+end_src
+
+** Some Doom stuff
+
+Use doom-modeline, set height. Install all-the-icons and use doom-themes to set a nice theme.
+
+#+begin_src emacs-lisp
+
+  ;; Doom stuff
+  (use-package doom-modeline
+    :ensure t
+    :hook (after-init . doom-modeline-mode)
+    :custom ((doom-modeline-height 15)))
+
+  (use-package all-the-icons)
+
+  (use-package doom-themes
+    :init (load-theme 'doom-dracula t))
+
+#+end_src
+
+** Programming languages and IDE
+*** Rainbow delimiters
+
+Really helpful
+
+#+begin_src emacs-lisp
+
+  ;; rainbow-delimiters
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+  
+#+end_src
+
+*** Org-babel Configs
+
+Enable Org-babbel for emacs-lisp, shell and python.
+
 #+begin_src emacs-lisp
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
+     (shell . t)
      (python . t)))
-#+end_src
 
-#+RESULTS:
-
-*** Templates
-#+begin_src emacs-lisp
   ;; This is needed as of Org 9.2
   (require 'org-tempo)
 
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("py" . "src python"))
-  (add-to-list 'org-structure-template-alist '("go" . "src go"))
-#+end_src
-
-#+begin_src emacs-lisp
   
 #+end_src
 
+*** Python
+
+WIP. Elpy
+
+#+begin_src emacs-lisp
+
+  ;; Python IDE with elpy
+  (setenv "PYTHONIOENCODING" "utf-8")
+  (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
+  (add-to-list 'process-coding-system-alist '("elpy" . (utf-8 . utf-8)))
+  (add-to-list 'process-coding-system-alist '("flake8" . (utf-8 . utf-8)))
+
+  (use-package elpy
+    :ensure t
+    :init
+    (elpy-enable))
+
+#+end_src
+
+*** Nix environment so we can use nix-shell on NixOS
+TODO
+#+begin_src emacs-lisp
+
+#+end_src
 

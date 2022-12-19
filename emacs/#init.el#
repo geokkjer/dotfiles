@@ -53,6 +53,7 @@
 (use-package yaml-mode)
 
 ;; Enable line numbers
+
 (column-number-mode)
 (global-display-line-numbers-mode t)
 
