@@ -14,9 +14,6 @@
 ;; Set up the visual bell
 (setq visible-bell t)
 
-;; Setting to auto reload files
-(setq auto-revert-mode t)
-
 ;; Font Configuration
 
 (defvar geokkjer/default-font-size 140)
@@ -121,6 +118,21 @@
 ;; rainbow-delimiters
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (shell . t)
+   (python . t)))
+
+(setq org-confirm-babel-evaluate nil)
+
+;; This is needed as of Org 9.2
+(require 'org-tempo)
+
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
 
 ;; Python IDE with elpy
 ;; (setenv "PYTHONIOENCODING" "utf-8")
@@ -271,43 +283,6 @@
 
   (use-package visual-fill-column
     :hook (org-mode . efs/org-mode-visual-fill)))
-
-;; Automatically update the README.org file on save
-(defun geokkjer/org-org-export-to-org ()
-    (when (string-equal (buffer-file-name)
-                        (expand-file-name "~/Projects/Code/dotfiles/emacs/Emacs.org"))
-      ;; Dynamic scoping to the rescue
-      (let ((org-confirm-export-to-org-evaluate nil))
-        (org-org-export-to-org))))
-
-    (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'geokkjer/org-org-export-to-org)))
-
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (shell . t)
-   (python . t)))
-
-(push '("conf-unix" . conf-unix) org-src-lang-modes)
-
-(setq org-confirm-babel-evaluate nil)
-
-;; This is needed as of Org 9.2
-(require 'org-tempo)
-
-(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("py" . "src python"))
-
-;; Automaticly tangle Emacs.org on save
-(defun geokkjer/org-babel-tangle-config ()
-  (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/Projects/Code/dotfiles/emacs/Emacs.org"))
-    ;; Dynamic scoping to the rescue
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-
-  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'geokkjer/org-babel-tangle-config)))
 
 ;; Org-agenda config 
   (setq org-agenda-start-with-log-mode t)
