@@ -1,4 +1,4 @@
-# Created 2022-12-20 Tue 13:29
+# Created 2022-12-20 Tue 22:24
 #+title: Emacs Configuration
 #+author: Geir Okkenhaug Jerstad
 #+property: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
@@ -8,9 +8,10 @@
 
 This is my current and ever evolving emacs configuration. It is written as an Org Mode document. The [[file:init.el][init.el]] and README.org files are generated from this file.
 
-*NOTE:* Inspired by [[https://github.com/daviwil/emacs-from-scratch/][Emacs from scratch by System Crafters]
+*NOTE:* Inspired by [[https://github.com/daviwil/emacs-from-scratch/][Emacs from scratch by System Crafters]]
 
 ** Basic UI config
+
 Turn off the startup-message makes emcas launch into the scratch buffer.
 Turn off some UI elements, like scroll-bar and menu-bar.
 And turn off the bell to visual, no audible bell.
@@ -175,7 +176,6 @@ Really helpful
   (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
-
 
 *** Python
 
@@ -528,5 +528,5 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
 ** Applications
 *** Some app
 #+begin_src conf
-
+  Test
 #+end_src

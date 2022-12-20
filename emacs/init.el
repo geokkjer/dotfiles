@@ -273,14 +273,6 @@
     :hook (org-mode . efs/org-mode-visual-fill)))
 
 ;; Automatically update the README.org file on save
-(defun geokkjer/org-org-export-to-org ()
-    (when (string-equal (buffer-file-name)
-                        (expand-file-name "~/Projects/Code/dotfiles/emacs/Emacs.org"))
-      ;; Dynamic scoping to the rescue
-      (let ((org-confirm-export-to-org-evaluate nil))
-        (org-org-export-to-org))))
-
-    (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'geokkjer/org-org-export-to-org)))
 
 (org-babel-do-load-languages
  'org-babel-load-languages
