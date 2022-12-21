@@ -1,4 +1,4 @@
-# Created 2022-12-20 Tue 22:24
+# Created 2022-12-21 Wed 11:51
 #+title: Emacs Configuration
 #+author: Geir Okkenhaug Jerstad
 #+property: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
@@ -195,10 +195,12 @@ WIP. Elpy
   ;;   (elpy-enable))
 #+end_src
 
-*** Nix environment so we can use nix-shell on NixOS
+*** nix environment so we can use nix-shell on NixOS
+
 TODO
 #+begin_src emacs-lisp
-
+  (use-package nix-mode
+    :mode "\\.nix\\'")
 #+end_src
 ** Helpful,Evil-mode and hydra
 
@@ -527,6 +529,15 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
 #+end_src
 ** Applications
 *** Some app
-#+begin_src conf
-  Test
+#+begin_src conf-unix
+  42
+#+end_src
+** Some value
+#+name: the-value
+#+begin_src emacs-lisp
+  55
+#+end_src
+
+#+begin_src unix-conf
+
 #+end_src

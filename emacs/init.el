@@ -17,6 +17,10 @@
 ;; Setting to auto reload files
 (setq auto-revert-mode t)
 
+;; rainbow-delimiters
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
 ;; Font Configuration
 
 (defvar geokkjer/default-font-size 140)
@@ -118,22 +122,52 @@
 (use-package doom-themes
   :init (load-theme 'doom-dracula t))
 
-;; rainbow-delimiters
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+;; typescript as an example
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :hook (typescript-mode . lsp-deferred)
+  :config
+  (setq typescript-indent-level 2))
 
-;; Python IDE with elpy
-;; (setenv "PYTHONIOENCODING" "utf-8")
-;; (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
-;; (add-to-list 'process-coding-system-alist '("elpy" . (utf-8 . utf-8)))
-;; (add-to-list 'process-coding-system-alist '("flake8" . (utf-8 . utf-8)))
+(use-package lsp-jedi
+  :ensure t
+  :config
+  (with-eval-after-load "lsp-mode"
+    (add-to-list 'lsp-disabled-clients 'pyls)
+    (add-to-list 'lsp-enabled-clients 'jedi)
+    (setq python-indent-level 2)))
 
-;; (use-package elpy
-;;   :ensure t
-;;   :init
-;;   (elpy-enable))
+;; lsp-mode
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (lsp-enable-which-key-integration t))
 
+(use-package nix-mode
+  :mode "\\.nix\\'")
 
+;; TODO learn to use projectile
+(use-package projectile
+  :diminish
+  :config
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/Projects/Code")
+    (setq projectile-projects-search-path '("~/Projects/Code")))
+  (setq projectile-switch-project-action #'projectile-dired))
+
+(use-package counsel-projectile
+  :config (counsel-projectile-mode))
+
+;; TODO learn git and Magit
+(use-package magit
+  :custom
+  (magit-display-buffer-function
+   #'magit-display-buffer-same-window-except-diff-v1))
 
 (use-package helpful
   :custom
@@ -188,27 +222,6 @@
 
 (geokkjer/leader-keys
   "ts" '(hydra-text-scale/body :which-key "scale text"))
-
-;; TODO learn to use projectile
-(use-package projectile
-  :diminish
-  :config
-  :custom ((projectile-completion-system 'ivy))
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  (when (file-directory-p "~/Projects/Code")
-    (setq projectile-projects-search-path '("~/Projects/Code")))
-  (setq projectile-switch-project-action #'projectile-dired))
-
-(use-package counsel-projectile
-  :config (counsel-projectile-mode))
-
-;; TODO learn git and Magit
-(use-package magit
-  :custom
-  (magit-display-buffer-function
-   #'magit-display-buffer-same-window-except-diff-v1))
 
 (defun efs/org-mode-setup ()
     (org-indent-mode)
@@ -423,4 +436,4 @@ Projects")))))
 
 (efs/org-font-setup)
 
-;; TODO stuff and testing
+(+ 55 100)
