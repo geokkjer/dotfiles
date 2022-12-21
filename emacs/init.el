@@ -21,6 +21,29 @@
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
+;; Doom stuff
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode)
+  :custom ((doom-modeline-height 15)))
+
+(use-package all-the-icons)
+
+(use-package doom-themes
+  :init (load-theme 'doom-dracula t))
+
+;; Enable line numbers
+
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                shell-mode-hook
+                eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
 ;; Font Configuration
 
 (defvar geokkjer/default-font-size 140)
@@ -53,18 +76,6 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t)
-
-;; Enable line numbers
-
-(column-number-mode)
-(global-display-line-numbers-mode t)
-
-;; Disable line numbers for some modes
-(dolist (mode '(org-mode-hook
-		term-mode-hook
-		shell-mode-hook
-		eshell-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (use-package swiper)
 
@@ -111,23 +122,14 @@
   :init
   (ivy-rich-mode 1))
 
-;; Doom stuff
-(use-package doom-modeline
-  :ensure t
-  :hook (after-init . doom-modeline-mode)
-  :custom ((doom-modeline-height 15)))
-
-(use-package all-the-icons)
-
-(use-package doom-themes
-  :init (load-theme 'doom-dracula t))
-
 ;; typescript as an example
 (use-package typescript-mode
   :mode "\\.ts\\'"
   :hook (typescript-mode . lsp-deferred)
   :config
   (setq typescript-indent-level 2))
+
+(use-package python-mode)
 
 (use-package lsp-jedi
   :ensure t
@@ -137,6 +139,27 @@
     (add-to-list 'lsp-enabled-clients 'jedi)
     (setq python-indent-level 2)))
 
+(use-package go-mode)
+
+(require 'lsp-mode)
+(add-hook 'go-mode-hook #'lsp-deferred)
+
+;; Set up before-save hooks to format buffer and add/delete imports.
+;; Make sure you don't have other gofmt/goimports hooks enabled.
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+(use-package nix-mode
+  :mode "\\.nix\\'")
+
+(add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
+                  :major-modes '(nix-mode)
+                  :server-id 'nix))
+
 ;; lsp-mode
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
@@ -144,9 +167,6 @@
   (setq lsp-keymap-prefix "C-c l")
   :config
   (lsp-enable-which-key-integration t))
-
-(use-package nix-mode
-  :mode "\\.nix\\'")
 
 ;; TODO learn to use projectile
 (use-package projectile
