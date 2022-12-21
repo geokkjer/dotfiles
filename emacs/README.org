@@ -1,4 +1,4 @@
-# Created 2022-12-21 Wed 11:51
+# Created 2022-12-21 on. 22:20
 #+title: Emacs Configuration
 #+author: Geir Okkenhaug Jerstad
 #+property: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
@@ -6,11 +6,12 @@
 
 * Welcome stranger!
 
-This is my current and ever evolving emacs configuration. It is written as an Org Mode document. The [[file:init.el][init.el]] and README.org files are generated from this file.
+This is my current and ever evolving emacs configuration. It is written as an Org Mode document. The [[file:init.el][init.el]] and [[file:][README.org]] files are generated from this file.
 
 *NOTE:* Inspired by [[https://github.com/daviwil/emacs-from-scratch/][Emacs from scratch by System Crafters]]
 
-** Basic UI config
+* UI config
+** Basic
 
 Turn off the startup-message makes emcas launch into the scratch buffer.
 Turn off some UI elements, like scroll-bar and menu-bar.
@@ -37,7 +38,54 @@ And turn off the bell to visual, no audible bell.
   ;; Setting to auto reload files
   (setq auto-revert-mode t)
 #+end_src
-** Font configuration
+
+** Rainbow delimiters
+
+Really helpful
+
+#+begin_src emacs-lisp
+
+  ;; rainbow-delimiters
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
+** Doom modline and all-the-icons
+
+Use doom-modeline, set height. Install all-the-icons and use doom-themes to set a nice theme.
+
+#+begin_src emacs-lisp
+
+  ;; Doom stuff
+  (use-package doom-modeline
+    :ensure t
+    :hook (after-init . doom-modeline-mode)
+    :custom ((doom-modeline-height 15)))
+
+  (use-package all-the-icons)
+
+  (use-package doom-themes
+    :init (load-theme 'doom-dracula t))
+#+end_src
+
+** Line numbers
+Set emacs to show line-numbers, some modes excluded.
+
+#+begin_src emacs-lisp
+  ;; Enable line numbers
+
+  (column-number-mode)
+  (global-display-line-numbers-mode t)
+
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+  		term-mode-hook
+  		shell-mode-hook
+  		eshell-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+#+end_src
+* Font configuration
+
 
 I like the MesloLGS font, it fits nicely with the theme and my zsh prompt.
 
@@ -55,7 +103,7 @@ I like the MesloLGS font, it fits nicely with the theme and my zsh prompt.
   (set-face-attribute 'variable-pitch nil :font "MesloLGS NF" :height 130 :weight 'regular)
 #+end_src
 
-** Package System setup
+* Package System setup
 
 #+begin_src emacs-lisp
   ;; Package Manager Configuration
@@ -80,24 +128,7 @@ I like the MesloLGS font, it fits nicely with the theme and my zsh prompt.
   (setq use-package-always-ensure t)
 #+end_src
 
-** Line numbers
-Set emacs to show line-numbers, some modes excluded.
-
-#+begin_src emacs-lisp
-  ;; Enable line numbers
-
-  (column-number-mode)
-  (global-display-line-numbers-mode t)
-
-  ;; Disable line numbers for some modes
-  (dolist (mode '(org-mode-hook
-  		term-mode-hook
-  		shell-mode-hook
-  		eshell-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
-#+end_src
-
-** Swiper and Ivy
+* Swiper and Ivy
 Install and setup Ivy and swiper. Some keybindings for both swiper and counsel. which-key and ivy-rich
 
 #+begin_src emacs-lisp
@@ -147,62 +178,123 @@ Install and setup Ivy and swiper. Some keybindings for both swiper and counsel. 
     (ivy-rich-mode 1))
 #+end_src
 
-** Some Doom stuff
+* Development
 
-Use doom-modeline, set height. Install all-the-icons and use doom-themes to set a nice theme.
+Making Emacs have the functionality of an IDE like VSCode. And other things that are related to develoment. TODO: move magit and projectile here ??
 
-#+begin_src emacs-lisp
+** Languages
 
-  ;; Doom stuff
-  (use-package doom-modeline
-    :ensure t
-    :hook (after-init . doom-modeline-mode)
-    :custom ((doom-modeline-height 15)))
-
-  (use-package all-the-icons)
-
-  (use-package doom-themes
-    :init (load-theme 'doom-dracula t))
-#+end_src
-
-** Programming languages and IDE
-*** Rainbow delimiters
-
-Really helpful
+*** Typescript
 
 #+begin_src emacs-lisp
 
-  ;; rainbow-delimiters
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
+  ;; typescript as an example
+  (use-package typescript-mode
+    :mode "\\.ts\\'"
+    :hook (typescript-mode . lsp-deferred)
+    :config
+    (setq typescript-indent-level 2))
 #+end_src
 
 *** Python
 
-WIP. Elpy
+#+begin_src emacs-lisp
+
+  (use-package python-mode)
+
+  (use-package lsp-jedi
+    :ensure t
+    :config
+    (with-eval-after-load "lsp-mode"
+      (add-to-list 'lsp-disabled-clients 'pyls)
+      (add-to-list 'lsp-enabled-clients 'jedi)
+      (setq python-indent-level 2)))
+#+end_src
+
+*** GO
 
 #+begin_src emacs-lisp
 
-   ;; Python IDE with elpy
-  ;; (setenv "PYTHONIOENCODING" "utf-8")
-  ;; (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
-  ;; (add-to-list 'process-coding-system-alist '("elpy" . (utf-8 . utf-8)))
-  ;; (add-to-list 'process-coding-system-alist '("flake8" . (utf-8 . utf-8)))
+  (use-package go-mode)
 
-  ;; (use-package elpy
-  ;;   :ensure t
-  ;;   :init
-  ;;   (elpy-enable))
+  (require 'lsp-mode)
+  (add-hook 'go-mode-hook #'lsp-deferred)
+
+  ;; Set up before-save hooks to format buffer and add/delete imports.
+  ;; Make sure you don't have other gofmt/goimports hooks enabled.
+  (defun lsp-go-install-save-hooks ()
+    (add-hook 'before-save-hook #'lsp-format-buffer t t)
+    (add-hook 'before-save-hook #'lsp-organize-imports t t))
+  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 #+end_src
 
-*** nix environment so we can use nix-shell on NixOS
+*** nix and NixOS
 
 TODO
+
 #+begin_src emacs-lisp
+
   (use-package nix-mode
     :mode "\\.nix\\'")
+
+  (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
+  		  :major-modes '(nix-mode)
+  		  :server-id 'nix))
 #+end_src
-** Helpful,Evil-mode and hydra
+
+*** Language Servers
+
+lsp-mode description. TODO
+
+#+begin_src emacs-lisp
+
+  ;; lsp-mode
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :init
+    (setq lsp-keymap-prefix "C-c l")
+    :config
+    (lsp-enable-which-key-integration t))
+#+end_src
+
+** Projectile
+
+Projectile description .TODO
+
+#+begin_src emacs-lisp
+
+  ;; TODO learn to use projectile
+  (use-package projectile
+    :diminish
+    :config
+    :custom ((projectile-completion-system 'ivy))
+    :bind-keymap
+    ("C-c p" . projectile-command-map)
+    :init
+    (when (file-directory-p "~/Projects/Code")
+      (setq projectile-projects-search-path '("~/Projects/Code")))
+    (setq projectile-switch-project-action #'projectile-dired))
+
+  (use-package counsel-projectile
+    :config (counsel-projectile-mode))
+#+end_src
+
+** Git and Magit
+
+MAGIT description. TODO
+
+#+begin_src emacs-lisp
+
+  ;; TODO learn git and Magit
+  (use-package magit
+    :custom
+    (magit-display-buffer-function
+     #'magit-display-buffer-same-window-except-diff-v1))
+#+end_src
+
+* Helpful,Evil-mode and hydra
 
 #+begin_src emacs-lisp
   (use-package helpful
@@ -260,37 +352,7 @@ TODO
     "ts" '(hydra-text-scale/body :which-key "scale text"))
 #+end_src
 
-** Projectile
-
-#+begin_src emacs-lisp
-
-  ;; TODO learn to use projectile
-  (use-package projectile
-    :diminish
-    :config
-    :custom ((projectile-completion-system 'ivy))
-    :bind-keymap
-    ("C-c p" . projectile-command-map)
-    :init
-    (when (file-directory-p "~/Projects/Code")
-      (setq projectile-projects-search-path '("~/Projects/Code")))
-    (setq projectile-switch-project-action #'projectile-dired))
-
-  (use-package counsel-projectile
-    :config (counsel-projectile-mode))
-#+end_src
-** Magit
-
-#+begin_src emacs-lisp
-
-  ;; TODO learn git and Magit
-  (use-package magit
-    :custom
-    (magit-display-buffer-function
-     #'magit-display-buffer-same-window-except-diff-v1))
-#+end_src
-
-** Org-mode
+* Org-mode
 *** basic
 
 #+begin_src emacs-lisp
@@ -523,21 +585,21 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
 
   (efs/org-font-setup)
 #+end_src
-** WIP
-#+begin_src emacs-lisp
-  ;; TODO stuff and testing 
-#+end_src
-** Applications
+
+* Other Applications examples
 *** Some app
+
 #+begin_src conf-unix
   42
 #+end_src
-** Some value
+
+*** Some value
+
 #+name: the-value
 #+begin_src emacs-lisp
-  55
+  (+ 55 100)
 #+end_src
 
-#+begin_src unix-conf
-
+#+begin_src emacs-lisp
+  value=(+ 55 100)
 #+end_src
