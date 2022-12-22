@@ -236,6 +236,13 @@ Making Emacs have the functionality of an IDE like VSCode. And other things that
 
 #+end_src
 
+*** SQL
+
+#+begin_src emacs-lisp
+
+  (use-package sql-indent)
+  
+#+end_src
 *** nix and NixOS
 
 TODO
@@ -269,6 +276,18 @@ lsp-mode description. TODO
   
 #+end_src
 
+*** Flycheck
+Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs, intended as replacement for the older Flymake extension which is part of GNU Emacs.
+
+[[https://www.flycheck.org/][Syntax checking for GNU Emacs
+]]
+#+begin_src emacs-lisp
+
+  (use-package flycheck
+    :ensure t
+    :init (global-flycheck-mode))
+  
+#+end_src
 ** Projectile
 
 Projectile description .TODO

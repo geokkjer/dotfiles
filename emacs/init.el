@@ -151,6 +151,8 @@
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
+(use-package sql-indent)
+
 (use-package nix-mode
   :mode "\\.nix\\'")
 
@@ -167,6 +169,10 @@
   (setq lsp-keymap-prefix "C-c l")
   :config
   (lsp-enable-which-key-integration t))
+
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
 
 ;; TODO learn to use projectile
 (use-package projectile
