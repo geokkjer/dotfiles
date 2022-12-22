@@ -86,6 +86,7 @@ Set emacs to show line-numbers, some modes excluded.
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 #+end_src
+
 * Font configuration
 
 
