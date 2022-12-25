@@ -44,8 +44,6 @@
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-;; Font Configuration
-
 (defvar geokkjer/default-font-size 140)
 
 (set-face-attribute 'default nil :font "MesloLGS NF" :height geokkjer/default-font-size)

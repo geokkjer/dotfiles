@@ -90,10 +90,10 @@ Set emacs to show line-numbers, some modes excluded.
 * Font configuration
 
 
-I like the MesloLGS font, it fits nicely with the theme and my zsh prompt.
+I like the MesloLGS Nerd font, it fits nicely with the theme and my zsh prompt.
 
 #+begin_src emacs-lisp
-;; Font Configuration
+
 
 (defvar geokkjer/default-font-size 140)
 
@@ -640,6 +640,7 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
 #+begin_src emacs-lisp :tangle .config/config :noweb yes
   value=<<the-value>>
 #+end_src
+
 
 
 
