@@ -1,5 +1,3 @@
-;; Basic UI Config ---------------------------
-
 ;; Turns off the startup-message
 (setq inhibit-startup-message t)
 
@@ -120,6 +118,11 @@
   :init
   (ivy-rich-mode 1))
 
+(use-package web-mode)
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(setq web-mode-engines-alist '(("django" . "\\.html\\'")))
+
 ;; typescript as an example
 (use-package typescript-mode
   :mode "\\.ts\\'"
@@ -127,15 +130,8 @@
   :config
   (setq typescript-indent-level 2))
 
-(use-package python-mode)
-
-(use-package lsp-jedi
-  :ensure t
-  :config
-  (with-eval-after-load "lsp-mode"
-    (add-to-list 'lsp-disabled-clients 'pyls)
-    (add-to-list 'lsp-enabled-clients 'jedi)
-    (setq python-indent-level 2)))
+(use-package python-mode
+  :mode "\\.py\\'")
 
 (use-package go-mode)
 
@@ -160,6 +156,10 @@
                   :major-modes '(nix-mode)
                   :server-id 'nix))
 
+(use-package scheme)
+
+
+
 ;; lsp-mode
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
@@ -167,6 +167,8 @@
   (setq lsp-keymap-prefix "C-c l")
   :config
   (lsp-enable-which-key-integration t))
+
+;; Python language server
 
 (use-package flycheck
   :ensure t

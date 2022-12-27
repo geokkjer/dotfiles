@@ -17,8 +17,6 @@ And turn off the bell to visual, no audible bell.
 
 #+begin_src emacs-lisp
 
-  ;; Basic UI Config ---------------------------
-
   ;; Turns off the startup-message
   (setq inhibit-startup-message t)
 
@@ -189,6 +187,19 @@ Making Emacs have the functionality of an IDE like VSCode. And other things that
 
 ** Languages
 
+Configuration for different programming languages that I use or want to learn.
+
+*** Web-mode
+
+#+begin_src emacs-lisp
+  
+  (use-package web-mode)
+  (require 'web-mode)
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (setq web-mode-engines-alist '(("django" . "\\.html\\'")))
+
+#+end_src
+
 *** Typescript
 
 #+begin_src emacs-lisp
@@ -206,15 +217,8 @@ Making Emacs have the functionality of an IDE like VSCode. And other things that
 
 #+begin_src emacs-lisp
 
-  (use-package python-mode)
-
-  (use-package lsp-jedi
-    :ensure t
-    :config
-    (with-eval-after-load "lsp-mode"
-      (add-to-list 'lsp-disabled-clients 'pyls)
-      (add-to-list 'lsp-enabled-clients 'jedi)
-      (setq python-indent-level 2)))
+  (use-package python-mode
+    :mode "\\.py\\'")
 
 #+end_src
 
@@ -243,7 +247,8 @@ Making Emacs have the functionality of an IDE like VSCode. And other things that
   (use-package sql-indent)
   
 #+end_src
-*** nix and NixOS
+
+*** nix
 
 TODO
 
@@ -260,7 +265,21 @@ TODO
 
 #+end_src
 
-*** Language Servers
+*** Scheme
+
+#+begin_src emacs-lisp
+
+  (use-package scheme)
+  
+#+end_src
+
+*** Guile
+
+#+begin_src emacs-lisp
+
+#+end_src
+
+** Language Servers
 
 lsp-mode description. TODO
 
@@ -276,7 +295,14 @@ lsp-mode description. TODO
   
 #+end_src
 
+#+begin_src emacs-lisp
+
+  ;; Python language server
+  
+#+end_src
+
 *** Flycheck
+
 Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs, intended as replacement for the older Flymake extension which is part of GNU Emacs.
 
 [[https://www.flycheck.org/][Syntax checking for GNU Emacs
@@ -288,6 +314,7 @@ Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs, intende
     :init (global-flycheck-mode))
   
 #+end_src
+
 ** Projectile
 
 Projectile description .TODO
