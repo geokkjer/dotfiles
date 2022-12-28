@@ -12,4 +12,12 @@ CLOCK: [2022-12-15 Thu 22:09]--[2022-12-15 Thu 22:10] =>  0:01
 :END:
 Hello World!
 
+*** 2022-12-27 Tuesday
+
+**** 09:33 PM - Journal                                          :journal:
+:LOGBOOK:
+CLOCK: [2022-12-27 Tue 21:33]--[2022-12-28 Wed 00:32] =>  2:59
+:END:
+hello from hello.ts
+
 

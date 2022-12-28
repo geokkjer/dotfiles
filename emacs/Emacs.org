@@ -9,6 +9,7 @@ This is my current and ever evolving emacs configuration. It is written as an Or
 *NOTE:* Inspired by [[https://github.com/daviwil/emacs-from-scratch/][Emacs from scratch by System Crafters]]
 
 * UI config
+
 ** Basic
 
 Turn off the startup-message makes emcas launch into the scratch buffer.
@@ -33,18 +34,6 @@ And turn off the bell to visual, no audible bell.
 
   ;; Setting to auto reload files
   (setq auto-revert-mode t)
-  
-#+end_src
-
-** Rainbow delimiters
-
-Really helpful
-
-#+begin_src emacs-lisp
-
-  ;; rainbow-delimiters
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
   
 #+end_src
 
@@ -86,7 +75,6 @@ Set emacs to show line-numbers, some modes excluded.
 #+end_src
 
 * Font configuration
-
 
 I like the MesloLGS Nerd font, it fits nicely with the theme and my zsh prompt.
 
@@ -130,6 +118,7 @@ I like the MesloLGS Nerd font, it fits nicely with the theme and my zsh prompt.
 #+end_src
 
 * Swiper and Ivy
+
 Install and setup Ivy and swiper. Some keybindings for both swiper and counsel. which-key and ivy-rich
 
 #+begin_src emacs-lisp
@@ -178,16 +167,42 @@ Install and setup Ivy and swiper. Some keybindings for both swiper and counsel. 
     :init
     (ivy-rich-mode 1))
 
-
 #+end_src
 
 * Development
 
 Making Emacs have the functionality of an IDE like VSCode. And other things that are related to develoment. TODO: move magit and projectile here ??
 
-** Languages
+** Languages and lsp-mode configuration
 
 Configuration for different programming languages that I use or want to learn.
+
+*** lsp-mode
+
+lsp-mode basic configuration. description. TODO
+
+#+begin_src emacs-lisp
+      (defun geokkjer/lsp-mode-setup ()
+        (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+        (lsp-headerline-breadcrumb-mode))
+
+      (use-package lsp-mode
+        :commands (lsp lsp-deferred)
+        :hook ((lsp-mode . geokkjer/lsp-mode-setup)
+               (lsp-mode . lsp-enable-which-key-integration))
+        :init
+        (setq lsp-keymap-prefix "C-c l"))
+
+#+end_src
+
+#+begin_src emacs-lisp
+
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    (lsp-ui-doc-psition 'bottom))
+
+#+end_src
 
 *** Web-mode
 
@@ -204,7 +219,6 @@ Configuration for different programming languages that I use or want to learn.
 
 #+begin_src emacs-lisp
 
-  ;; typescript as an example
   (use-package typescript-mode
     :mode "\\.ts\\'"
     :hook (typescript-mode . lsp-deferred)
@@ -218,7 +232,10 @@ Configuration for different programming languages that I use or want to learn.
 #+begin_src emacs-lisp
 
   (use-package python-mode
-    :mode "\\.py\\'")
+    :mode "\\.py\\'"
+    :hook (python-mode . lsp-deferred)
+    :config
+    )
 
 #+end_src
 
@@ -279,29 +296,19 @@ TODO
 
 #+end_src
 
-** Language Servers
+*** Rainbow delimiters
 
-lsp-mode description. TODO
-
-#+begin_src emacs-lisp
-
-  ;; lsp-mode
-  (use-package lsp-mode
-    :commands (lsp lsp-deferred)
-    :init
-    (setq lsp-keymap-prefix "C-c l")
-    :config
-    (lsp-enable-which-key-integration t))
-  
-#+end_src
+Really helpful
 
 #+begin_src emacs-lisp
 
-  ;; Python language server
+  ;; rainbow-delimiters
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
   
 #+end_src
 
-*** Flycheck
+** Flycheck
 
 Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs, intended as replacement for the older Flymake extension which is part of GNU Emacs.
 
@@ -355,64 +362,67 @@ MAGIT description. TODO
 * Helpful,Evil-mode and hydra
 
 #+begin_src emacs-lisp
-    (use-package helpful
-      :custom
-      (counsel-describe-function-function #'helpful-callable)
-      (counsel-describe-variable-function #'helpful-variable)
-      :bind
-      ([remap describe-function] . counsel-describe-function)
-      ([remap describe-command] . helpful-command)
-      ([remap describe-variable] . counsel-describe-variable)
-      ([remap describe-key] . helpful-key))
 
-    (use-package general
-      :config
-      (general-create-definer geokkjer/leader-keys
-        :keymaps '(normal insert visual emacs)
-        :prefix "SPC"
-        :global-prefix "C-SPC")
-      (geokkjer/leader-keys
-        "t"  '(:ignore t :which-key "toggles")
-        "tt" '(counsel-load-theme :which-key "choose theme")))
+  (use-package helpful
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ([remap describe-function] . counsel-describe-function)
+    ([remap describe-command] . helpful-command)
+    ([remap describe-variable] . counsel-describe-variable)
+    ([remap describe-key] . helpful-key))
 
-    (use-package evil
-      :init
-      (setq evil-want-integration t)
-      (setq evil-want-keybinding nil)
-      (setq evil-want-C-u-scroll t)
-      (setq evil-want-C-i-jump nil)
-      :config
-      (evil-mode 1)
-      (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-      (define-key evil-insert-state-map (kbd "C-h")
-        'evil-delete-backeard-char-and-join)
-
-      ;; Use visual line motions even outside of visual-line-mode buffers
-      (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-      (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
-      (evil-set-initial-state 'messages-buffer-mode 'normal)
-      (evil-set-initial-state 'dashboard-mode 'normal))
-
-    (use-package evil-collection
-      :after evil
-      :config
-      (evil-collection-init))
-
-    (use-package hydra)
-    (defhydra hydra-text-scale (:timeout 4)
-      "scale text"
-      ("j" text-scale-increase "in")
-      ("k" text-scale-decrease "out")
-      ("f" nil "finished" :exit t))
-
+  (use-package general
+    :config
+    (general-create-definer geokkjer/leader-keys
+      :keymaps '(normal insert visual emacs)
+      :prefix "SPC"
+      :global-prefix "C-SPC")
     (geokkjer/leader-keys
-      "ts" '(hydra-text-scale/body :which-key "scale text"))
+      "t"  '(:ignore t :which-key "toggles")
+      "tt" '(counsel-load-theme :which-key "choose theme")))
 
+  (use-package evil
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-want-C-u-scroll t)
+    (setq evil-want-C-i-jump nil)
+    :config
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+    (define-key evil-insert-state-map (kbd "C-h")
+      'evil-delete-backeard-char-and-join)
+
+    ;; Use visual line motions even outside of visual-line-mode buffers
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+    (evil-set-initial-state 'messages-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal))
+
+  (use-package evil-collection
+    :after evil
+    :config
+    (evil-collection-init))
+
+  (use-package hydra)
+  (defhydra hydra-text-scale (:timeout 4)
+    "scale text"
+    ("j" text-scale-increase "in")
+    ("k" text-scale-decrease "out")
+    ("f" nil "finished" :exit t))
+
+  (geokkjer/leader-keys
+    "ts" '(hydra-text-scale/body :which-key "scale text"))
 
 #+end_src
 
 * Org-mode
+
+Org-mode configuration
+
 *** basic
 
 #+begin_src emacs-lisp
@@ -526,95 +536,96 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
 
 #+begin_src emacs-lisp
 
-    ;; Org-agenda config 
-    (setq org-agenda-start-with-log-mode t)
-    (setq org-log-done 'time)
-    (setq org-log-into-drawer t)
-    (setq org-agenda-files
-          '("~/Projects/Code/dotfiles/emacs/OrgFiles/Tasks.org"
-            "~/Projects/Code/dotfiles/emacs/OrgFiles/Birthdays.org"
-            "~/Projects/Code/dotfiles/emacs/OrgFiles/Habits.org"))
+  ;; Org-agenda config
 
-    (require 'org-habit)
-    (add-to-list 'org-modules 'org-habit)
-    (setq org-habit-graph-column 60)
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+  (setq org-agenda-files
+        '("~/Projects/Code/dotfiles/emacs/OrgFiles/Tasks.org"
+          "~/Projects/Code/dotfiles/emacs/OrgFiles/Birthdays.org"
+          "~/Projects/Code/dotfiles/emacs/OrgFiles/Habits.org"))
 
-    (setq org-refile-targets
-          '(("Archive.org" :maxlevel . 1)
-            ("Tasks.org" :maxlevel . 1)))
+  (require 'org-habit)
+  (add-to-list 'org-modules 'org-habit)
+  (setq org-habit-graph-column 60)
 
-    ;; Save Org buffers after refiling!
-    (advice-add 'org-refile :after 'org-save-all-org-buffers)
+  (setq org-refile-targets
+        '(("Archive.org" :maxlevel . 1)
+          ("Tasks.org" :maxlevel . 1)))
 
-    (setq org-tag-alist
-          '((:startgroup)
-            ;; Put mutually exclusive tags here
-            (:endgroup)
-            ("@errand" . ?E)
-            ("@home" . ?H)
-            ("@work" . ?W)
-            ("agenda" . ?a)
-            ("planning" . ?p)
-            ("publish" . ?P)
-            ("batch" . ?b)
-            ("note" . ?n)
-            ("idea" . ?i)))
+  ;; Save Org buffers after refiling!
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
-    ;; Configure custom agenda views
-    (setq org-agenda-custom-commands
-          '(("d" "Dashboard"
-             ((agenda "" ((org-deadline-warning-days 7)))
-              (todo "NEXT"
-                    ((org-agenda-overriding-header "Next Tasks")))
-              (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active
-  Projects")))))
+  (setq org-tag-alist
+        '((:startgroup)
+          ;; Put mutually exclusive tags here
+          (:endgroup)
+          ("@errand" . ?E)
+          ("@home" . ?H)
+          ("@work" . ?W)
+          ("agenda" . ?a)
+          ("planning" . ?p)
+          ("publish" . ?P)
+          ("batch" . ?b)
+          ("note" . ?n)
+          ("idea" . ?i)))
 
-            ("n" "Next Tasks"
-             ((todo "NEXT"
-                    ((org-agenda-overriding-header "Next Tasks")))))
+  ;; Configure custom agenda views
+  (setq org-agenda-custom-commands
+        '(("d" "Dashboard"
+           ((agenda "" ((org-deadline-warning-days 7)))
+            (todo "NEXT"
+                  ((org-agenda-overriding-header "Next Tasks")))
+            (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active
+   Projects")))))
 
-            ("W" "Work Tasks" tags-todo "+work-email")
+          ("n" "Next Tasks"
+           ((todo "NEXT"
+                  ((org-agenda-overriding-header "Next Tasks")))))
 
-            ;; Low-effort next actions
-            ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-             ((org-agenda-overriding-header "Low Effort Tasks")
-              (org-agenda-max-todos 20)
-              (org-agenda-files org-agenda-files)))
+          ("W" "Work Tasks" tags-todo "+work-email")
 
-            ("w" "Workflow Status"
-             ((todo "WAIT"
-                    ((org-agenda-overriding-header "Waiting on External")
-                     (org-agenda-files org-agenda-files)))
-              (todo "REVIEW"
-                    ((org-agenda-overriding-header "In Review")
-                     (org-agenda-files org-agenda-files)))
-              (todo "PLAN"
-                    ((org-agenda-overriding-header "In Planning")
-                     (org-agenda-todo-list-sublevels nil)
-                     (org-agenda-files org-agenda-files)))
-              (todo "BACKLOG"
-                    ((org-agenda-overriding-header "Project Backlog")
-                     (org-agenda-todo-list-sublevels nil)
-                     (org-agenda-files org-agenda-files)))
-              (todo "READY"
-                    ((org-agenda-overriding-header "Ready for Work")
-                     (org-agenda-files org-agenda-files)))
-              (todo "ACTIVE"
-                    ((org-agenda-overriding-header "Active Projects")
-                     (org-agenda-files org-agenda-files)))
-              (todo "COMPLETED"
-                    ((org-agenda-overriding-header "Completed Projects")
-                     (org-agenda-files org-agenda-files)))
-              (todo "CANC"
-                    ((org-agenda-overriding-header "Cancelled Projects")
-                     (org-agenda-files org-agenda-files)))))))
+          ;; Low-effort next actions
+          ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+           ((org-agenda-overriding-header "Low Effort Tasks")
+            (org-agenda-max-todos 20)
+            (org-agenda-files org-agenda-files)))
+
+          ("w" "Workflow Status"
+           ((todo "WAIT"
+                  ((org-agenda-overriding-header "Waiting on External")
+                   (org-agenda-files org-agenda-files)))
+            (todo "REVIEW"
+                  ((org-agenda-overriding-header "In Review")
+                   (org-agenda-files org-agenda-files)))
+            (todo "PLAN"
+                  ((org-agenda-overriding-header "In Planning")
+                   (org-agenda-todo-list-sublevels nil)
+                   (org-agenda-files org-agenda-files)))
+            (todo "BACKLOG"
+                  ((org-agenda-overriding-header "Project Backlog")
+                   (org-agenda-todo-list-sublevels nil)
+                   (org-agenda-files org-agenda-files)))
+            (todo "READY"
+                  ((org-agenda-overriding-header "Ready for Work")
+                   (org-agenda-files org-agenda-files)))
+            (todo "ACTIVE"
+                  ((org-agenda-overriding-header "Active Projects")
+                   (org-agenda-files org-agenda-files)))
+            (todo "COMPLETED"
+                  ((org-agenda-overriding-header "Completed Projects")
+                   (org-agenda-files org-agenda-files)))
+            (todo "CANC"
+                  ((org-agenda-overriding-header "Cancelled Projects")
+                   (org-agenda-files org-agenda-files)))))))
 
 
   (setq org-capture-templates
         `(("t" "Tasks / Projects")
           ("tt" "Task" entry (file+olp
                               "~/Projects/Code/dotfiles/emacs/OrgFiles/Tasks.org"
-                             "Inbox")
+                              "Inbox")
            "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
 
           ("j" "Journal Entries")
@@ -630,17 +641,17 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
             "~/Projects/Code/dotfiles/emacs/OrgFiles/Journal.org")
            "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
            :clock-in :clock-resume
-               :empty-lines 1)
+           :empty-lines 1)
 
           ("w" "Workflows")
           ("we" "Checking Email" entry (file+olp+date
-               "~/Projects/Code/dotfiles/emacs/OrgFiles/Journal.org")
+                                        "~/Projects/Code/dotfiles/emacs/OrgFiles/Journal.org")
            "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines
            1)
 
           ("m" "Metrics Capture")
           ("mw" "Weight" table-line (file+headline
-                "~/Projects/Code/dotfiles/emacs/OrgFiles/Metrics.org" "Weight")
+                                     "~/Projects/Code/dotfiles/emacs/OrgFiles/Metrics.org" "Weight")
            "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
 
   (define-key global-map (kbd "C-c j")
@@ -651,23 +662,13 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
 #+end_src
 
 * Other Applications examples
+
+Using emacs org-mode to configure other applications.
+
 *** Some app
 
 #+begin_src conf-unix :tangle .config/some-app :mkdirp yes
       42
 #+end_src
-
-*** Some value
-
-#+NAME: the-value
-#+begin_src emacs-lisp
-(+ 55 100)
-#+end_src
-
-#+begin_src emacs-lisp :tangle .config/config :noweb yes
-  value=<<the-value>>
-#+end_src
-
-
 
 
