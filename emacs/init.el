@@ -62,7 +62,7 @@
 
 ;; Initialize use-package in case we are on non-Linux platform
 (unless (package-installed-p 'use-package)
-   (package-install 'use-package))
+  (package-install 'use-package))
 
 (require 'use-package)
 (setq use-package-always-ensure t)
@@ -112,6 +112,220 @@
   :init
   (ivy-rich-mode 1))
 
+(defun efs/org-mode-setup ()
+    (org-indent-mode)
+    (variable-pitch-mode 1)
+    (visual-line-mode 1))
+
+    ;; Org Mode Configuration  
+
+    (defun efs/org-font-setup ()
+    ;; Replace list hyphen with dot
+    (font-lock-add-keywords 'org-mode
+                            '(("^ *\\([-]\\) "
+                                (0 (prog1 () (compose-region
+                                                (match-beginning1)
+                                                (match-end 1)
+                                                "•")))))))
+
+    ;; Show overview when open
+    (setq org-startup-folded t)
+
+    ;; Set faces for heading levels
+    (with-eval-after-load 'org-faces
+    (dolist (face '((org-level-1 . 1.2)
+                    (org-level-2 . 1.1)
+                    (org-level-3 . 1.05)
+                    (org-level-4 . 1.0)
+                    (org-level-5 . 1.1)
+                    (org-level-6 . 1.1)
+                    (org-level-7 . 1.1)
+                    (org-level-8 . 1.1)))
+        (set-face-attribute (car face) nil :font "MesloLGS NF" :weight 'regular
+                            :height (cdr face))
+
+        ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+        (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+        (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+        (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+        (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+        (set-face-attribute 'org-special-keyword nil :inherit
+                            '(font-lock-comment-face fixed-pitch))
+        (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face
+                                                        fixed-pitch))
+        (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)))
+
+(use-package org
+    :hook (org-mode . efs/org-mode-setup)
+    :config
+    (setq org-ellipsis " ▾")
+
+    (use-package org-bullets
+    :after org
+    :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+    (defun efs/org-mode-visual-fill ()
+    (setq visual-fill-column-width 100
+            visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+    (use-package visual-fill-column
+    :hook (org-mode . efs/org-mode-visual-fill)))
+
+(org-babel-do-load-languages
+'org-babel-load-languages
+'((emacs-lisp . t)
+    (shell . t)
+    (python . t)))
+
+(push '("conf-unix" . conf-unix) org-src-lang-modes)
+
+(setq org-confirm-babel-evaluate nil)
+
+;; This is needed as of Org 9.2
+(require 'org-tempo)
+
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
+(add-to-list 'org-structure-template-alist '("nx" . "src nix"))
+
+;; Automaticly tangle Emacs.org on save
+(defun geokkjer/org-babel-tangle-config ()
+(when (string-equal (buffer-file-name)
+                    (expand-file-name "~/Projects/Code/dotfiles/emacs/Emacs.org"))
+
+    ;; Dynamic scoping to the rescue
+    (let ((org-confirm-babel-evaluate nil))
+    (org-babel-tangle))))
+
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'geokkjer/org-babel-tangle-config)))
+
+;; Org-agenda config
+
+(setq org-agenda-start-with-log-mode t)
+(setq org-log-done 'time)
+(setq org-log-into-drawer t)
+(setq org-agenda-files
+    '("~/Projects/Code/dotfiles/emacs/OrgFiles/Tasks.org"
+        "~/Projects/Code/dotfiles/emacs/OrgFiles/Birthdays.org"
+        "~/Projects/Code/dotfiles/emacs/OrgFiles/Habits.org"))
+
+(require 'org-habit)
+(add-to-list 'org-modules 'org-habit)
+(setq org-habit-graph-column 60)
+
+(setq org-refile-targets
+    '(("Archive.org" :maxlevel . 1)
+        ("Tasks.org" :maxlevel . 1)))
+
+;; Save Org buffers after refiling!
+(advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+(setq org-tag-alist
+    '((:startgroup)
+        ;; Put mutually exclusive tags here
+        (:endgroup)
+        ("@errand" . ?E)
+        ("@home" . ?H)
+        ("@work" . ?W)
+        ("agenda" . ?a)
+        ("planning" . ?p)
+        ("publish" . ?P)
+        ("batch" . ?b)
+        ("note" . ?n)
+        ("idea" . ?i)))
+
+;; Configure custom agenda views
+(setq org-agenda-custom-commands
+    '(("d" "Dashboard"
+        ((agenda "" ((org-deadline-warning-days 7)))
+        (todo "NEXT"
+                ((org-agenda-overriding-header "Next Tasks")))
+        (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active
+Projects")))))
+
+        ("n" "Next Tasks"
+        ((todo "NEXT"
+                ((org-agenda-overriding-header "Next Tasks")))))
+
+        ("W" "Work Tasks" tags-todo "+work-email")
+
+        ;; Low-effort next actions
+        ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+        ((org-agenda-overriding-header "Low Effort Tasks")
+        (org-agenda-max-todos 20)
+        (org-agenda-files org-agenda-files)))
+
+        ("w" "Workflow Status"
+        ((todo "WAIT"
+                ((org-agenda-overriding-header "Waiting on External")
+                (org-agenda-files org-agenda-files)))
+        (todo "REVIEW"
+                ((org-agenda-overriding-header "In Review")
+                (org-agenda-files org-agenda-files)))
+        (todo "PLAN"
+                ((org-agenda-overriding-header "In Planning")
+                (org-agenda-todo-list-sublevels nil)
+                (org-agenda-files org-agenda-files)))
+        (todo "BACKLOG"
+                ((org-agenda-overriding-header "Project Backlog")
+                (org-agenda-todo-list-sublevels nil)
+                (org-agenda-files org-agenda-files)))
+        (todo "READY"
+                ((org-agenda-overriding-header "Ready for Work")
+                (org-agenda-files org-agenda-files)))
+        (todo "ACTIVE"
+                ((org-agenda-overriding-header "Active Projects")
+                (org-agenda-files org-agenda-files)))
+        (todo "COMPLETED"
+                ((org-agenda-overriding-header "Completed Projects")
+                (org-agenda-files org-agenda-files)))
+        (todo "CANC"
+                ((org-agenda-overriding-header "Cancelled Projects")
+                (org-agenda-files org-agenda-files)))))))
+
+
+(setq org-capture-templates
+    `(("t" "Tasks / Projects")
+        ("tt" "Task" entry (file+olp
+                            "~/Projects/Code/dotfiles/emacs/OrgFiles/Tasks.org"
+                            "Inbox")
+        "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+        ("j" "Journal Entries")
+        ("jj" "Journal" entry
+        (file+olp+datetree
+        "~/Projects/Code/dotfiles/emacs/OrgFiles/Journal.org")
+        "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+        ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
+        :clock-in :clock-resume
+        :empty-lines 1)
+        ("jm" "Meeting" entry
+        (file+olp+datetree
+        "~/Projects/Code/dotfiles/emacs/OrgFiles/Journal.org")
+        "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+        :clock-in :clock-resume
+        :empty-lines 1)
+
+        ("w" "Workflows")
+        ("we" "Checking Email" entry (file+olp+date
+                                    "~/Projects/Code/dotfiles/emacs/OrgFiles/Journal.org")
+        "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines
+        1)
+
+        ("m" "Metrics Capture")
+        ("mw" "Weight" table-line (file+headline
+                                    "~/Projects/Code/dotfiles/emacs/OrgFiles/Metrics.org" "Weight")
+        "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
+
+(define-key global-map (kbd "C-c j")
+(lambda () (interactive) (org-capture nil "jj")))
+
+(efs/org-font-setup)
+
 (defun geokkjer/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
   (lsp-headerline-breadcrumb-mode))
@@ -124,9 +338,9 @@
   (setq lsp-keymap-prefix "C-c l"))
 
 (use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-doc-psition 'bottom))
+:hook (lsp-mode . lsp-ui-mode)
+:custom
+(lsp-ui-doc-psition 'bottom))
 
 (use-package web-mode)
 (require 'web-mode)
@@ -134,16 +348,16 @@
 (setq web-mode-engines-alist '(("django" . "\\.html\\'")))
 
 (use-package typescript-mode
-  :mode "\\.ts\\'"
-  :hook (typescript-mode . lsp-deferred)
-  :config
-  (setq typescript-indent-level 2))
+:mode "\\.ts\\'"
+:hook (typescript-mode . lsp-deferred)
+:config
+(setq typescript-indent-level 2))
 
 (use-package python-mode
-  :mode "\\.py\\'"
-  :hook (python-mode . lsp-deferred)
-  :config
-  )
+:mode "\\.py\\'"
+:hook (python-mode . lsp-deferred)
+:config
+)
 
 (use-package go-mode)
 
@@ -153,20 +367,20 @@
 ;; Set up before-save hooks to format buffer and add/delete imports.
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
 (defun lsp-go-install-save-hooks ()
-  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'before-save-hook #'lsp-format-buffer t t)
+(add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
 (use-package sql-indent)
 
 (use-package nix-mode
-  :mode "\\.nix\\'")
+:mode "\\.nix\\'")
 
 (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
-                  :major-modes '(nix-mode)
-                  :server-id 'nix))
+(make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
+                :major-modes '(nix-mode)
+                :server-id 'nix))
 
 (use-package scheme)
 
@@ -174,32 +388,32 @@
 
 ;; rainbow-delimiters
 (use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+:hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
+:ensure t
+:init (global-flycheck-mode))
 
 ;; TODO learn to use projectile
 (use-package projectile
-  :diminish
-  :config
-  :custom ((projectile-completion-system 'ivy))
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  (when (file-directory-p "~/Projects/Code")
+:diminish
+:config
+:custom ((projectile-completion-system 'ivy))
+:bind-keymap
+("C-c p" . projectile-command-map)
+:init
+(when (file-directory-p "~/Projects/Code")
     (setq projectile-projects-search-path '("~/Projects/Code")))
-  (setq projectile-switch-project-action #'projectile-dired))
+(setq projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
-  :config (counsel-projectile-mode))
+:config (counsel-projectile-mode))
 
 ;; TODO learn git and Magit
 (use-package magit
-  :custom
-  (magit-display-buffer-function
-   #'magit-display-buffer-same-window-except-diff-v1))
+    :custom
+    (magit-display-buffer-function
+    #'magit-display-buffer-same-window-except-diff-v1))
 
 (use-package helpful
   :custom
@@ -254,217 +468,3 @@
 
 (geokkjer/leader-keys
   "ts" '(hydra-text-scale/body :which-key "scale text"))
-
-(defun efs/org-mode-setup ()
-    (org-indent-mode)
-    (variable-pitch-mode 1)
-    (visual-line-mode 1))
-
-  ;; Org Mode Configuration  
-
-  (defun efs/org-font-setup ()
-    ;; Replace list hyphen with dot
-    (font-lock-add-keywords 'org-mode
-                            '(("^ *\\([-]\\) "
-                               (0 (prog1 () (compose-region
-                                             (match-beginning1)
-                                             (match-end 1)
-                                             "•")))))))
-
-  ;; Show overview when open
-  (setq org-startup-folded t)
-
-  ;; Set faces for heading levels
-  (with-eval-after-load 'org-faces
-    (dolist (face '((org-level-1 . 1.2)
-                    (org-level-2 . 1.1)
-                    (org-level-3 . 1.05)
-                    (org-level-4 . 1.0)
-                    (org-level-5 . 1.1)
-                    (org-level-6 . 1.1)
-                    (org-level-7 . 1.1)
-                    (org-level-8 . 1.1)))
-      (set-face-attribute (car face) nil :font "MesloLGS NF" :weight 'regular
-                          :height (cdr face))
-
-      ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-      (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-      (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-      (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-      (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-      (set-face-attribute 'org-special-keyword nil :inherit
-                          '(font-lock-comment-face fixed-pitch))
-      (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face
-                                                        fixed-pitch))
-      (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)))
-
-(use-package org
-  :hook (org-mode . efs/org-mode-setup)
-  :config
-  (setq org-ellipsis " ▾")
-
-  (use-package org-bullets
-    :after org
-    :hook (org-mode . org-bullets-mode)
-    :custom
-    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
-
-  (defun efs/org-mode-visual-fill ()
-    (setq visual-fill-column-width 100
-          visual-fill-column-center-text t)
-    (visual-fill-column-mode 1))
-
-  (use-package visual-fill-column
-    :hook (org-mode . efs/org-mode-visual-fill)))
-
-;; Automatically update the README.org file on save
-
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (shell . t)
-   (python . t)))
-
-(push '("conf-unix" . conf-unix) org-src-lang-modes)
-
-(setq org-confirm-babel-evaluate nil)
-
-;; This is needed as of Org 9.2
-(require 'org-tempo)
-
-(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("py" . "src python"))
-
-;; Automaticly tangle Emacs.org on save
-(defun geokkjer/org-babel-tangle-config ()
-  (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/Projects/Code/dotfiles/emacs/Emacs.org"))
-    ;; Dynamic scoping to the rescue
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-
-  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'geokkjer/org-babel-tangle-config)))
-
-;; Org-agenda config
-
-(setq org-agenda-start-with-log-mode t)
-(setq org-log-done 'time)
-(setq org-log-into-drawer t)
-(setq org-agenda-files
-      '("~/Projects/Code/dotfiles/emacs/OrgFiles/Tasks.org"
-        "~/Projects/Code/dotfiles/emacs/OrgFiles/Birthdays.org"
-        "~/Projects/Code/dotfiles/emacs/OrgFiles/Habits.org"))
-
-(require 'org-habit)
-(add-to-list 'org-modules 'org-habit)
-(setq org-habit-graph-column 60)
-
-(setq org-refile-targets
-      '(("Archive.org" :maxlevel . 1)
-        ("Tasks.org" :maxlevel . 1)))
-
-;; Save Org buffers after refiling!
-(advice-add 'org-refile :after 'org-save-all-org-buffers)
-
-(setq org-tag-alist
-      '((:startgroup)
-        ;; Put mutually exclusive tags here
-        (:endgroup)
-        ("@errand" . ?E)
-        ("@home" . ?H)
-        ("@work" . ?W)
-        ("agenda" . ?a)
-        ("planning" . ?p)
-        ("publish" . ?P)
-        ("batch" . ?b)
-        ("note" . ?n)
-        ("idea" . ?i)))
-
-;; Configure custom agenda views
-(setq org-agenda-custom-commands
-      '(("d" "Dashboard"
-         ((agenda "" ((org-deadline-warning-days 7)))
-          (todo "NEXT"
-                ((org-agenda-overriding-header "Next Tasks")))
-          (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active
- Projects")))))
-
-        ("n" "Next Tasks"
-         ((todo "NEXT"
-                ((org-agenda-overriding-header "Next Tasks")))))
-
-        ("W" "Work Tasks" tags-todo "+work-email")
-
-        ;; Low-effort next actions
-        ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-         ((org-agenda-overriding-header "Low Effort Tasks")
-          (org-agenda-max-todos 20)
-          (org-agenda-files org-agenda-files)))
-
-        ("w" "Workflow Status"
-         ((todo "WAIT"
-                ((org-agenda-overriding-header "Waiting on External")
-                 (org-agenda-files org-agenda-files)))
-          (todo "REVIEW"
-                ((org-agenda-overriding-header "In Review")
-                 (org-agenda-files org-agenda-files)))
-          (todo "PLAN"
-                ((org-agenda-overriding-header "In Planning")
-                 (org-agenda-todo-list-sublevels nil)
-                 (org-agenda-files org-agenda-files)))
-          (todo "BACKLOG"
-                ((org-agenda-overriding-header "Project Backlog")
-                 (org-agenda-todo-list-sublevels nil)
-                 (org-agenda-files org-agenda-files)))
-          (todo "READY"
-                ((org-agenda-overriding-header "Ready for Work")
-                 (org-agenda-files org-agenda-files)))
-          (todo "ACTIVE"
-                ((org-agenda-overriding-header "Active Projects")
-                 (org-agenda-files org-agenda-files)))
-          (todo "COMPLETED"
-                ((org-agenda-overriding-header "Completed Projects")
-                 (org-agenda-files org-agenda-files)))
-          (todo "CANC"
-                ((org-agenda-overriding-header "Cancelled Projects")
-                 (org-agenda-files org-agenda-files)))))))
-
-
-(setq org-capture-templates
-      `(("t" "Tasks / Projects")
-        ("tt" "Task" entry (file+olp
-                            "~/Projects/Code/dotfiles/emacs/OrgFiles/Tasks.org"
-                            "Inbox")
-         "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-
-        ("j" "Journal Entries")
-        ("jj" "Journal" entry
-         (file+olp+datetree
-          "~/Projects/Code/dotfiles/emacs/OrgFiles/Journal.org")
-         "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-         ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
-         :clock-in :clock-resume
-         :empty-lines 1)
-        ("jm" "Meeting" entry
-         (file+olp+datetree
-          "~/Projects/Code/dotfiles/emacs/OrgFiles/Journal.org")
-         "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
-         :clock-in :clock-resume
-         :empty-lines 1)
-
-        ("w" "Workflows")
-        ("we" "Checking Email" entry (file+olp+date
-                                      "~/Projects/Code/dotfiles/emacs/OrgFiles/Journal.org")
-         "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines
-         1)
-
-        ("m" "Metrics Capture")
-        ("mw" "Weight" table-line (file+headline
-                                   "~/Projects/Code/dotfiles/emacs/OrgFiles/Metrics.org" "Weight")
-         "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
-
-(define-key global-map (kbd "C-c j")
-  (lambda () (interactive) (org-capture nil "jj")))
-
-(efs/org-font-setup)

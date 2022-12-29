@@ -1,8 +1,3 @@
-
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, lib, ... }:
 
 {
@@ -50,18 +45,18 @@
   services.xserver = {
     layout = "no";
   };
-  
-  
+
+
   # Configure console keymap
   console.keyMap = "no";
 
   # Fonts
   fonts.fonts = with pkgs; [
-	fira-code
-	fira-code-symbols
-	meslo-lgs-nf
+        fira-code
+        fira-code-symbols
+        meslo-lgs-nf
   ];
-  
+
   # flatpak
   xdg.portal.enable = true; 
   services.flatpak.enable = true;
@@ -120,21 +115,21 @@
     zsh-powerlevel10k
     fzf
   ];
-  
+
   # Steam
-  
+
   #programs.steam = {
   #  enable = true;
     #remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
     #dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
   #};
-  
+
   #nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
   #  "steam"
   #  "steam-original"
   #  "steam-runtime"
   #];
-  
+
   # zsh conf
   programs.zsh.enable = true;
   programs.zsh.syntaxHighlighting.enable = true;
@@ -142,10 +137,10 @@
   programs.zsh.interactiveShellInit = ''
   export ZSH=${pkgs.oh-my-zsh}/share/oh-my-zsh/
   export FZF_BASE=${pkgs.fzf}/share/fzf/
-  
+
 
   # Customize your oh-my-zsh options here
-  
+
   ZSH_THEME="agnoster"
   plugins=(git fzf )
   HISTFILESIZE=50000
@@ -159,15 +154,15 @@
   setopt completealiases
   export LANG=en_US.UTF-8
   export LC_ALL=en_US.UTF-8
-  
+
   if [ -f ~/.aliases ]; then
     source ~/.aliases
   fi
-    
-   
+
+
 
   source $ZSH/oh-my-zsh.sh
-  
+
  '';
  programs.zsh.promptInit = "source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
 
