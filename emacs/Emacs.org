@@ -80,22 +80,21 @@ I like the MesloLGS Nerd font, it fits nicely with the theme and my zsh prompt.
 
 #+begin_src emacs-lisp
 
+  (defvar geokkjer/default-font-size 140)
 
-(defvar geokkjer/default-font-size 140)
+  (set-face-attribute 'default nil :font "MesloLGS NF" :height geokkjer/default-font-size)
 
-(set-face-attribute 'default nil :font "MesloLGS NF" :height geokkjer/default-font-size)
+  ;; Set the fixed pitch face
+  (set-face-attribute 'fixed-pitch nil :font "MesloLGS NF" :height 140)
 
-;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "MesloLGS NF" :height 140)
+  ;; Set the variable pitch face
+  (set-face-attribute 'variable-pitch nil :font "MesloLGS NF" :height 130 :weight 'regular)
 
-;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "MesloLGS NF" :height 130 :weight 'regular)
 #+end_src
 
 * Package System setup
 
 #+begin_src emacs-lisp
-  ;; Package Manager Configuration
 
   ;; Initialize package sources
   (require 'package)
@@ -115,6 +114,7 @@ I like the MesloLGS Nerd font, it fits nicely with the theme and my zsh prompt.
 
   (require 'use-package)
   (setq use-package-always-ensure t)
+  
 #+end_src
 
 * Swiper and Ivy
@@ -171,13 +171,17 @@ Install and setup Ivy and swiper. Some keybindings for both swiper and counsel. 
 
 * Development
 
-Making Emacs have the functionality of an IDE like VSCode. And other things that are related to develoment. TODO: move magit and projectile here ??
+Making Emacs have the functionality of an IDE. And other things that are related to development.
 
 ** Languages and lsp-mode configuration
 
-Configuration for different programming languages that I use or want to learn.
+Configuration for different programming languages that I use, or want to learn.
 
 *** lsp-mode
+
+lsp-mode is a mode TODO:
+
+**** lsp-basic
 
 lsp-mode basic configuration. description. TODO
 
@@ -194,6 +198,10 @@ lsp-mode basic configuration. description. TODO
         (setq lsp-keymap-prefix "C-c l"))
 
 #+end_src
+
+**** lsp-ui
+
+lsp-ui is .. TODO
 
 #+begin_src emacs-lisp
 

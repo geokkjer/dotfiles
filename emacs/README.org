@@ -1,4 +1,4 @@
-# Created 2022-12-28 Wed 00:23
+# Created 2022-12-29 Thu 15:16
 #+title: Emacs Configuration
 #+author: Geir Okkenhaug Jerstad
 #+property: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
@@ -79,7 +79,6 @@ I like the MesloLGS Nerd font, it fits nicely with the theme and my zsh prompt.
 
 #+begin_src emacs-lisp
 
-
   (defvar geokkjer/default-font-size 140)
 
   (set-face-attribute 'default nil :font "MesloLGS NF" :height geokkjer/default-font-size)
@@ -94,7 +93,6 @@ I like the MesloLGS Nerd font, it fits nicely with the theme and my zsh prompt.
 * Package System setup
 
 #+begin_src emacs-lisp
-  ;; Package Manager Configuration
 
   ;; Initialize package sources
   (require 'package)
@@ -169,13 +167,17 @@ Install and setup Ivy and swiper. Some keybindings for both swiper and counsel. 
 
 * Development
 
-Making Emacs have the functionality of an IDE like VSCode. And other things that are related to develoment. TODO: move magit and projectile here ??
+Making Emacs have the functionality of an IDE. And other things that are related to development.
 
 ** Languages and lsp-mode configuration
 
-Configuration for different programming languages that I use or want to learn.
+Configuration for different programming languages that I use, or want to learn.
 
 *** lsp-mode
+
+lsp-mode is a mode TODO:
+
+**** lsp-basic
 
 lsp-mode basic configuration. description. TODO
 
@@ -186,12 +188,15 @@ lsp-mode basic configuration. description. TODO
 
   (use-package lsp-mode
     :commands (lsp lsp-deferred)
-    :hook (lsp-mode . geokkjer/lsp-mode-setup)
+    :hook ((lsp-mode . geokkjer/lsp-mode-setup)
+  	 (lsp-mode . lsp-enable-which-key-integration))
     :init
-    (setq lsp-keymap-prefix "C-c l")
-    :config
-    (lsp-enable-which-key-integration t))
+    (setq lsp-keymap-prefix "C-c l"))
 #+end_src
+
+**** lsp-ui
+
+lsp-ui is .. TODO
 
 #+begin_src emacs-lisp
 

@@ -48,8 +48,6 @@
 ;; Set the variable pitch face
 (set-face-attribute 'variable-pitch nil :font "MesloLGS NF" :height 130 :weight 'regular)
 
-;; Package Manager Configuration
-
 ;; Initialize package sources
 (require 'package)
 
