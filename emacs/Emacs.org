@@ -423,7 +423,7 @@ lsp-mode is a mode TODO:
 
 **** lsp-basic
 
-lsp-mode basic configuration. description. TODO
+lsp-mode basic configuration including automatic headerline in lsp-mod . description. TODO
 
 #+begin_src emacs-lisp
 
@@ -446,13 +446,58 @@ lsp-ui is .. TODO
 
 #+begin_src emacs-lisp
 
-(use-package lsp-ui
-:hook (lsp-mode . lsp-ui-mode)
-:custom
-(lsp-ui-doc-psition 'bottom))
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    (lsp-ui-doc-psition 'bottom))
+
+  (setq lsp-ui-sidline-enable nil)
+  (setq lsp-ui-sideline-show-hover nil)
+  
+#+end_src
+**** lsp-treemacs
+
+TODO: explore treemacs
+
+#+begin_src emacs-lisp
+
+  (use-package lsp-treemacs
+    :after lsp)
+  
+#+end_src
+
+**** Code completion with company-mode
+
+Company provides bette completions TODO:
+
+#+begin_src emacs-lisp
+
+  (use-package company
+    :after lsp-mode
+    :hook (lsp-mode . company-mode)
+    :bind (:map company-active-map
+            ("<tab>" . company-complete-section))
+          (:map lsp-mode-map
+            ("<tab>" . company-indent-or-complete-common))
+    :custom
+    (company-minimum-orefix-lenght 1)
+    (company-idle-delay 0.0))
+
+  (use-package company-box
+    :hook (company-mode . company-box-mode))
 
 #+end_src
 
+**** Commenting in evil-mode
+
+Useeful for commenting or uncommenting lines of code in modal editing mode.
+
+#+begin_src emacs-lisp
+
+  (use-package evil-nerd-commenter
+    :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+  
+#+end_src
 *** Web-mode
 
 #+begin_src emacs-lisp
@@ -478,13 +523,23 @@ lsp-ui is .. TODO
 
 *** Python
 
+Sets up python mode to trigger on .py files. Then sets up lsp-python-ms to find python-language server on NixOS.
+
 #+begin_src emacs-lisp
 
-(use-package python-mode
-:mode "\\.py\\'"
-:hook (python-mode . lsp-deferred)
-:config
-)
+  (use-package python-mode
+  :mode "\\.py\\'"
+  :hook (python-mode . lsp-deferred)
+  :config
+  )
+
+  (use-package lsp-python-ms
+  :ensure t
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-python-ms)
+                         (lsp-deferred)))
+  :init
+  (setq lsp-python-ms-executable (executable-find "python-language-server")))
 
 #+end_src
 

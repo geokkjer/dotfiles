@@ -338,9 +338,32 @@ Projects")))))
   (setq lsp-keymap-prefix "C-c l"))
 
 (use-package lsp-ui
-:hook (lsp-mode . lsp-ui-mode)
-:custom
-(lsp-ui-doc-psition 'bottom))
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-psition 'bottom))
+
+(setq lsp-ui-sidline-enable nil)
+(setq lsp-ui-sideline-show-hover nil)
+
+(use-package lsp-treemacs
+  :after lsp)
+
+(use-package company
+  :after lsp-mode
+  :hook (lsp-mode . company-mode)
+  :bind (:map company-active-map
+          ("<tab>" . company-complete-section))
+        (:map lsp-mode-map
+          ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-orefix-lenght 1)
+  (company-idle-delay 0.0))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
+(use-package evil-nerd-commenter
+  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
 (use-package web-mode)
 (require 'web-mode)
@@ -358,6 +381,14 @@ Projects")))))
 :hook (python-mode . lsp-deferred)
 :config
 )
+
+(use-package lsp-python-ms
+:ensure t
+:hook (python-mode . (lambda ()
+                       (require 'lsp-python-ms)
+                       (lsp-deferred)))
+:init
+(setq lsp-python-ms-executable (executable-find "python-language-server")))
 
 (use-package go-mode)
 
