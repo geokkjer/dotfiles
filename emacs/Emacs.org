@@ -71,6 +71,7 @@ Set emacs to show line-numbers, some modes excluded.
   (dolist (mode '(org-mode-hook
                   term-mode-hook
                   shell-mode-hook
+                  vterm-mode-hook
                   eshell-mode-hook))
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
@@ -466,38 +467,6 @@ TODO: explore treemacs
   
 #+end_src
 
-**** Code completion with company-mode
-
-Company provides bette completions TODO:
-
-#+begin_src emacs-lisp
-
-  (use-package company
-    :after lsp-mode
-    :hook (lsp-mode . company-mode)
-    :bind (:map company-active-map
-            ("<tab>" . company-complete-section))
-          (:map lsp-mode-map
-            ("<tab>" . company-indent-or-complete-common))
-    :custom
-    (company-minimum-orefix-lenght 1)
-    (company-idle-delay 0.0))
-
-  (use-package company-box
-    :hook (company-mode . company-box-mode))
-
-#+end_src
-
-**** Commenting in evil-mode
-
-Useeful for commenting or uncommenting lines of code in modal editing mode.
-
-#+begin_src emacs-lisp
-
-  (use-package evil-nerd-commenter
-    :bind ("M-/" . evilnc-comment-or-uncomment-lines))
-  
-#+end_src
 *** Web-mode
 
 #+begin_src emacs-lisp
@@ -544,7 +513,6 @@ Sets up python mode to trigger on .py files. Then sets up lsp-python-ms to find 
 #+end_src
 
 *** GO
-
 #+begin_src emacs-lisp
 
 (use-package go-mode)
@@ -600,7 +568,40 @@ TODO
 
 #+end_src
 
-*** Rainbow delimiters
+** Code completion with company-mode
+
+Company provides bette completions TODO:
+
+#+begin_src emacs-lisp
+
+  (use-package company
+    :after lsp-mode
+    :hook (lsp-mode . company-mode)
+    :bind (:map company-active-map
+            ("<tab>" . company-complete-section))
+          (:map lsp-mode-map
+            ("<tab>" . company-indent-or-complete-common))
+    :custom
+    (company-minimum-orefix-lenght 1)
+    (company-idle-delay 0.0))
+
+  (use-package company-box
+    :hook (company-mode . company-box-mode))
+
+#+end_src
+
+** Commenting
+
+Useeful for commenting or uncommenting lines of code in modal editing mode.
+
+#+begin_src emacs-lisp
+
+  (use-package evil-nerd-commenter
+    :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+  
+#+end_src
+
+** Rainbow Delimiters
 
 Really helpful
 
@@ -663,9 +664,7 @@ MAGIT description. TODO
 
 #+end_src
 
-* Helpful, Evil-mode and hydra
-
-
+* Helpful
 
 #+begin_src emacs-lisp
 
@@ -688,6 +687,11 @@ MAGIT description. TODO
     (geokkjer/leader-keys
       "t"  '(:ignore t :which-key "toggles")
       "tt" '(counsel-load-theme :which-key "choose theme")))
+#+end_src
+
+* Evil-mode
+
+#+begin_src emacs-lisp
 
   (use-package evil
     :init
@@ -713,6 +717,11 @@ MAGIT description. TODO
     :config
     (evil-collection-init))
 
+#+end_src
+
+* Hydra
+#+begin_src emacs-lisp
+  
   (use-package hydra)
   (defhydra hydra-text-scale (:timeout 4)
     "scale text"
@@ -725,6 +734,40 @@ MAGIT description. TODO
 
 #+end_src
 
+* Shells and Terminals
+
+** term-mode
+
+#+begin_src emacs-lisp
+
+  (use-package term
+    :config
+    (setq explicit-shell-file-name "bash")
+    ;; (setq explicit-zsh-args '())
+    (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
+
+  (use-package eterm-256color
+    :hook (term-mode . eterm-256color-mode))
+    
+#+end_src
+
+** vterm
+
+I used the package from NixOS repository rather than compile from emacs.
+
+#+begin_src emacs-lisp
+
+  (use-package vterm
+    :commands vterm
+    :config
+    ;; (setq vterm-shell "zsh")
+    (setq vterm-max-scrollback 10000))
+  
+#+end_src
+
+** shell-mode
+
+** eshell
 * Other Applications examples
 
 Using emacs org-mode to configure other applications.

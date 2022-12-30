@@ -35,6 +35,7 @@
 (dolist (mode '(org-mode-hook
                 term-mode-hook
                 shell-mode-hook
+                vterm-mode-hook
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
@@ -348,23 +349,6 @@ Projects")))))
 (use-package lsp-treemacs
   :after lsp)
 
-(use-package company
-  :after lsp-mode
-  :hook (lsp-mode . company-mode)
-  :bind (:map company-active-map
-          ("<tab>" . company-complete-section))
-        (:map lsp-mode-map
-          ("<tab>" . company-indent-or-complete-common))
-  :custom
-  (company-minimum-orefix-lenght 1)
-  (company-idle-delay 0.0))
-
-(use-package company-box
-  :hook (company-mode . company-box-mode))
-
-(use-package evil-nerd-commenter
-  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
-
 (use-package web-mode)
 (require 'web-mode)
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
@@ -416,6 +400,23 @@ Projects")))))
 (use-package scheme)
 
 
+
+(use-package company
+  :after lsp-mode
+  :hook (lsp-mode . company-mode)
+  :bind (:map company-active-map
+          ("<tab>" . company-complete-section))
+        (:map lsp-mode-map
+          ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-orefix-lenght 1)
+  (company-idle-delay 0.0))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
+(use-package evil-nerd-commenter
+  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
 ;; rainbow-delimiters
 (use-package rainbow-delimiters
@@ -499,3 +500,18 @@ Projects")))))
 
 (geokkjer/leader-keys
   "ts" '(hydra-text-scale/body :which-key "scale text"))
+
+(use-package term
+  :config
+  (setq explicit-shell-file-name "bash")
+  ;; (setq explicit-zsh-args '())
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
+
+(use-package eterm-256color
+  :hook (term-mode . eterm-256color-mode))
+
+(use-package vterm
+  :commands vterm
+  :config
+  ;; (setq vterm-shell "zsh")
+  (setq vterm-max-scrollback 10000))
