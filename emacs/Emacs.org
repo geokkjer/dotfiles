@@ -36,7 +36,7 @@ And turn off the bell to visual, no audible bell.
 
   ;; Setting to auto reload files
   (setq auto-revert-mode t)
-  
+
 #+end_src
 
 ** Doom modline and all-the-icons
@@ -59,6 +59,7 @@ Use doom-modeline, set height. Install all-the-icons and use doom-themes to set 
 #+end_src
 
 ** Line numbers
+
 Set emacs to show line-numbers, some modes excluded.
 
 #+begin_src emacs-lisp
@@ -82,7 +83,7 @@ Set emacs to show line-numbers, some modes excluded.
 I like the MesloLGS Nerd font, it fits nicely with the theme and my zsh prompt.
 
 #+begin_src emacs-lisp
-
+  
   (defvar geokkjer/default-font-size 140)
 
   (set-face-attribute 'default nil :font "MesloLGS NF" :height geokkjer/default-font-size)
@@ -99,6 +100,8 @@ I like the MesloLGS Nerd font, it fits nicely with the theme and my zsh prompt.
 
 Setting up some packaging registers for emacs.
 
+** Package sources and initialization.
+
 #+begin_src emacs-lisp
 
   ;; Initialize package sources
@@ -106,8 +109,8 @@ Setting up some packaging registers for emacs.
 
   ;; Set the repos
   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                           ("org" . "https://orgmode.org/elpa/")
-                           ("elpa" . "https://elpa.gnu.org/packages/")))
+  			 ("org" . "https://orgmode.org/elpa/")
+  			 ("elpa" . "https://elpa.gnu.org/packages/")))
 
   (package-initialize)
   (unless package-archive-contents
@@ -119,6 +122,28 @@ Setting up some packaging registers for emacs.
 
   (require 'use-package)
   (setq use-package-always-ensure t)
+#+end_src
+
+** Auto-update packages
+
+#+begin_src emacs-lisp
+
+  (use-package auto-package-update
+    :custom
+    (auto-package-update-interval 7)
+    (auto-package-update-prompt-before-update t)
+    (auto-package-update-hide-results t)
+    :config
+    (auto-package-update-maybe)
+    (auto-package-update-at-time "09:00"))
+
+#+end_src
+
+** Keep the folders clean
+
+#+begin_src emacs-lisp
+  
+  ;;(use-package no-littering)
 
 #+end_src
 
@@ -127,6 +152,7 @@ Setting up some packaging registers for emacs.
 Install and setup Ivy and swiper. Some keybindings for both swiper and counsel. which-key and ivy-rich
 
 #+begin_src emacs-lisp
+
   (use-package swiper)
 
   ;; Ivy Configuration --------------------------
@@ -454,8 +480,9 @@ lsp-ui is .. TODO
 
   (setq lsp-ui-sidline-enable nil)
   (setq lsp-ui-sideline-show-hover nil)
-  
+
 #+end_src
+
 **** lsp-treemacs
 
 TODO: explore treemacs
@@ -471,61 +498,75 @@ TODO: explore treemacs
 
 #+begin_src emacs-lisp
 
-(use-package web-mode)
-(require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-(setq web-mode-engines-alist '(("django" . "\\.html\\'")))
+  (use-package web-mode)
+  (require 'web-mode)
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (setq web-mode-engines-alist '(("django" . "\\.html\\'")))
 
 #+end_src
 
 *** Typescript
 
+Used as an example of how to 
 #+begin_src emacs-lisp
 
-(use-package typescript-mode
-:mode "\\.ts\\'"
-:hook (typescript-mode . lsp-deferred)
-:config
-(setq typescript-indent-level 2))
+  (use-package typescript-mode
+    :mode "\\.ts\\'"
+    :hook (typescript-mode . lsp-deferred)
+    :config
+  (setq typescript-indent-level 2))
 
 #+end_src
 
 *** Python
 
-Sets up python mode to trigger on .py files. Then sets up lsp-python-ms to find python-language server on NixOS.
+Python IDE config. Sets up python mode to trigger on .py files. Then sets up lsp-python-ms to find python-language-server on NixOS.
 
 #+begin_src emacs-lisp
 
   (use-package python-mode
-  :mode "\\.py\\'"
-  :hook (python-mode . lsp-deferred)
-  :config
-  )
+    :ensure nil
+    :hook (python-mode . lsp-deferred)
+    :custom
+    (python-shell-interpreter "python3")
+    :mode "\\.py\\'"
+    :config
+    )
 
+  (use-package pyvenv
+    :config
+    (pyvenv-mode 1))
+  
   (use-package lsp-python-ms
-  :ensure t
-  :hook (python-mode . (lambda ()
+    :ensure t
+    :hook (python-mode . (lambda ()
                          (require 'lsp-python-ms)
                          (lsp-deferred)))
-  :init
-  (setq lsp-python-ms-executable (executable-find "python-language-server")))
+    :init
+    (setq lsp-python-ms-executable (executable-find "python-language-server")))
 
 #+end_src
 
 *** GO
 #+begin_src emacs-lisp
 
-(use-package go-mode)
+  (use-package go-mode)
 
-(require 'lsp-mode)
-(add-hook 'go-mode-hook #'lsp-deferred)
+  (require 'lsp-mode)
+  (add-hook 'go-mode-hook #'lsp-deferred)
 
-;; Set up before-save hooks to format buffer and add/delete imports.
-;; Make sure you don't have other gofmt/goimports hooks enabled.
-(defun lsp-go-install-save-hooks ()
-(add-hook 'before-save-hook #'lsp-format-buffer t t)
-(add-hook 'before-save-hook #'lsp-organize-imports t t))
-(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+  ;; Set up before-save hooks to format buffer and add/delete imports.
+  ;; Make sure you don't have other gofmt/goimports hooks enabled.
+  (defun lsp-go-install-save-hooks ()
+    (add-hook 'before-save-hook #'lsp-format-buffer t t)
+    (add-hook 'before-save-hook #'lsp-organize-imports t t))
+  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+#+end_src
+
+*** Rust
+
+#+begin_src emacs-lisp
 
 #+end_src
 
@@ -533,7 +574,7 @@ Sets up python mode to trigger on .py files. Then sets up lsp-python-ms to find 
 
 #+begin_src emacs-lisp
 
-(use-package sql-indent)
+  (use-package sql-indent)
 
 #+end_src
 
@@ -543,28 +584,14 @@ TODO
 
 #+begin_src emacs-lisp
 
-(use-package nix-mode
-:mode "\\.nix\\'")
+  (use-package nix-mode
+    :mode "\\.nix\\'")
 
-(add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
-(lsp-register-client
-(make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
-                :major-modes '(nix-mode)
-                :server-id 'nix))
-
-#+end_src
-
-*** Scheme
-
-#+begin_src emacs-lisp
-
-(use-package scheme)
-
-#+end_src
-
-*** Guile
-
-#+begin_src emacs-lisp
+  (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
+                    :major-modes '(nix-mode)
+                    :server-id 'nix))
 
 #+end_src
 
@@ -598,7 +625,7 @@ Useeful for commenting or uncommenting lines of code in modal editing mode.
 
   (use-package evil-nerd-commenter
     :bind ("M-/" . evilnc-comment-or-uncomment-lines))
-  
+
 #+end_src
 
 ** Rainbow Delimiters
@@ -607,9 +634,9 @@ Really helpful
 
 #+begin_src emacs-lisp
 
-;; rainbow-delimiters
-(use-package rainbow-delimiters
-:hook (prog-mode . rainbow-delimiters-mode))
+  ;; rainbow-delimiters
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
 
 #+end_src
 
@@ -621,9 +648,9 @@ Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs, intende
 ]]
 #+begin_src emacs-lisp
 
-(use-package flycheck
-:ensure t
-:init (global-flycheck-mode))
+  (use-package flycheck
+    :ensure t
+    :init (global-flycheck-mode))
 
 #+end_src
 
@@ -633,20 +660,20 @@ Projectile description .TODO
 
 #+begin_src emacs-lisp
 
-;; TODO learn to use projectile
-(use-package projectile
-:diminish
-:config
-:custom ((projectile-completion-system 'ivy))
-:bind-keymap
-("C-c p" . projectile-command-map)
-:init
-(when (file-directory-p "~/Projects/Code")
-    (setq projectile-projects-search-path '("~/Projects/Code")))
-(setq projectile-switch-project-action #'projectile-dired))
+  ;; TODO learn to use projectile
+  (use-package projectile
+    :diminish
+    :config
+    :custom ((projectile-completion-system 'ivy))
+    :bind-keymap
+    ("C-c p" . projectile-command-map)
+    :init
+    (when (file-directory-p "~/Projects/Code")
+      (setq projectile-projects-search-path '("~/Projects/Code")))
+    (setq projectile-switch-project-action #'projectile-dired))
 
-(use-package counsel-projectile
-:config (counsel-projectile-mode))
+  (use-package counsel-projectile
+    :config (counsel-projectile-mode))
 
 #+end_src
 
@@ -656,11 +683,11 @@ MAGIT description. TODO
 
 #+begin_src emacs-lisp
 
-;; TODO learn git and Magit
-(use-package magit
+  ;; TODO learn git and Magit
+  (use-package magit
     :custom
     (magit-display-buffer-function
-    #'magit-display-buffer-same-window-except-diff-v1))
+     #'magit-display-buffer-same-window-except-diff-v1))
 
 #+end_src
 
@@ -720,6 +747,8 @@ MAGIT description. TODO
 #+end_src
 
 * Hydra
+
+
 #+begin_src emacs-lisp
   
   (use-package hydra)
@@ -753,7 +782,8 @@ MAGIT description. TODO
 
 ** vterm
 
-I used the package from NixOS repository rather than compile from emacs.
+TODO
+I used the package from NixOS repository rather than compile from source.
 
 #+begin_src emacs-lisp
 
@@ -765,9 +795,73 @@ I used the package from NixOS repository rather than compile from emacs.
   
 #+end_src
 
-** shell-mode
-
 ** eshell
+
+built in shell written for emacs TODO:completions
+
+#+begin_src emacs-lisp
+
+  (defun geokkjer/configure-eshell ()
+    ;; Make eshell svae history when it is open  
+    (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+    ;; Truncate buffer for performance
+    (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+    ;; Bind some useful keys for evil-mode
+    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
+    (evil-normalize-keymaps)
+
+    (setq eshell-history-size         10000
+          eshell-buffer-maximum-lines 10000
+          eshell-hist-ignoredups t
+          eshell-scroll-to-bottom-on-input t))
+
+  (use-package eshell-git-prompt)
+  (use-package eshell
+    :hook (eshell-first-time-mode . geokkjer/configure-eshell)
+    :config
+    (with-eval-after-load 'esh-opt
+      (setq eshell-destroy-buffer-when-process-dies t)
+      (setq eshell-visual-commands '("htop" "zsh" "vim" "glances")))
+    
+    (eshell-git-prompt-use-theme 'powerline))
+
+#+end_src
+
+* File Management
+** Dired
+
+#+begin_src emacs-lisp
+
+  (use-package dired
+    :ensure nil
+    :commands (dired dired-jump)
+    :bind (("C-x C-j" . dired-jump))
+    :custom ((dired-listing-switches "-agho --group-directories-first"))
+    :config
+    (evil-collection-define-key 'normal 'dired-mode-map
+      "h" 'dired-up-directory
+      "l" 'dired-single-buffer))
+
+  (use-package dired-single)
+
+  (use-package all-the-icons-dired
+    :hook (dired-mode . all-the-icons-dired-mode))
+
+  (use-package dired-open
+    :config
+    (setq dired-open-exstensions '(("png" . "feh")
+                                   ("mkv" . "mpv"))))
+  (use-package dired-hide-dotfiles
+    :hook (dired-mode . dired-hide-dotfiles-mode)
+    :config
+    (evil-collection-define-key 'normal 'dired-mode-map
+      "H" 'dired-hide-dotfiles-mode))
+  
+#+end_src
+
 * Other Applications examples
 
 Using emacs org-mode to configure other applications.

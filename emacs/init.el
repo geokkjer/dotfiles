@@ -54,8 +54,8 @@
 
 ;; Set the repos
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")
-                         ("elpa" . "https://elpa.gnu.org/packages/")))
+  		       ("org" . "https://orgmode.org/elpa/")
+  		       ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (package-initialize)
 (unless package-archive-contents
@@ -67,6 +67,17 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t)
+
+(use-package auto-package-update
+  :custom
+  (auto-package-update-interval 7)
+  (auto-package-update-prompt-before-update t)
+  (auto-package-update-hide-results t)
+  :config
+  (auto-package-update-maybe)
+  (auto-package-update-at-time "09:00"))
+
+;;(use-package no-littering)
 
 (use-package swiper)
 
@@ -355,24 +366,31 @@ Projects")))))
 (setq web-mode-engines-alist '(("django" . "\\.html\\'")))
 
 (use-package typescript-mode
-:mode "\\.ts\\'"
-:hook (typescript-mode . lsp-deferred)
-:config
+  :mode "\\.ts\\'"
+  :hook (typescript-mode . lsp-deferred)
+  :config
 (setq typescript-indent-level 2))
 
 (use-package python-mode
-:mode "\\.py\\'"
-:hook (python-mode . lsp-deferred)
-:config
-)
+  :ensure nil
+  :hook (python-mode . lsp-deferred)
+  :custom
+  (python-shell-interpreter "python3")
+  :mode "\\.py\\'"
+  :config
+  )
+
+(use-package pyvenv
+  :config
+  (pyvenv-mode 1))
 
 (use-package lsp-python-ms
-:ensure t
-:hook (python-mode . (lambda ()
+  :ensure t
+  :hook (python-mode . (lambda ()
                        (require 'lsp-python-ms)
                        (lsp-deferred)))
-:init
-(setq lsp-python-ms-executable (executable-find "python-language-server")))
+  :init
+  (setq lsp-python-ms-executable (executable-find "python-language-server")))
 
 (use-package go-mode)
 
@@ -382,24 +400,22 @@ Projects")))))
 ;; Set up before-save hooks to format buffer and add/delete imports.
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
 (defun lsp-go-install-save-hooks ()
-(add-hook 'before-save-hook #'lsp-format-buffer t t)
-(add-hook 'before-save-hook #'lsp-organize-imports t t))
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+
 
 (use-package sql-indent)
 
 (use-package nix-mode
-:mode "\\.nix\\'")
+  :mode "\\.nix\\'")
 
 (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
 (lsp-register-client
-(make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
-                :major-modes '(nix-mode)
-                :server-id 'nix))
-
-(use-package scheme)
-
-
+ (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
+                  :major-modes '(nix-mode)
+                  :server-id 'nix))
 
 (use-package company
   :after lsp-mode
@@ -420,32 +436,32 @@ Projects")))))
 
 ;; rainbow-delimiters
 (use-package rainbow-delimiters
-:hook (prog-mode . rainbow-delimiters-mode))
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package flycheck
-:ensure t
-:init (global-flycheck-mode))
+  :ensure t
+  :init (global-flycheck-mode))
 
 ;; TODO learn to use projectile
 (use-package projectile
-:diminish
-:config
-:custom ((projectile-completion-system 'ivy))
-:bind-keymap
-("C-c p" . projectile-command-map)
-:init
-(when (file-directory-p "~/Projects/Code")
+  :diminish
+  :config
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/Projects/Code")
     (setq projectile-projects-search-path '("~/Projects/Code")))
-(setq projectile-switch-project-action #'projectile-dired))
+  (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
-:config (counsel-projectile-mode))
+  :config (counsel-projectile-mode))
 
 ;; TODO learn git and Magit
 (use-package magit
-    :custom
-    (magit-display-buffer-function
-    #'magit-display-buffer-same-window-except-diff-v1))
+  :custom
+  (magit-display-buffer-function
+   #'magit-display-buffer-same-window-except-diff-v1))
 
 (use-package helpful
   :custom
@@ -515,3 +531,55 @@ Projects")))))
   :config
   ;; (setq vterm-shell "zsh")
   (setq vterm-max-scrollback 10000))
+
+(defun geokkjer/configure-eshell ()
+  ;; Make eshell svae history when it is open  
+  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+  ;; Truncate buffer for performance
+  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+  ;; Bind some useful keys for evil-mode
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
+  (evil-normalize-keymaps)
+
+  (setq eshell-history-size         10000
+        eshell-buffer-maximum-lines 10000
+        eshell-hist-ignoredups t
+        eshell-scroll-to-bottom-on-input t))
+
+(use-package eshell-git-prompt)
+(use-package eshell
+  :hook (eshell-first-time-mode . geokkjer/configure-eshell)
+  :config
+  (with-eval-after-load 'esh-opt
+    (setq eshell-destroy-buffer-when-process-dies t)
+    (setq eshell-visual-commands '("htop" "zsh" "vim" "glances")))
+
+  (eshell-git-prompt-use-theme 'powerline))
+
+(use-package dired
+  :ensure nil
+  :commands (dired dired-jump)
+  :bind (("C-x C-j" . dired-jump))
+  :custom ((dired-listing-switches "-agho --group-directories-first"))
+  :config
+  (evil-collection-define-key 'normal 'dired-mode-map
+    "h" 'dired-up-directory
+    "l" 'dired-single-buffer))
+
+(use-package dired-single)
+
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package dired-open
+  :config
+  (setq dired-open-exstensions '(("png" . "feh")
+                                 ("mkv" . "mpv"))))
+(use-package dired-hide-dotfiles
+  :hook (dired-mode . dired-hide-dotfiles-mode)
+  :config
+  (evil-collection-define-key 'normal 'dired-mode-map
+    "H" 'dired-hide-dotfiles-mode))
