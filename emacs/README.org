@@ -1,4 +1,4 @@
-# Created 2023-01-01 Sun 23:43
+# Created 2023-01-02 Mon 14:39
 #+title: Emacs Configuration
 #+author: Geir Okkenhaug Jerstad
 #+property: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
@@ -9,6 +9,22 @@
 This is my current and ever evolving emacs configuration. It is written as an Org Mode document. The [[file:init.el][init.el]] and [[file:][README.org]] files are generated from this file.
 
 *NOTE:* Inspired by [[https://github.com/daviwil/emacs-from-scratch/][Emacs from scratch by System Crafters]]
+
+* Emacs startup
+
+Make Emacs print out the time it used to start up.
+
+#+begin_src emacs-lisp
+
+  (defun geokkjer/display-startup-time ()
+    (message "Emacs loaded in %s with %d grabage collections."
+  	   (format "%.2f seconds"
+  		   (float-time
+  		    (time-subtract after-init-time before-init-time)))
+  	   gcs-done))
+
+  (add-hook 'emacs-startup-hook #'geokkjer/display-startup-time)
+#+end_src
 
 * UI config
 
@@ -137,6 +153,8 @@ Setting up some packaging registers for emacs.
 #+end_src
 
 ** Keep the folders clean
+
+This is where I will put some things to keep my .emacs.d folder clean
 
 #+begin_src emacs-lisp
 
