@@ -577,12 +577,16 @@ TODO: explore treemacs
 #+begin_src emacs-lisp
 
   (use-package web-mode
-  :mode "\\.html\\'"
-  :hook (web-mode . lsp-deferred)
-  :config
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  (setq web-mode-engines-alist '(("django" . "\\.html\\'"))))
+    :mode "\\.html\\'"
+    :hook (web-mode . lsp-deferred)
+    :config
+    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+    (setq web-mode-engines-alist '(("django" . "\\.html\\'"))))
 
+  ;; Simple-httpd webserver to preview webpages
+  (use-package simple-httpd
+    :ensure t)
+  
 #+end_src
 
 *** Typescript
@@ -676,6 +680,21 @@ TODO
 
 #+end_src
 
+*** K8s
+
+#+begin_src emacs-lisp
+
+        (use-package kubernetes
+          :commands kubernetes-overview
+          :config
+          (setq kubernetes-poll-frequency 3600
+                kubernetes-redraw-frequency 3600))
+
+        (use-package kubernetes-evil
+          :ensure t
+          :after kubernetes)
+  
+#+end_src
 ** Code completion with company-mode
 
 Company provides bette completions TODO:

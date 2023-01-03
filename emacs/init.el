@@ -381,11 +381,15 @@ Projects")))))
   :after lsp)
 
 (use-package web-mode
-:mode "\\.html\\'"
-:hook (web-mode . lsp-deferred)
-:config
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-(setq web-mode-engines-alist '(("django" . "\\.html\\'"))))
+  :mode "\\.html\\'"
+  :hook (web-mode . lsp-deferred)
+  :config
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (setq web-mode-engines-alist '(("django" . "\\.html\\'"))))
+
+;; Simple-httpd webserver to preview webpages
+(use-package simple-httpd
+  :ensure t)
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
@@ -439,6 +443,16 @@ Projects")))))
  (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
                   :major-modes '(nix-mode)
                   :server-id 'nix))
+
+(use-package kubernetes
+  :commands kubernetes-overview
+  :config
+  (setq kubernetes-poll-frequency 3600
+        kubernetes-redraw-frequency 3600))
+
+(use-package kubernetes-evil
+  :ensure t
+  :after kubernetes)
 
 (use-package company
   :after lsp-mode
@@ -624,3 +638,4 @@ Projects")))))
 
 ;; Make gc pauses faster by decreasing the threshold
 (setq gc-cons-threshold (* 2 1000 1000))
+(put 'downcase-region 'disabled nil)
