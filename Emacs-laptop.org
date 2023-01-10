@@ -120,17 +120,16 @@ Shows key commands in a pane. :commands ensures that the package is loade when t
 #+end_src
 
 * Font configuration
-
-I like the MesloLGS Nerd and the Fira Code fonts, it fits nicely with the theme and my zsh prompt.
+I like the MesloLGS Nerd font, it fits nicely with the theme and my zsh prompt.
 
 #+begin_src emacs-lisp
   
   (defvar geokkjer/default-font-size 140)
 
-  (set-face-attribute 'default nil :font "Fira Code" :height geokkjer/default-font-size)
+  (set-face-attribute 'default nil :font "MesloLGS NF" :height geokkjer/default-font-size)
 
   ;; Set the fixed pitch face
-  (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 140)
+  (set-face-attribute 'fixed-pitch nil :font "MesloLGS NF" :height 140)
 
   ;; Set the variable pitch face
   (set-face-attribute 'variable-pitch nil :font "MesloLGS NF" :height 130 :weight 'regular)
@@ -343,18 +342,16 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
 
 #+begin_src emacs-lisp
 
-  (with-eval-after-load 'org
-    (require 'ob-go)
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((emacs-lisp . t)
-       (shell . t)
-       (go . t)
-       (python . t)))
+    (with-eval-after-load 'org
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '((emacs-lisp . t)
+         (shell . t)
+         (python . t)))
 
-    (push '("conf-unix" . conf-unix) org-src-lang-modes))
+      (push '("conf-unix" . conf-unix) org-src-lang-modes))
 
-  (setq org-confirm-babel-evaluate nil)
+    (setq org-confirm-babel-evaluate nil)
 
   ;; This is needed as of Org 9.2
   (with-eval-after-load 'org
@@ -363,7 +360,6 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
     (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
     (add-to-list 'org-structure-template-alist '("py" . "src python"))
-    (add-to-list 'org-structure-template-alist '("go" . "src go"))
     (add-to-list 'org-structure-template-alist '("nx" . "src nix")))
 
 
@@ -377,7 +373,7 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
         (org-babel-tangle))))
 
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'geokkjer/org-babel-tangle-config)))
-
+ 
 #+end_src
 
 *** org-agenda
@@ -638,8 +634,7 @@ Python IDE config. Sets up python mode to trigger on .py files. Then sets up lsp
 
 *** GO
 #+begin_src emacs-lisp
-  
-  (use-package ob-go)
+
   (use-package go-mode)
 
   (require 'lsp-mode)
@@ -1005,44 +1000,6 @@ built in shell written for emacs TODO:completions
     (evil-collection-define-key 'normal 'dired-mode-map
       "H" 'dired-hide-dotfiles-mode))
 
-#+end_src
-
-* EXVM
-
-EXVM is Emacs as a Window Manager
-
-** Write the Desktop file and link it
-
-NOTE: For installation on traditional Linux distros like Ubuntu:
-
-#+begin_src conf-unix :tangle ~/dotfiles/emacs/exwm/exwm.desktop
-[Desktop Entry]
-Name=EXWM
-Comment=Emacs Window Manager
-Exec=sh /home/geir/dotfiles/emacs/exvm/start-exwm.sh
-TryExec=sh
-Type=Application
-X-LightDM-DesktopName=exwm
-DesktopNames=exwm
-#+end_src
-
-#+begin_src shell :dir "/sudo::"
- sudo ln -f ~/dotfiles/emacs/exwm/exwm.desktop  /usr/share/xsessions/exwm.desktop 
-#+end_src
-
-#+begin_src shell :tangle ~/dotfiles/emacs/exwm/start-exwm.sh
-  #!/bin/sh  
-
-  # start EXWM --mm maximize emacs --debug-init drop into debugger
-  
-  exec dbus-launch --exit-with-session emacs -mm --debug-init
-
-#+end_src
-
-NOTE: On GNU Guix just run:
-
-#+begin_src shell
-  guix install emacs-exwm emacs-desktop-environment
 #+end_src
 
 * Other Applications examples

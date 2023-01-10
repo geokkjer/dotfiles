@@ -1,0 +1,3 @@
+* This is the landing page for my systems configuration
+
+[[file:systems/laptop.org][The laptop]]

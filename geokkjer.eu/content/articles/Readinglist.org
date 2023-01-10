@@ -1,0 +1,17 @@
+#+title: Read/watch list
+
+* Technical non-fiction
+
+- [ ] Structure and Iterpretation of Computer Programs - Harold Abelson and Gerald Jay Sussman with Julie Sussman
+
+- [ ] The little Schemer - Daniel P. Friedman and Matthias Felleisen 
+ 
+- [ ] An Introduction to Programming in Emacs Lisp - Robert J. Chassell 
+
+- [ ] NixOS Phd thesis - Eelco 
+
+
+* Fiction
+
+- [ ] Latest - Kim Stanley Robertson 
+  

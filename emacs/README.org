@@ -108,11 +108,12 @@ Set emacs to show line-numbers, some modes excluded.
 ** Command Log mode
 
 Shows key commands in a pane. :commands ensures that the package is loade when the command is invoked and not before.
-
+    
 #+begin_src emacs-lisp
 
   (use-package command-log-mode
     :commands command-log-mode)
+  
 #+end_src
 
 * Font configuration
@@ -758,7 +759,6 @@ MAGIT description. TODO
     :after magit)
 #+end_src
 
-
 * Helpful and general
 
 #+begin_src emacs-lisp
@@ -943,7 +943,6 @@ Using emacs org-mode to configure other applications.
 #+begin_src conf-unix
   (+ 42 42)
 #+end_src
-
 
 
 

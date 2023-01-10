@@ -55,10 +55,10 @@
 
 (defvar geokkjer/default-font-size 140)
 
-(set-face-attribute 'default nil :font "MesloLGS NF" :height geokkjer/default-font-size)
+(set-face-attribute 'default nil :font "Fira Code" :height geokkjer/default-font-size)
 
 ;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "MesloLGS NF" :height 140)
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 140)
 
 ;; Set the variable pitch face
 (set-face-attribute 'variable-pitch nil :font "MesloLGS NF" :height 130 :weight 'regular)
@@ -202,10 +202,12 @@
     :hook (org-mode . efs/org-mode-visual-fill)))
 
 (with-eval-after-load 'org
+  (require 'ob-go)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
      (shell . t)
+     (go . t)
      (python . t)))
 
   (push '("conf-unix" . conf-unix) org-src-lang-modes))
@@ -219,12 +221,14 @@
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("py" . "src python"))
+  (add-to-list 'org-structure-template-alist '("go" . "src go"))
   (add-to-list 'org-structure-template-alist '("nx" . "src nix")))
+
 
 ;; Automaticly tangle Emacs.org on save
 (defun geokkjer/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/Projects/Code/dotfiles/emacs/Emacs.org"))
+                      (expand-file-name "~/dotfiles/emacs/Emacs.org"))
 
     ;; Dynamic scoping to the rescue
     (let ((org-confirm-babel-evaluate nil))
@@ -419,6 +423,7 @@ Projects")))))
   :init
   (setq lsp-python-ms-executable (executable-find "python-language-server")))
 
+(use-package ob-go)
 (use-package go-mode)
 
 (require 'lsp-mode)
@@ -453,6 +458,8 @@ Projects")))))
 (use-package kubernetes-evil
   :ensure t
   :after kubernetes)
+
+(use-package yaml-mode)
 
 (use-package company
   :after lsp-mode
@@ -552,6 +559,8 @@ Projects")))))
   :config
   (evil-collection-init))
 
+(use-package guix)
+
 (use-package hydra
   :defer t)
 
@@ -575,9 +584,10 @@ Projects")))))
   :hook (term-mode . eterm-256color-mode))
 
 (use-package vterm
+  :ensure t
   :commands vterm
   :config
-  ;; (setq vterm-shell "zsh")
+  (setq vterm-shell "bash")
   (setq vterm-max-scrollback 10000))
 
 (defun geokkjer/configure-eshell ()
@@ -638,4 +648,3 @@ Projects")))))
 
 ;; Make gc pauses faster by decreasing the threshold
 (setq gc-cons-threshold (* 2 1000 1000))
-(put 'downcase-region 'disabled nil)
