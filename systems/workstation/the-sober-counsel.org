@@ -1,4 +1,6 @@
 #+title: NixOS configuration for the-sober-counsel
+#+PROPERTY: :mkdirp yes
+#+EXPORT_FILE_NAME: README.org
 
 * Welcome/bootstrap
 
@@ -13,8 +15,9 @@ Install NixOS as you would noramlly from the iso -> run the code blocks in this 
 #+end_src
 
 * Configs
+** From here we create the sober.nix configuration
 
-#+begin_src nix :tangle sober.nix :noweb no-export
+#+begin_src nix :tangle ./sober.nix :noweb no-export
 #
 # This file is auto-generated from "the-sober-counsel.org"
 #
@@ -25,6 +28,20 @@ Install NixOS as you would noramlly from the iso -> run the code blocks in this 
   ];
 }
 #+end_src
+
+** general
+
+#+name: nixos-section
+#+begin_src nix
+{
+  networking.hostName = "the-sober-counsel";
+
+  system.stateVersion = "22.05";
+}
+#+end_src
+
 * Sources and Inspiration
 
 - [[https://www.alexeyshmalko.com/2020/literate-config/][4 Years with Literate Configuration]]
+
+  
