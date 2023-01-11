@@ -1,0 +1,30 @@
+#+title: NixOS configuration for the-sober-counsel
+
+* Welcome/bootstrap
+
+This is an attempt to configure NixOS from an Emacs document usidn org-babel to tangle config files
+
+Install NixOS as you would noramlly from the iso -> run the code blocks in this file -> rebuild your system with:
+
+#+begin_src shell
+
+  sudo nixos-rebuild boot --upgrade
+  
+#+end_src
+
+* Configs
+
+#+begin_src nix :tangle sober.nix :noweb no-export
+#
+# This file is auto-generated from "the-sober-counsel.org"
+#
+{ config, pkgs, ... }:
+{
+  imports = [
+    <<nixos-section>>
+  ];
+}
+#+end_src
+* Sources and Inspiration
+
+- [[https://www.alexeyshmalko.com/2020/literate-config/][4 Years with Literate Configuration]]

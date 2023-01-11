@@ -13,6 +13,12 @@ install minimal NixOS or GNU Guix systems following install follow the repective
 
 The [[file:init.el][init.el]], [[file:][README.org]] and different config files are generated from this file.
 
+*NOTE:* symlink your init.el file to ~/.emacs.d/init.el
+
+#+begin_src shell
+  ln -s ~/systems/laptop/init.el ~/emacs.d/init.el
+#+end_src
+
 This one is used to configure mt laptop.
 My laptop runs GNU Guix with Gnome and exwm as window managers.
 
@@ -23,7 +29,7 @@ My laptop runs GNU Guix with Gnome and exwm as window managers.
 On this machine I want to run GNU Guix, because I want to learn about it. The harware in my laptop is non-free so the regular libre-kernel will not boot. I will need the nongnu channel I will have to compile the Linux kernel(not fun as this machine has two cores)
 Download prepared ISO from System Crafters, follow their instructions TODO add links
 
-#+begin_src scheme :tangle ~/.config/guix 
+#+begin_src scheme 
   
 #+end_src
 
@@ -32,6 +38,7 @@ Download prepared ISO from System Crafters, follow their instructions TODO add l
 Here there will be some comments on hoe to use this file
 
 * Emacs startup performance
+
 ** Make Emacs print out the time it used to start up.
 
 #+begin_src emacs-lisp
@@ -42,7 +49,7 @@ Here there will be some comments on hoe to use this file
                      (float-time
                       (time-subtract after-init-time before-init-time)))
              gcs-done))
-  
+
   (add-hook 'emacs-startup-hook #'geokkjer/display-startup-time)
 
 #+end_src
@@ -388,11 +395,11 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
   ;; Automaticly tangle Emacs.org on save
   (defun geokkjer/org-babel-tangle-config ()
     (when (string-equal (buffer-file-name)
-                        (expand-file-name "~/dotfiles/emacs/Emacs.org"))
+			(expand-file-name "~/dotfiles/systems/laptop/Laptop.org"))
 
       ;; Dynamic scoping to the rescue
       (let ((org-confirm-babel-evaluate nil))
-        (org-babel-tangle))))
+	(org-babel-tangle))))
 
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'geokkjer/org-babel-tangle-config)))
 
@@ -1026,7 +1033,7 @@ built in shell written for emacs TODO:completions
 #+end_src
 
 * Window Managers
-** i3
+** ix3
 ** EXVM
 
 EXVM is Emacs as a Window Manager
@@ -1035,7 +1042,7 @@ EXVM is Emacs as a Window Manager
 
 NOTE: For installation on traditional Linux distros like Ubuntu:
 
-#+begin_src conf-unix :tangle ~/dotfiles/emacs/exwm/exwm.desktop
+#+begin_src conf-unix :tangle ~/dotfiles/exwm/exwm.desktop
 [Desktop Entry]
 Name=EXWM
 Comment=Emacs Window Manager
@@ -1047,10 +1054,10 @@ DesktopNames=exwm
 #+end_src
 
 #+begin_src shell :dir "/sudo::"
- sudo ln -f ~/dotfiles/emacs/exwm/exwm.desktop  /usr/share/xsessions/exwm.desktop 
+ sudo ln -f ~/dotfiles/exwm/exwm.desktop  /usr/share/xsessions/exwm.desktop 
 #+end_src
 
-#+begin_src shell :tangle ~/dotfiles/emacs/exwm/start-exwm.sh
+#+begin_src shell :tangle ~/dotfiles/exwm/start-exwm.sh
   #!/bin/sh  
 
   # start EXWM --mm maximize emacs --debug-init drop into debugger
@@ -1068,7 +1075,7 @@ NOTE: remember to install Xmodmap on your distro
 
 Configure CapsLock to act as CTRL
 
-#+begin_src conf-unix :tangle ~/dotfiles/emacs/exwm/Xmodmap
+#+begin_src conf-unix :tangle ~/dotfiles/exwm/Xmodmap
 
   clear lock
   clear control
@@ -1098,7 +1105,7 @@ This is a basic configuration for EXWM
     (add-hook 'exwm-update-class-hook #'geokkjer/exwm-update-class)
 
     ;; Rebind CapsLock to Ctrl
-    (start-process-shell-command "xmodmap" nil "xmodmap ~/dofiles/emacs/exwm/Xmodmap")
+    (start-process-shell-command "xmodmap" nil "xmodmap ~/dofiles/exwm/Xmodmap")
 
     ;; Set the screen resolution (update this to be the correct resolution for your screen!)
     (require 'exwm-randr)

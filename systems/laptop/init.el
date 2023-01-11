@@ -228,7 +228,7 @@
 ;; Automaticly tangle Emacs.org on save
 (defun geokkjer/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/dotfiles/emacs/Emacs.org"))
+		      (expand-file-name "~/dotfiles/systems/laptop/Laptop.org"))
 
     ;; Dynamic scoping to the rescue
     (let ((org-confirm-babel-evaluate nil))
@@ -658,7 +658,7 @@ Projects")))))
   (add-hook 'exwm-update-class-hook #'geokkjer/exwm-update-class)
 
   ;; Rebind CapsLock to Ctrl
-  (start-process-shell-command "xmodmap" nil "xmodmap ~/dofiles/emacs/exwm/Xmodmap")
+  (start-process-shell-command "xmodmap" nil "xmodmap ~/dofiles/exwm/Xmodmap")
 
   ;; Set the screen resolution (update this to be the correct resolution for your screen!)
   (require 'exwm-randr)
