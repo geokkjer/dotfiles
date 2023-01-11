@@ -1,0 +1,17 @@
+* Inbox
+
+** TODO stuff
+  [2022-12-15 Thu 22:04]
+
+** TODO more stuff
+  [2022-12-15 Thu 22:05]
+  [[file:~/Projects/Code/dotfiles/emacs/OrgFiles/Tasks.org::*stuff][stuff]]
+
+* Active
+* Regular
+** TODO Get a job
+** where I can use emacs!
+
+* Planning
+** TODO Read k8s book                                              :reading:
+** TODO Finish Bash videos                                :reading:planning:
