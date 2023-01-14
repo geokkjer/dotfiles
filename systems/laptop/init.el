@@ -39,15 +39,16 @@
 
 ;; Enable line numbers
 
+
 (column-number-mode)
 (global-display-line-numbers-mode t)
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
-                term-mode-hook
-                shell-mode-hook
-                vterm-mode-hook
-                eshell-mode-hook))
+		term-mode-hook
+		shell-mode-hook
+		vterm-mode-hook
+		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (use-package command-log-mode
@@ -68,8 +69,9 @@
 
 ;; Set the repos
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-  		       ("org" . "https://orgmode.org/elpa/")
-  		       ("elpa" . "https://elpa.gnu.org/packages/")))
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (package-initialize)
 (unless package-archive-contents
@@ -148,11 +150,11 @@
 (defun efs/org-font-setup ()
   ;; Replace list hyphen with dot
   (font-lock-add-keywords 'org-mode
-                            '(("^ *\\([-]\\) "
-                               (0 (prog1 () (compose-region
-                                             (match-beginning1)
-                                             (match-end 1)
-                                             "•")))))))
+			    '(("^ *\\([-]\\) "
+			       (0 (prog1 () (compose-region
+					     (match-beginning1)
+					     (match-end 1)
+					     "•")))))))
 
 ;; Show overview when open
 (setq org-startup-folded t)
@@ -160,15 +162,15 @@
 ;; Set faces for heading levels
 (with-eval-after-load 'org-faces
   (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
+		  (org-level-2 . 1.1)
+		  (org-level-3 . 1.05)
+		  (org-level-4 . 1.0)
+		  (org-level-5 . 1.1)
+		  (org-level-6 . 1.1)
+		  (org-level-7 . 1.1)
+		  (org-level-8 . 1.1)))
     (set-face-attribute (car face) nil :font "MesloLGS NF" :weight 'regular
-                        :height (cdr face))
+			:height (cdr face))
 
     ;; Ensure that anything that should be fixed-pitch in Org files appears that way
     (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
@@ -176,9 +178,9 @@
     (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
     (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
     (set-face-attribute 'org-special-keyword nil :inherit
-                        '(font-lock-comment-face fixed-pitch))
+			'(font-lock-comment-face fixed-pitch))
     (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face
-                                                      fixed-pitch))
+						      fixed-pitch))
     (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)))
 
 (use-package org
@@ -195,7 +197,7 @@
 
   (defun efs/org-mode-visual-fill ()
     (setq visual-fill-column-width 100
-          visual-fill-column-center-text t)
+	  visual-fill-column-center-text t)
     (visual-fill-column-mode 1))
 
   (use-package visual-fill-column
@@ -205,7 +207,9 @@
   (require 'ob-go)
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((emacs-lisp . t)
+   '((lisp . t)
+     (scheme . t)
+     (emacs-lisp . t)
      (shell . t)
      (go . t)
      (python . t)))
@@ -222,19 +226,23 @@
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("py" . "src python"))
   (add-to-list 'org-structure-template-alist '("go" . "src go"))
+  (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+  (add-to-list 'org-structure-template-alist '("li" . "src lisp"))
   (add-to-list 'org-structure-template-alist '("nx" . "src nix")))
 
 
 ;; Automaticly tangle Emacs.org on save
 (defun geokkjer/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
-		      (expand-file-name "~/dotfiles/systems/laptop/Laptop.org"))
+                      (expand-file-name "~/dotfiles/systems/laptop/Laptop.org"))
 
     ;; Dynamic scoping to the rescue
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'geokkjer/org-babel-tangle-config)))
+
+(setq org-src-tab-acts-natively t)
 
 ;; Org-agenda config
 
@@ -370,6 +378,9 @@ Projects")))))
   :init
   (setq lsp-keymap-prefix "C-c l"))
 
+(use-package  lsp-org
+  :after lsp)
+
 (use-package lsp-ivy
   :after lsp)
 
@@ -383,6 +394,13 @@ Projects")))))
 
 (use-package lsp-treemacs
   :after lsp)
+
+(use-package geiser-mit
+  :ensure t)
+(use-package geiser-racket
+  :ensure t)
+(use-package geiser-guile
+  :ensure t)
 
 (use-package web-mode
   :mode "\\.html\\'"
