@@ -9,7 +9,7 @@ This is part of my current and ever evolving effort to configure my systems and 
 
 It is written in Emacs as an Org Mode document. Emacs is at the center of this effort with git in a supporting role. Which means that the org-mode files are the source of truth.
 From the org-mode files we configure the rest of the system. I will add some bootstrap information in each of the files. It is mostly the same approach on all systems.
-install minimal NixOS  following install follow the repective manuals -> clone git ->configure emacs -> configure systems -> reboot.
+install minimal NixOS following install follow the repective manuals -> clone git ->configure emacs -> configure systems -> reboot.
 
 The [[file:init.el][init.el]], [[file:][README.org]] and different config files are generated from this file.
 
@@ -18,9 +18,6 @@ The [[file:init.el][init.el]], [[file:][README.org]] and different config files 
 #+begin_src shell
   ln -s ~/systems/laptop/init.el ~/emacs.d/init.el
 #+end_src
-
-This one is used to configure mt laptop.
-My laptop runs GNU Guix with Gnome and exwm as window managers.
 
 *NOTE:* Inspired by [[https://github.com/daviwil/emacs-from-scratch/][Emacs from scratch by System Crafters]]
 

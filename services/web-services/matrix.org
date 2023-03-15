@@ -1,0 +1,13 @@
+#+TITLE: Matrix
+
+* What is matrix ?
+
+[[https://matrix.org/][Matrix]]
+
+* Nix config
+
+[[https://gitlab.com/famedly/conduit][Conduit]]
+
+#+begin_src nix :tangle matrix.nix
+
+#+end_src
