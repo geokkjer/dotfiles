@@ -1100,7 +1100,8 @@ This is the configuration for NixOs on my laptop
         arc-icon-theme beauty-line-icon-theme
         # tools
         htop glances
-        # shells
+        # shells & terminals
+        wezterm
         starship
         nushell
         fishPlugins.done
@@ -1124,6 +1125,8 @@ This is the configuration for NixOs on my laptop
         # language servers
         rnix-lsp
         gopls
+        luajitPackages.lua-lsp
+        nodePackages.bash-language-server
         # building software
         cmake
         gcc
