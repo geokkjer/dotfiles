@@ -1,3 +1,0 @@
-#+title: shared config that I always want to include
-
-* Common

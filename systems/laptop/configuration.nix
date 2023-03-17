@@ -79,7 +79,8 @@
       arc-icon-theme beauty-line-icon-theme
       # tools
       htop glances
-      # shells
+      # shells & terminals
+      wezterm
       starship
       nushell
       fishPlugins.done
@@ -103,6 +104,9 @@
       # language servers
       rnix-lsp
       gopls
+      luajitPackages.lua-lsp
+      nodePackages.bash-language-server
+      vimPlugins.cmp-nvim-lsp
       # building software
       cmake
       gcc

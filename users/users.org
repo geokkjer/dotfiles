@@ -1,0 +1,69 @@
+
+#+TITLE: User configuration
+
+* Geir
+#+begin_src nix :tangle geir.nix
+  { config, pkgs, ... }:
+
+  {
+    # User account settings.
+    environment.localBinInPath = true;
+    programs.fish.enable = true;
+    users.users.geir = {
+      isNormalUser = true;
+      description = "Geir Okkenhaug Jerstad";
+      extraGroups = [ "networkmanager" "wheel" ];
+      shell = pkgs.fish;
+      packages = with pkgs; [
+        # Browsers
+        firefox google-chrome nyxt
+        # Fonts
+        fira-code fira-mono fira-code-symbols meslo-lgs-nf
+        # Gnome
+        gnome.gnome-tweaks
+        arc-icon-theme beauty-line-icon-theme
+        # tools
+        htop glances
+        # shells & terminals
+        wezterm
+        starship
+        nushell
+        fishPlugins.done
+        fishPlugins.fzf-fish 
+        fishPlugins.forgit
+        fishPlugins.hydro
+        fzf
+        # Virtualisation
+        virt-manager
+        qemu
+        # Emacs
+        emacsPackages.vterm
+        libvterm libtool
+        # Coding
+        sbcl
+        racket
+        guile
+        python3Full
+        go gotools
+        rustup
+        # language servers
+        rnix-lsp
+        gopls
+        luajitPackages.lua-lsp
+        nodePackages.bash-language-server
+        vimPlugins.cmp-nvim-lsp
+        # building software
+        cmake
+        gcc
+        bintools
+        gnutar
+        sccache
+        # Remote desktop
+        remmina
+        # DevSecOps
+        kubectl
+      ];
+
+    };
+  }
+#+end_src
