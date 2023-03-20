@@ -2,7 +2,48 @@
 
 Organizing my configs in here
 
-NixOS, Emacs and K8s 
+NixOS
+
+* why
+
+NixOS is suitable for any compute task 
+this is my ops
+next create nixos orchestrator - kubernetes cybernetics
+oprator centric: pattern like xen
+network: wireguard
+orchestration tool: central repository of knowledge gitOps cli web terminalui dashboard
+deployment :  modularize nix services repo, containers/kubernetes k3s
+
+1. Os orchestration
+   - Client/operator machines  configuration and deployment
+   - Server proxmox/xg-ng truenas openmedivault or yunohost replacement based on nixOS
+   - leverage containers both nixos-containers and regular linux containers -scaling
+   - one pane - network and os conf from one place - git truth 
+2. leverage nixops
+   - cloud deployment
+3. clustering
+   - make the hw one unified platform 
+4. ephemeral system
+   - Rebuild whole infra fast fast
+    
+* bootstrap
+** automatic Pxe boot
+** Premade iso
+** Manual
+Inssall nixos however you like
+include emacs favourite editor
+
+* install
+
+#+begin_src shell
+
+  rm
+
+  git clone
+
+  ln -s
+  
+#+end_src
 
 * Inspired by
 

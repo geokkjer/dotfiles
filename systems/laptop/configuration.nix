@@ -3,8 +3,8 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nixi
-      ../users/geir.nix
+      ./hardware-configuration.nix
+      #../users/geir.nix
     ];
 
   # Bootloader.
@@ -81,7 +81,7 @@
       # tools
       htop glances
       # shells & terminals
-      wezterm
+      alacritty
       starship
       nushell
       fishPlugins.done
@@ -96,8 +96,6 @@
       emacsPackages.vterm
       libvterm libtool
       # Coding
-      sbcl
-      racket
       guile
       python3Full
       go gotools

@@ -1,7 +1,6 @@
 #+title: The Laptop
-#+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
+#+PROPERTY: header-args:emacs-lisp :tangle :mkdirp yes
 #+EXPORT_FILE_NAME: README.org
-#+INCLUDE "../common/startup.org"
 
 * Welcome stranger!
 
@@ -16,7 +15,7 @@ The [[file:init.el][init.el]], [[file:][README.org]] and different config files 
 *NOTE:* symlink your init.el file to ~/.emacs.d/init.el
 
 #+begin_src shell
-  ln -s ~/systems/laptop/init.el ~/emacs.d/init.el
+  ln -s ~/dotfiles/out /etc/nixos/
 #+end_src
 
 *NOTE:* Inspired by [[https://github.com/daviwil/emacs-from-scratch/][Emacs from scratch by System Crafters]]
@@ -160,9 +159,20 @@ I like the MesloLGS Nerd and the Fira Code fonts, it fits nicely with the theme 
 
 #+end_src
 
-** Package System setup
+** Auto-update packages
 
-Setting up some packaging registers for emacs.
+#+begin_src emacs-lisp
+
+  (use-package auto-package-update
+    :custom
+    (auto-package-update-interval 7)
+    (auto-package-update-prompt-before-update t)
+    (auto-package-update-hide-results t)
+    :config
+    (auto-package-update-maybe)
+    (auto-package-update-at-time "09:00"))
+
+#+end_src
 
 ** Package sources and initialization.
 
@@ -190,22 +200,7 @@ Setting up some packaging registers for emacs.
 
 #+end_src
 
-** Auto-update packages
-
-#+begin_src emacs-lisp
-
-  (use-package auto-package-update
-    :custom
-    (auto-package-update-interval 7)
-    (auto-package-update-prompt-before-update t)
-    (auto-package-update-hide-results t)
-    :config
-    (auto-package-update-maybe)
-    (auto-package-update-at-time "09:00"))
-
-#+end_src
-
-** Keep the folders clean
+** KEEP the folders clean
 
 This is where I will put some things to keep my .emacs.d folder clean
 
@@ -217,10 +212,6 @@ This is where I will put some things to keep my .emacs.d folder clean
 ;;        '((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 
 #+end_src
-
-** Swiper and Ivy
-
-Install and setup Ivy and swiper. Some keybindings for both swiper and counsel. which-key and ivy-rich.
 
 ** Swiper
 
@@ -419,9 +410,6 @@ Sometimes you need some dummy text
   (use-package lorem-ipsum
     :after org)
 #+end_src
-** Development
-
-Making Emacs have the functionality of an IDE. And other things that are related to development.
 
 ** Languages and lsp-mode configuration
 
@@ -809,14 +797,6 @@ MAGIT description. TODO
 
 #+end_src
 
-** GUIX
-
-#+begin_src emacs-lisp
-
-  ;; (use-package guix)
-
-#+end_src
-
 ** Hydra
 
 
@@ -835,8 +815,6 @@ MAGIT description. TODO
     "ts" '(hydra-text-scale/body :which-key "scale text"))
 
 #+end_src
-
-** Shells and Terminals
 
 ** term-mode
 
@@ -879,7 +857,7 @@ I used the package from NixOS repository rather than compile from source.
 
 ** eshell
 
-built in shell written for emacs TODO:completions
+builtin shell written for emacs TODO:completions
 
 #+begin_src emacs-lisp
 
@@ -914,8 +892,6 @@ built in shell written for emacs TODO:completions
 
 #+end_src
 
-** File Management
-
 ** Dired
 
 #+begin_src emacs-lisp
@@ -949,14 +925,6 @@ built in shell written for emacs TODO:completions
 
 #+end_src
 
-** Window Managers
-** i3
-** EXVM
-
-EXVM is Emacs as a Window Manager
-** StumpWM
-** Xmonad
-** Sway
 ** Other Applications examples
 
 Using emacs org-mode to configure other applications.
@@ -975,6 +943,67 @@ Using emacs org-mode to configure other applications.
   
 #+end_src
 
+* Configs
+
+Here are some configs for other software I use .
+
+** Alacritty
+
+#+begin_src yaml :tangle ~/.config/alacritty/alacritty.yml :mkdirp yes
+  font:
+    normal:
+      family: MesloLGS NF
+      style: Regular
+    bold:
+      family:  MesloLGS NF
+      style: Bold
+
+    italic:
+      family:  MesloLGS NF
+      style: Italic
+
+    bold_italic:
+      family:  MesloLGS NF
+      style: Bold Italic
+
+    size: 14
+
+  import:
+    - ~/.config/alacritty/dracula.yml
+
+#+end_src
+
+#+begin_src conf-unix :tangle ~/.config/alacritty/dracula.yml :mkdirp yes
+# Colors (Dracula)
+colors:
+  # Default colors
+  primary:
+    background: '0x282a36'
+    foreground: '0xf8f8f2'
+ 
+  # Normal colors
+  normal:
+    black:   '0x000000'
+    red:     '0xff5555'
+    green:   '0x50fa7b'
+    yellow:  '0xf1fa8c'
+    blue:    '0xbd93f9'
+    magenta: '0xff79c6'
+    cyan:    '0x8be9fd'
+    white:   '0xbbbbbb'
+ 
+  # Bright colors
+  bright:
+    black:   '0x555555'
+    red:     '0xff5555'
+    green:   '0x50fa7b'
+    yellow:  '0xf1fa8c'
+    blue:    '0xcaa9fa'
+    magenta: '0xff79c6'
+    cyan:    '0x8be9fd'
+    white:   '0xffffff'
+
+#+end_src
 * NixOS - Laptop
 
 This is the configuration for NixOs on my laptop
@@ -1018,14 +1047,14 @@ This is the configuration for NixOs on my laptop
 
 ** configuration.nix
 
-#+begin_src nix :tangle configuration.nix
+#+begin_src nix :tangle configuration.nix :mkdirp yes
   { config, pkgs, ... }:
 
   {
     imports =
       [ # Include the results of the hardware scan.
-        ./hardware-configuration.nixi
-        ../users/geir.nix
+        ./hardware-configuration.nix
+        #../users/geir.nix
       ];
 
     # Bootloader.
@@ -1102,7 +1131,7 @@ This is the configuration for NixOs on my laptop
         # tools
         htop glances
         # shells & terminals
-        wezterm
+        alacritty
         starship
         nushell
         fishPlugins.done
@@ -1117,8 +1146,6 @@ This is the configuration for NixOs on my laptop
         emacsPackages.vterm
         libvterm libtool
         # Coding
-        sbcl
-        racket
         guile
         python3Full
         go gotools
