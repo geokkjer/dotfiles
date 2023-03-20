@@ -1047,7 +1047,7 @@ This is the configuration for NixOs on my laptop
 
 ** configuration.nix
 
-#+begin_src nix :tangle configuration.nix :mkdirp yes
+#+begin_src nix :tangle ./out/laptop/configuration.nix :mkdirp yes
   { config, pkgs, ... }:
 
   {
