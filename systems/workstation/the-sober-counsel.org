@@ -25,7 +25,7 @@ tangle this document with C-c C-v t then change ownership and symlink out folder
 #+end_src
 ** From here we create the configuration.nix configuration
 
-#+begin_src nix :tangle ../out/sober/configuration.nix :mkdirp yes
+#+begin_src nix :tangle ../../out/sober/configuration.nix :mkdirp yes
   #
   # This file is auto-generated from "the-sober-counsel.org"
   #
