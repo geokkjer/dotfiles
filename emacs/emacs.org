@@ -1,40 +1,8 @@
-#+title: The Laptop - NixOS configuration
-#+PROPERTY: header-args:emacs-lisp :tangle :mkdirp yes
-#+EXPORT_FILE_NAME: README.org
-
-* Welcome stranger!
-
-This is part of my current and ever evolving effort to configure my systems and the software that run on them. Right now it is single page and long document, part of the plan is to modularize theese documents for code reuse and my mental health.
-
-It is written in Emacs as an Org Mode document. Emacs is at the center of this effort with git in a supporting role. Which means that the org-mode files are the source of truth.
-From the org-mode files we configure the rest of the system. I will add some bootstrap information in each of the files. It is mostly the same approach on all systems.
-install minimal NixOS following install follow the repective manuals -> clone git ->configure emacs -> configure systems -> reboot.
-
-The [[file:init.el][init.el]], [[file:][README.org]] and different config files are generated from this file.
-
-*NOTE:* symlink your init.el file to ~/.emacs.d/init.el
-
-#+begin_src shell
-  ln -s ~/dotfiles/out /etc/nixos/
-#+end_src
-
-*NOTE:* Inspired by [[https://github.com/daviwil/emacs-from-scratch/][Emacs from scratch by System Crafters]]
-
-* Bootstrap
-
-Boostrapping my systems involves installing NixOs in a predictable way so that configuring them is jus git clone -> symlink -> rebuild -> reboot -> apply Emacs config. TODO how to handle secrets(ssh-keys and gpg keys)
-
-#+begin_src shell 
-  
-#+end_src
-
-* Tips
-
-Here there will be some comments on hoe to use this file
-
+#+TITLE: Emacs Configuration i
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes
 * Emacs
 ** Emacs startup performance
-** Make Emacs print out the time it used to start up.
+*** Make Emacs print out the time it used to start up.
 
 #+begin_src emacs-lisp
 
@@ -49,7 +17,7 @@ Here there will be some comments on hoe to use this file
 
 #+end_src
 
-** Garbage collection
+*** Garbage collection
 
 #+begin_src emacs-lisp
 
@@ -57,11 +25,53 @@ Here there will be some comments on hoe to use this file
   
 #+end_src
 
+
+** Package sources and initialization.
+
+#+begin_src emacs-lisp
+
+  ;; Initialize package sources
+  (require 'package)
+
+  ;; Set the repos
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("org" . "https://orgmode.org/elpa/")
+                           ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                           ("elpa" . "https://elpa.gnu.org/packages/")))
+
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+  ;; Initialize use-package in case we are on non-Linux platform
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+
+#+end_src
+
+** Auto-update packages
+
+#+begin_src emacs-lisp
+
+  (use-package auto-package-update
+    :custom
+    (auto-package-update-interval 7)
+    (auto-package-update-prompt-before-update t)
+    (auto-package-update-hide-results t)
+    :config
+    (auto-package-update-maybe)
+    (auto-package-update-at-time "09:00"))
+
+#+end_src
+
 ** UI config
 
 Setting up the emacs ui to my liking.
 
-** Basic
+*** Basic
 
 Turn off the startup-message makes emcas launch into the scratch buffer.
 Turn off some UI elements, like scroll-bar and menu-bar.
@@ -88,7 +98,7 @@ And turn off the bell to visual, no audible bell.
 
 #+end_src
 
-** Doom modline and all-the-icons
+*** Doom modline and all-the-icons
 
 Use doom-modeline, set height. Install all-the-icons and use doom-themes to set a nice theme. Sometimes needed "M-x all-the-icons-install-fonts"
 
@@ -107,7 +117,7 @@ Use doom-modeline, set height. Install all-the-icons and use doom-themes to set 
 
 #+end_src
 
-** Line numbers
+*** Line numbers
 
 Set emacs to show line-numbers, some modes excluded.
 
@@ -156,47 +166,6 @@ I like the MesloLGS Nerd and the Fira Code fonts, it fits nicely with the theme 
 
   ;; Set the variable pitch face
   (set-face-attribute 'variable-pitch nil :font "MesloLGS NF" :height 130 :weight 'regular)
-
-#+end_src
-
-** Auto-update packages
-
-#+begin_src emacs-lisp
-
-  (use-package auto-package-update
-    :custom
-    (auto-package-update-interval 7)
-    (auto-package-update-prompt-before-update t)
-    (auto-package-update-hide-results t)
-    :config
-    (auto-package-update-maybe)
-    (auto-package-update-at-time "09:00"))
-
-#+end_src
-
-** Package sources and initialization.
-
-#+begin_src emacs-lisp
-
-  ;; Initialize package sources
-  (require 'package)
-
-  ;; Set the repos
-  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                           ("org" . "https://orgmode.org/elpa/")
-                           ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                           ("elpa" . "https://elpa.gnu.org/packages/")))
-
-  (package-initialize)
-  (unless package-archive-contents
-    (package-refresh-contents))
-
-  ;; Initialize use-package in case we are on non-Linux platform
-  (unless (package-installed-p 'use-package)
-    (package-install 'use-package))
-
-  (require 'use-package)
-  (setq use-package-always-ensure t)
 
 #+end_src
 
@@ -925,281 +894,11 @@ builtin shell written for emacs TODO:completions
 
 #+end_src
 
-** Other Applications examples
-
-Using emacs org-mode to configure other applications.
-
-*** Some app
-
-#+begin_src conf-unix :tangle .config/some-app :mkdirp yes
-      (+ 42 42)
-#+end_src
-
 ** Runtime performance
 #+begin_src emacs-lisp
 
   ;; Make gc pauses faster by decreasing the threshold
   (setq gc-cons-threshold (* 2 1000 1000))
   
-#+end_src
-
-* Configs
-
-Here are some configs for other software I use .
-
-** Alacritty
-
-#+begin_src yaml :tangle ~/.config/alacritty/alacritty.yml :mkdirp yes
-  font:
-    normal:
-      family: MesloLGS NF
-      style: Regular
-    bold:
-      family:  MesloLGS NF
-      style: Bold
-
-    italic:
-      family:  MesloLGS NF
-      style: Italic
-
-    bold_italic:
-      family:  MesloLGS NF
-      style: Bold Italic
-
-    size: 14
-
-  import:
-    - ~/.config/alacritty/dracula.yml
-
-#+end_src
-
-#+begin_src conf-unix :tangle ~/.config/alacritty/dracula.yml :mkdirp yes
-# Colors (Dracula)
-colors:
-  # Default colors
-  primary:
-    background: '0x282a36'
-    foreground: '0xf8f8f2'
- 
-  # Normal colors
-  normal:
-    black:   '0x000000'
-    red:     '0xff5555'
-    green:   '0x50fa7b'
-    yellow:  '0xf1fa8c'
-    blue:    '0xbd93f9'
-    magenta: '0xff79c6'
-    cyan:    '0x8be9fd'
-    white:   '0xbbbbbb'
- 
-  # Bright colors
-  bright:
-    black:   '0x555555'
-    red:     '0xff5555'
-    green:   '0x50fa7b'
-    yellow:  '0xf1fa8c'
-    blue:    '0xcaa9fa'
-    magenta: '0xff79c6'
-    cyan:    '0x8be9fd'
-    white:   '0xffffff'
-
-#+end_src
-* NixOS - Laptop
-
-This is the configuration for NixOs on my laptop
-** hardware-configuration.nix
-
-#+begin_src nix :tangle hardware-configuration.nix
-  # Do not modify this file!  It was generated by ‘nixos-generate-config’
-  # and may be overwritten by future invocations.  Please make changes
-  # to /etc/nixos/configuration.nix instead.
-  { config, lib, pkgs, modulesPath, ... }:
-
-  {
-    imports =
-      [ (modulesPath + "/installer/scan/not-detected.nix")
-      ];
-
-    boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usb_storage" "sd_mod" ];
-    boot.initrd.kernelModules = [ ];
-    boot.kernelModules = [ "kvm-amd" ];
-    boot.extraModulePackages = [ ];
-
-    fileSystems."/" =
-      { device = "/dev/disk/by-uuid/f425969c-9df5-4a3f-927e-b524a3d007d7";
-        fsType = "xfs";
-      };
-
-    fileSystems."/boot/efi" =
-      { device = "/dev/disk/by-uuid/EC44-1BA0";
-        fsType = "vfat";
-      };
-
-    swapDevices = [ ];
-    networking.useDHCP = lib.mkDefault true;
-    # networking.interfaces.wlp2s0.useDHCP = lib.mkDefault true;
-
-    nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-    hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-  }
-
-#+end_src
-
-** configuration.nix
-
-#+begin_src nix :tangle ./out/laptop/configuration.nix :mkdirp yes
-  { config, pkgs, ... }:
-
-  {
-    imports =
-      [ # Include the results of the hardware scan.
-        ./hardware-configuration.nix
-        #../users/geir.nix
-      ];
-
-    # Bootloader.
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
-    boot.loader.efi.efiSysMountPoint = "/boot/efi";
-    boot.kernelPackages = pkgs.linuxPackages_latest;
-    zramSwap = {
-      enable = true;
-      algorithm = "zstd";
-    };
-
-    networking.hostName = "the-laptop"; # Define your hostname.
-
-    # Enable networking
-    networking.networkmanager.enable = true;
-
-    # Set your time zone.
-    time.timeZone = "Europe/Oslo";
-
-    # Select internationalisation properties.
-    i18n.defaultLocale = "en_US.UTF-8";
-
-    # Enable the X11 windowing system.
-    services.xserver.enable = true;
-
-    # Enable the GNOME Desktop Environment.
-    services.xserver.displayManager.gdm.enable = true;
-    services.xserver.desktopManager.gnome.enable = true;
-
-    # Enable Sway compositor
-    # programs.sway.enable = true;
-
-    # Configure keymap in X11
-    services.xserver = {
-      layout = "no";
-      xkbVariant = "";
-    };
-
-    # Configure console keymap
-    console.keyMap = "no";
-
-    # Enable CUPS to print documents.
-    services.printing.enable = true;
-
-    # Enable sound with pipewire.
-    sound.enable = true;
-    hardware.pulseaudio.enable = false;
-    security.rtkit.enable = true;
-    services.pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-    };
-
-
-    # User account.
-    environment.localBinInPath = true;
-    programs.fish.enable = true;
-    users.users.geir = {
-      isNormalUser = true;
-      description = "Geir Okkenhaug Jerstad";
-      extraGroups = [ "networkmanager" "wheel" ];
-      shell = pkgs.fish;
-      packages = with pkgs; [
-        # Browsers
-        firefox google-chrome nyxt
-        # Fonts
-        fira-code fira-mono fira-code-symbols meslo-lgs-nf
-        # Gnome
-        gnome.gnome-tweaks
-        arc-icon-theme beauty-line-icon-theme
-        # tools
-        htop glances
-        # shells & terminals
-        alacritty
-        starship
-        nushell
-        fishPlugins.done
-        fishPlugins.fzf-fish 
-        fishPlugins.forgit
-        fishPlugins.hydro
-        fzf
-        # Virtualisation
-        virt-manager
-        qemu
-        # Emacs
-        emacsPackages.vterm
-        libvterm libtool
-        # Coding
-        guile
-        python3Full
-        go gotools
-        rustup
-        # language servers
-        rnix-lsp
-        gopls
-        luajitPackages.lua-lsp
-        nodePackages.bash-language-server
-        vimPlugins.cmp-nvim-lsp
-        # building software
-        cmake
-        gcc
-        bintools
-        gnutar
-        sccache
-        # Remote desktop
-        remmina
-        # DevSecOps
-        kubectl
-      ];
-
-    };
-
-    nixpkgs.config.permittedInsecurePackages = [
-      "python-2.7.18.6"
-      "python3.10-certifi-2022.9.24"
-    ];
-
-    # Allow unfree packages
-    nixpkgs.config.allowUnfree = true;
-
-    # List packages installed in system profile. To search, run:
-    # $ nix search wget
-    environment.systemPackages = with pkgs; [
-       neovim emacs git
-       wget curl screen
-       neofetch inxi mlocate     
-    ];
-
-    # Turn on some experimental features for nix
-
-    nix.settings.experimental-features = [ "nix-command" "flakes" ];
-    # Enable the OpenSSH daemon.
-    services.openssh.enable = true;
-
-    # Open ports in the firewall.
-    # networking.firewall.allowedTCPPorts = [ ... ];
-    # networking.firewall.allowedUDPPorts = [ ... ];
-    # Or disable the firewall altogether.
-    # networking.firewall.enable = false;
-    system.stateVersion = "22.11";
-
-  } 
-
 #+end_src
 
