@@ -1,5 +1,6 @@
-#+TITLE: Emacs Configuration i
+#+TITLE: Emacs Configuration 
 #+PROPERTY: header-args:emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes
+
 * Emacs
 ** Emacs startup performance
 *** Make Emacs print out the time it used to start up.
@@ -24,7 +25,6 @@
   (setq gc-cons-threshold (* 50 1000 1000))
   
 #+end_src
-
 
 ** Package sources and initialization.
 
@@ -353,6 +353,7 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
     (add-to-list 'org-structure-template-alist '("go" . "src go"))
     (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
     (add-to-list 'org-structure-template-alist '("li" . "src lisp"))
+    (add-to-list 'org-structure-template-alist '("ru" . "src rust"))
     (add-to-list 'org-structure-template-alist '("nx" . "src nix")))
 
 
