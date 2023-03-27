@@ -19,7 +19,7 @@ install minimal NixOS following install follow the repective manuals -> clone gi
 
 tangle this document with C-c C-v t then change ownership and symlink out folder to /etc/nixos/
 
-* Configs
+* App Configs
 
 Here are some configs for other software I use .
 
@@ -422,10 +422,15 @@ colors:
 
 #+end_src
 
-** Vim - NeoVim - LazyVim
+** LazyVim
+
+Install LazyVim
 
 #+begin_src shell
- 
+  
+  mv ~/.config/nvim ~/.config/nvim.bak
+  git clone https://github.com/LazyVim/starter ~/.config/nvim
+  rm -rf ~/.config/nvim/.git
 #+end_src
 
 * NixOS - Laptop
@@ -640,3 +645,9 @@ As root or sudo
 
 #+end_src
 
+
+** Nix services and configs
+*** 
+#+begin_src nix :tangle ~/configs/test.nix :mkdirp yes
+
+#+end_src
