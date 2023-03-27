@@ -573,7 +573,7 @@ As root or sudo
         gnome.gnome-tweaks
         arc-icon-theme beauty-line-icon-theme
         # tools
-        htop glances
+        htop glances zenith
         # shells & terminals
         alacritty
         starship
@@ -690,12 +690,14 @@ As root or sudo
       tldr
       exa
       bat
+      ripgrep
     ];
     environment.shellAliases = {
       h = "tldr";
       # oxidized
       ls = "exa -l";
       cat = "bat";
+      grep = "rg";
       # some tools
       st = "curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -";
     };
