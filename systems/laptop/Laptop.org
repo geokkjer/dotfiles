@@ -15,31 +15,13 @@ install minimal NixOS following install follow the repective manuals -> clone gi
 
 *NOTE:* Inspired by [[https://github.com/daviwil/emacs-from-scratch/][Emacs from scratch by System Crafters]]
 
-* Bootstrap
-
-Boostrapping my systems involves installing NixOs in a predictable way so that configuring them is jus git clone -> symlink -> rebuild -> reboot -> apply Emacs config. TODO how to handle secrets(ssh-keys and gpg keys)
-
-#+begin_src shell 
-  
-#+end_src
-
 * Tips
 
-Here there will be some comments on hoe to use this file
+tangle this document with C-c C-v t then change ownership and symlink out folder to /etc/nixos/
 
 * Configs
 
 Here are some configs for other software I use .
-
-** LeftWM
-
-#+begin_src nix :tangle ~/configs/leftwm.nix :mkdirp yes
-
-#+end_src
-
-#+begin_src conf-unix  
-
-#+end_src
 
 ** Sway
 
@@ -445,6 +427,7 @@ colors:
 #+begin_src shell
  
 #+end_src
+
 * NixOS - Laptop
 
 This is the configuration for NixOs on my laptop

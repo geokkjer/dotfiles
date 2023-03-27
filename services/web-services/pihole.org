@@ -1,9 +1,0 @@
-#+TITLE: PiHole
-
-* What is pihole
-[[][]]
-
-* Nix
-#+begin_src nix :tangle pihole.nix
-
-#+end_src

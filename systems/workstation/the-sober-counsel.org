@@ -1,5 +1,4 @@
 #+title: NixOS configuration for the-sober-counsel
-#+PROPERTY: :mkdirp yes :tangle
 #+EXPORT_FILE_NAME: README.org
 
 * Welcome/bootstrap
@@ -20,8 +19,7 @@ Install NixOS as you would noramlly from the iso -> run the code blocks in this 
 tangle this document with C-c C-v t then change ownership and symlink out folder to /etc/nixos/
 
 #+begin_src shell
-  sudo chown
-  ln -s 
+  ln -s ~/configs /etc/nixos
 #+end_src
 ** From here we create the configuration.nix configuration
 
