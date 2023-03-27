@@ -16,11 +16,12 @@ Install NixOS as you would noramlly from the iso -> run the code blocks in this 
 * NixOS
 ** Setup
 
-tangle this document with C-c C-v t then change ownership and symlink out folder to /etc/nixos/
+Tangle this document with C-c C-v t then change ownership and symlink ~/configs dir to /etc/nixos/
 
 #+begin_src shell
   ln -s ~/configs /etc/nixos
 #+end_src
+
 ** From here we create the configuration.nix configuration
 
 #+begin_src nix :tangle ~/nixos-conf/the-sober-counsel/configuration.nix :mkdirp yes
