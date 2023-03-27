@@ -698,6 +698,7 @@ As root or sudo
       ls = "exa -l";
       cat = "bat";
       grep = "rg";
+      top = "btm --color gruvbox";
       # some tools
       st = "curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -";
     };
