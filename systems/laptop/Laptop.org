@@ -440,16 +440,26 @@ colors:
 
 #+end_src
 
+** Vim - NeoVim - LazyVim
+
+#+begin_src shell
+ 
+#+end_src
 * NixOS - Laptop
 
 This is the configuration for NixOs on my laptop
+
 ** bootstrap script
+
 backup org conf and remove other files from /etc/nixos
 As root or sudo
+
 #+begin_src shell
+
   ln -s ~/configs /etc/nixos
-  
+
 #+end_src
+
 ** hardware-configuration.nix
 
 #+begin_src nix :tangle ~/configs/hardware-configuration.nix :mkdirp yes
@@ -541,7 +551,7 @@ As root or sudo
     console.keyMap = "no";
 
     # Enable CUPS to print documents.
-    services.printing.enable = true;
+    services.printing.enable = false;
 
     # Enable sound with pipewire.
     sound.enable = true;
