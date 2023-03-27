@@ -497,6 +497,7 @@ As root or sudo
         ./hardware-configuration.nix
         ./sway.nix
         ./tty.nix
+        ./aliases.nix
       ];
 
     # Bootloader.
@@ -646,7 +647,6 @@ As root or sudo
 
 #+end_src
 
-
 ** Nix services and configs
 *** tty with colors
 #+begin_src nix :tangle ~/configs/tty.nix :mkdirp yes
@@ -680,4 +680,24 @@ As root or sudo
   };
 }
 
+#+end_src
+
+*** Aliases and apps
+#+begin_src nix :tangle ~/configs/aliases.nix :mkdirp yes
+  { config, pkgs, ... }:
+  {
+    environment.systemPackages = with pkgs; [
+      tldr
+      exa
+      bat
+    ];
+    environment.shellAliases = {
+      h = "tldr";
+      # oxidized
+      ls = "exa -l";
+      cat = "bat";
+      # some tools
+      st = "curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -";
+    };
+  }
 #+end_src
