@@ -24,68 +24,66 @@ tangle this document with C-c C-v t then change ownership and symlink out folder
 Here are some configs for other software I use .
 
 ** Sway
-
+*** nixos
 #+begin_src nix :tangle ~/configs/sway.nix
-  { config, pkgs, lib, ... }:
-  let
-    # bash script to let dbus know about important env variables and
-    # propagate them to relevent services run at the end of sway config
-    # see
-    # https://github.com/emersion/xdg-desktop-portal-wlr/wiki/"It-doesn't-work"-Troubleshooting-Checklist
-    # note: this is pretty much the same as  /etc/sway/config.d/nixos.conf but also restarts  
-    # some user services to make sure they have the correct environment variables
-    dbus-sway-environment = pkgs.writeTextFile {
-      name = "dbus-sway-environment";
-      destination = "/bin/dbus-sway-environment";
-      executable = true;
-      text = ''
-        dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_C  URRENT_DESKTOP=sway
-        systemctl --user stop pipewire pipewire-media-session xdg-desktop-portal xdg-desktop-portal-wlr
-        systemctl --user start pipewire pipewire-media-session xdg-desktop-portal xdg-desktop-portal-wlr
-      ''; 
-    };
+   { config, pkgs, lib, ... }:
+   let
+     # bash script to let dbus know about important env variables and
+     # propagate them to relevent services run at the end of sway config
+     # see
+     # https://github.com/emersion/xdg-desktop-portal-wlr/wiki/"It-doesn't-work"-Troubleshooting-Checklist
+     # note: this is pretty much the same as  /etc/sway/config.d/nixos.conf but also restarts  
+     # some user services to make sure they have the correct environment variables
+     dbus-sway-environment = pkgs.writeTextFile {
+       name = "dbus-sway-environment";
+       destination = "/bin/dbus-sway-environment";
+       executable = true;
+       text = ''
+         dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_C  URRENT_DESKTOP=sway
+         systemctl --user stop pipewire pipewire-media-session xdg-desktop-portal xdg-desktop-portal-wlr
+         systemctl --user start pipewire pipewire-media-session xdg-desktop-portal xdg-desktop-portal-wlr
+       ''; 
+     };
 
- in
-  {
-    environment.systemPackages = with pkgs; [
-      sway
-      dbus-sway-environment
-      wayland
-      xdg-utils # for opening default programs when clicking links
-      glib # gsettings
-      dracula-theme # gtk theme
-      swaylock
-      swayidle
-      grim # screenshot functionality
-      slurp # screenshot functionality
-      wl-clipboard # wl-copy and wl-paste for copy/paste from stdin / stdout
-      bemenu # wayland clone of dmenu
-      mako # notification system developed by swaywm maintainer
-    ];
+  in
+   {
+     environment.systemPackages = with pkgs; [
+       sway
+       dbus-sway-environment
+       wayland
+       xdg-utils # for opening default programs when clicking links
+       glib # gsettings
+       dracula-theme # gtk theme
+       swaylock
+       swayidle
+       grim # screenshot functionality
+       slurp # screenshot functionality
+       wl-clipboard # wl-copy and wl-paste for copy/paste from stdin / stdout
+       bemenu # wayland clone of dmenu
+       mako # notification system developed by swaywm maintainer
+       waybar
+       gammastep
+     ];
 
-    # xdg-desktop-portal works by exposing a series of D-Bus interfaces
-    # known as portals under a well-known name
-    # (org.freedesktop.portal.Desktop) and object path
-    # (/org/freedesktop/portal/desktop).
-    # The portal interfaces include APIs for file access, opening URIs,
-    # printing and others.
-    services.dbus.enable = true;
+     # xdg-desktop-portal works by exposing a series of D-Bus interfaces
+     # known as portals under a well-known name
+     # (org.freedesktop.portal.Desktop) and object path
+     # (/org/freedesktop/portal/desktop).
+     # The portal interfaces include APIs for file access, opening URIs,
+     # printing and others.
+     services.dbus.enable = true;
 
-    # enable sway window manager
-    programs.sway = {
-      enable = true;
-      wrapperFeatures.gtk = true;
-    };
-  }
+     # enable sway window manager
+     programs.sway = {
+       enable = true;
+       wrapperFeatures.gtk = true;
+     };
+   }
 #+end_src
 
-#+begin_src conf-unix :tangle ~/.config/sway/config
-
-  # Default config for sway
-     #
-    # Copy this to ~/.config/sway/config and edit it to your liking.
-    #
-    # Read `man 5 sway` for a complete reference.
+*** Sway
+Sway Window Manager
+#+begin_src conf-unix :tangle ~/.config/sway/config :mkdirp yes
 
     ### Variables
     #
@@ -98,11 +96,10 @@ Here are some configs for other software I use .
     set $right l
     # Your preferred terminal emulator
     set $term alacritty
-    # Your preferred application launcher
-    # Note: pass the final command to swaymsg so that the resulting window can be opened
-    # on the original workspace that the command was run on.
-    set $menu bemenu-run
 
+    set $menu bemenu-run
+    # Set gnome stuff
+    set $gnome-schema org.gnome.desktop.interface
     ### Output configuration
 
     #
@@ -132,11 +129,11 @@ Here are some configs for other software I use .
     #
     # Example configuration:
     #
-    input "1739:52781:MSFT0001:00_06CB:CE2D_Touchpad" {
-           dwt enabled
-           tap enabled
-           natural_scroll enabled
-           middle_emulation enabled
+  input "1739:52781:MSFT0001:00_06CB:CE2D_Touchpad" {
+         dwt enabled
+         tap enabled
+         natural_scroll enabled
+         middle_emulation enabled
        }
     #
     # You can get the names of your inputs by running: swaymsg -t get_inputs
@@ -157,24 +154,20 @@ Here are some configs for other software I use .
 
     bindsym $mod+Return exec $term
 
-        # Kill focused window
-        bindsym $mod+Shift+q kill
+    # Kill focused window
+    bindsym $mod+Shift+q kill
 
-        # Start your launcher
-        bindsym $mod+d exec $menu
+    # Start your launcher
+    bindsym $mod+d exec $menu
 
-        # Drag floating windows by holding down $mod and left mouse button.
-        # Resize them with right mouse button + $mod.
-        # Despite the name, also works for non-floating windows.
-        # Change normal to inverse to use left mouse button for resizing and right
-        # mouse button for dragging.
-        floating_modifier $mod normal
+    # Drag floating windows by holding down $mod and left mouse button.
+    floating_modifier $mod normal
 
-        # Reload the configuration file
-        bindsym $mod+Shift+c reload
+    # Reload the configuration file
+    bindsym $mod+Shift+c reload
 
-        # Exit sway (logs you out of your Wayland session)
-        bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+    # Exit sway (logs you out of your Wayland session)
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
     #
     # Moving around:
     #
@@ -224,8 +217,7 @@ Here are some configs for other software I use .
         bindsym $mod+Shift+8 move container to workspace number 8
         bindsym $mod+Shift+9 move container to workspace number 9
         bindsym $mod+Shift+0 move container to workspace number 10
-        # Note: workspaces can have any name you want, not just numbers.
-        # We just use 1-10 as the default.
+
     #
     # Layout stuff:
     #
@@ -291,24 +283,94 @@ Here are some configs for other software I use .
     #
     # Status Bar:
     #
-    # Read `man 5 sway-bar` for more information about this section.
-    bar {
-        position top
+  bar {
+     swaybar_command waybar 
+  } 
 
-        # When the status_command prints a new line to stdout, swaybar updates.
-        # The default just shows the current date and time.
-        status_command while date +'%Y-%m-%d %I:%M:%S %p'; do sleep 1; done
+  include /etc/sway/config.d/*
+  exec dbus-sway-environment
+  exec configure-gtk
+  exec gammastep
+       
+#+end_src
 
-        colors {
-            statusline #ffffff
-            background #323232
-            inactive_workspace #32323200 #32323200 #5c5c5c
-        }
-    }
+*** Waybar
+#+begin_src conf-unix  :mkdirp yes
+#+end_src
 
-    include /etc/sway/config.d/*
-    exec dbus-sway-environment
-    exec configure-gtk
+*** gammastep
+
+#+begin_src conf-unix :tangle ~/.config/gammastep/config.ini :mkdirp yes
+
+  ; Global settings
+  [general]
+  ; Set the day and night screen temperatures
+  temp-day=5700
+  temp-night=3500
+
+  ; Disable the smooth fade between temperatures when Redshift starts and stops.
+  ; 0 will cause an immediate change between screen temperatures.
+  ; 1 will gradually apply the new screen temperature over a couple of seconds.
+  fade=1
+
+  ; Solar elevation thresholds.
+  ; By default, Redshift will use the current elevation of the sun to determine
+  ; whether it is daytime, night or in transition (dawn/dusk). When the sun is
+  ; above the degrees specified with elevation-high it is considered daytime and
+  ; below elevation-low it is considered night.
+  ;elevation-high=3
+  ;elevation-low=-6
+
+  ; Custom dawn/dusk intervals.
+  ; Instead of using the solar elevation, the time intervals of dawn and dusk
+  ; can be specified manually. The times must be specified as HH:MM in 24-hour
+  ; format.
+  dawn-time=8:00-9:45
+  dusk-time=19:35-20:15
+
+  ; Set the screen brightness. Default is 1.0.
+  ;brightness=0.9
+  ; It is also possible to use different settings for day and night
+  ; since version 1.8.
+  ;brightness-day=0.7
+  ;brightness-night=0.4
+  ; Set the screen gamma (for all colors, or each color channel
+  ; individually)
+  gamma=0.8
+  ;gamma=0.8:0.7:0.8
+  ; This can also be set individually for day and night since
+  ; version 1.10.
+  ;gamma-day=0.8:0.7:0.8
+  ;gamma-night=0.6
+
+  ; Set the location-provider: 'geoclue2', 'manual'.
+  ; The location provider settings are in a different section.
+  location-provider=manual
+
+  ; Set the adjustment-method: 'randr', 'vidmode', 'drm', 'wayland'.
+  ; 'randr' is the preferred X11 method, 'vidmode' is an older API
+  ; that works in some cases when 'randr' does not.
+  ; The adjustment method settings are in a different section.
+  adjustment-method=wayland
+
+  ; Configuration of the location-provider:
+  ; type 'gammastep -l PROVIDER:help' to see the settings.
+  ; ex: 'gammastep -l manual:help'
+  ; Keep in mind that longitudes west of Greenwich (e.g. the Americas)
+  ; are negative numbers.
+  [manual]
+  lat=58.1
+  lon=7.9
+          
+  ; Configuration of the adjustment-method
+  ; type 'gammastep -m METHOD:help' to see the settings.
+  ; ex: 'gammastep -m randr:help'
+  ; In this example, randr is configured to adjust only screen 0.
+  ; Note that the numbering starts from 0, so this is actually the first screen.
+  ; If this option is not specified, Redshift will try to adjust _all_ screens.
+  [randr]
+  screen=0
+
 #+end_src
 
 ** Alacritty
