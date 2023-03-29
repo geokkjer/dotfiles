@@ -439,6 +439,7 @@ colors:
 #+end_src
 
 ** Zsh
+
 #+begin_src nix :tangle ~/configs/zsh.nix :mkdirp yes
   { config, pkgs, ... }:
   {
@@ -457,11 +458,6 @@ colors:
     '';
   }
 
-
-#+end_src
-
-#+begin_src conf-unix :mkdirp yes
-  eval "$(starship init zsh)"
 #+end_src
 
 ** Starship
