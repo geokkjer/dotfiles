@@ -24,7 +24,7 @@ Tangle this document with C-c C-v t then change ownership and symlink ~/configs 
 
 ** From here we create the configuration.nix configuration
 
-#+begin_src nix :tangle ~/nixos-conf/the-sober-counsel/configuration.nix :mkdirp yes
+#+begin_src nix :tangle ~/configs/configuration.nix :mkdirp yes
   #
   # This file is auto-generated from "the-sober-counsel.org"
   #
