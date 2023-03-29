@@ -589,6 +589,7 @@ As root or sudo
       enable = true;
       algorithm = "zstd";
     };
+    services.fwupd.enable = true;
 
     networking.hostName = "the-laptop"; # Define your hostname.
 
