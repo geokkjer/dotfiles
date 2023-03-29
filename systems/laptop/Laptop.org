@@ -442,7 +442,7 @@ colors:
 #+begin_src nix :tangle ~/configs/zsh.nix :mkdirp yes
   { config, pkgs, ... }:
   {
-    enviroment.systemPackages = with pkgs;
+    environment.systemPackages = with pkgs;
       [
         zsh
         zsh-completions
@@ -453,7 +453,7 @@ colors:
     programs.zsh.syntaxHighlighting.enable = true;
     programs.zsh.autosuggestions.enable = true;
     programs.zsh.interactiveShellInit = ''
-    eval "$(staship init zsh)"
+    eval "$(starship init zsh)"
     '';
   }
 
