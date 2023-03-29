@@ -1,4 +1,5 @@
 #+title: The Laptop - NixOS configuration
+#+EXPORT_FILE_NAME: README.org
 
 * Welcome stranger!
 
@@ -499,7 +500,7 @@ Install LazyVim
 
 This is the configuration for NixOs on my laptop
 
-** bootstrap script
+** bootstrap
 
 backup org conf and remove other files from /etc/nixos
 As root or sudo
