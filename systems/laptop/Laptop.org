@@ -654,7 +654,7 @@ As root or sudo
         gnome.gnome-tweaks
         arc-icon-theme beauty-line-icon-theme
         # Monitoring tools
-        htop glances zenith bottom
+        htop glances zenith bottom fwupd
         # shells & terminals
         alacritty
         starship
