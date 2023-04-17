@@ -20,7 +20,7 @@ install minimal NixOS following install follow the repective manuals -> clone gi
 
 tangle this document with C-c C-v t then change ownership and symlink out folder to /etc/nixos/
 
-* App Configs
+* Configs
 
 Here are some configs for other software I use .
 
@@ -933,6 +933,7 @@ colors:
         zsh
         zsh-completions
         nix-zsh-completions
+        starship
       ];
 
     programs.zsh.enable = true;
@@ -1090,12 +1091,9 @@ As root or sudo
     # Enable the X11 windowing system.
     services.xserver.enable = true;
 
-    # Enable the GNOME Desktop Environment.
+    # Enable Gnome Desktop Environment.
     services.xserver.displayManager.gdm.enable = true;
     services.xserver.desktopManager.gnome.enable = true;
-
-    # Enable Sway compositor
-    # programs.sway.enable = true;
 
     # Configure keymap in X11
     services.xserver = {
@@ -1124,7 +1122,6 @@ As root or sudo
     # User account.
     environment.localBinInPath = true;
     programs.fish.enable = true;
-    programs.zsh.enable = true;
     users.users.geir = {
       isNormalUser = true;
       description = "Geir Okkenhaug Jerstad";
@@ -1149,6 +1146,10 @@ As root or sudo
         fishPlugins.forgit
         fishPlugins.hydro
         fzf
+        # Multiplexers
+        screen
+        tmux
+        zellij
         # Virtualisation
         virt-manager
         qemu
@@ -1158,7 +1159,7 @@ As root or sudo
         # Coding
         guile
         python3Full
-        go gotools
+        go gotools golint
         rustup
         # language servers
         rnix-lsp
@@ -1193,7 +1194,7 @@ As root or sudo
     environment.systemPackages = with pkgs; [
        neovim emacs git
        wget curl screen
-       neofetch inxi mlocate     
+       neofetch inxi mlocate
     ];
 
     # Turn on some experimental features for nix

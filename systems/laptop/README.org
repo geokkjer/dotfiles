@@ -1,1128 +1,1264 @@
-# Created 2023-01-10 Tue 22:34
-#+title: Emacs Configuration
+# Created 2023-03-30 Thu 10:40
+#+title: The Laptop - NixOS configuration
 #+author: Geir Okkenhaug Jerstad
-#+property: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+export_file_name: README.org
 
 * Welcome stranger!
 
-This is part of my current and ever evolving effort to configure my systems and the software that run on them.
+This is part of my current and ever evolving effort to configure my systems and the software that run on them. Right now it is single page and long document, part of the plan is to modularize theese documents for code reuse and my mental health.
 
 It is written in Emacs as an Org Mode document. Emacs is at the center of this effort with git in a supporting role. Which means that the org-mode files are the source of truth.
 From the org-mode files we configure the rest of the system. I will add some bootstrap information in each of the files. It is mostly the same approach on all systems.
-install minimal NixOS or GNU Guix systems following install follow the repective manuals -> clone git ->configure emacs -> configure systems -> reboot.
+install minimal NixOS following install follow the repective manuals -> clone git ->configure emacs -> configure systems -> reboot.
 
-The [[file:init.el][init.el]], [[file:][README.org]] and different config files are generated from this file.
 
-This one is used to configure mt laptop.
-My laptop runs GNU Guix with Gnome and exwm as window managers.
+#+begin_src shell
+  ln -s ~/dotfiles/out /etc/nixos/
+#+end_src
 
 *NOTE:* Inspired by [[https://github.com/daviwil/emacs-from-scratch/][Emacs from scratch by System Crafters]]
-* Bootstrap
-
-On this machine I want to run GNU Guix, because I want to learn about it. The harware in my laptop is non-free so the regular libre-kernel will not boot.
 
 * Tips
 
-Here there will be some comments on hoe to use this file
+tangle this document with C-c C-v t then change ownership and symlink out folder to /etc/nixos/
 
-* Emacs startup performance
+* App Configs
 
-** Make Emacs print out the time it used to start up.
+Here are some configs for other software I use .
 
-#+begin_src emacs-lisp
-
-  (defun geokkjer/display-startup-time ()
-    (message "Emacs loaded in %s with %d grabage collections."
-  	   (format "%.2f seconds"
-  		   (float-time
-  		    (time-subtract after-init-time before-init-time)))
-  	   gcs-done))
-
-  (add-hook 'emacs-startup-hook #'geokkjer/display-startup-time)
-#+end_src
-
-** Garbage collection
-
-#+begin_src emacs-lisp
-
-  (setq gc-cons-threshold (* 50 1000 1000))
-#+end_src
-
-* UI config
-
-Setting up the emacs ui to my liking.
-
-** Basic
-
-Turn off the startup-message makes emcas launch into the scratch buffer.
-Turn off some UI elements, like scroll-bar and menu-bar.
-And turn off the bell to visual, no audible bell.
-
-#+begin_src emacs-lisp
-
-  ;; Turns off the startup-message
-  (setq inhibit-startup-message t)
-
-  ;; Disable UI-elements
-  (scroll-bar-mode -1)  ; Disable visible scrollbar
-  (tool-bar-mode -1)    ; Disable the toolbar
-  (tooltip-mode -1)     ; Disable tooltips
-  (set-fringe-mode 10)  ; Give us some breathing room
-
-  (menu-bar-mode -1)    ; Disable the menu bar
-
-  ;; Set up the visual bell
-  (setq visible-bell t)
-
-  ;; Setting to auto reload files
-  (setq auto-revert-mode t)
-#+end_src
-
-** Doom modline and all-the-icons
-
-Use doom-modeline, set height. Install all-the-icons and use doom-themes to set a nice theme. Sometimes needed "M-x all-the-icons-install-fonts"
-
-#+begin_src emacs-lisp
-
-  ;; Doom modline, all-the-icons and doom-theme
-  (use-package doom-modeline
-    :ensure t
-    :hook (after-init . doom-modeline-mode)
-    :custom ((doom-modeline-height 15)))
-
-  (use-package all-the-icons)
-
-  (use-package doom-themes
-    :init (load-theme 'doom-dracula t))
-#+end_src
-
-** Line numbers
-
-Set emacs to show line-numbers, some modes excluded.
-
-#+begin_src emacs-lisp
-
-  ;; Enable line numbers
-
-  (column-number-mode)
-  (global-display-line-numbers-mode t)
-
-  ;; Disable line numbers for some modes
-  (dolist (mode '(org-mode-hook
-  		term-mode-hook
-  		shell-mode-hook
-  		vterm-mode-hook
-  		eshell-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
-#+end_src
-
-** Command Log mode
-
-Shows key commands in a pane. :commands ensures that the package is loade when the command is invoked and not before.
-
-#+begin_src emacs-lisp
-
-  (use-package command-log-mode
-    :commands command-log-mode)
-#+end_src
-
-* Font configuration
-
-I like the MesloLGS Nerd and the Fira Code fonts, it fits nicely with the theme and my zsh prompt.
-
-#+begin_src emacs-lisp
-
-  (defvar geokkjer/default-font-size 140)
-
-  (set-face-attribute 'default nil :font "Fira Code" :height geokkjer/default-font-size)
-
-  ;; Set the fixed pitch face
-  (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 140)
-
-  ;; Set the variable pitch face
-  (set-face-attribute 'variable-pitch nil :font "MesloLGS NF" :height 130 :weight 'regular)
-#+end_src
-
-* Package System setup
-
-Setting up some packaging registers for emacs.
-
-** Package sources and initialization.
-
-#+begin_src emacs-lisp
-
-  ;; Initialize package sources
-  (require 'package)
-
-  ;; Set the repos
-  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-  		       ("org" . "https://orgmode.org/elpa/")
-  		       ("elpa" . "https://elpa.gnu.org/packages/")))
-
-  (package-initialize)
-  (unless package-archive-contents
-    (package-refresh-contents))
-
-  ;; Initialize use-package in case we are on non-Linux platform
-  (unless (package-installed-p 'use-package)
-    (package-install 'use-package))
-
-  (require 'use-package)
-  (setq use-package-always-ensure t)
-#+end_src
-
-** Auto-update packages
-
-#+begin_src emacs-lisp
-
-  (use-package auto-package-update
-    :custom
-    (auto-package-update-interval 7)
-    (auto-package-update-prompt-before-update t)
-    (auto-package-update-hide-results t)
-    :config
-    (auto-package-update-maybe)
-    (auto-package-update-at-time "09:00"))
-#+end_src
-
-** Keep the folders clean
-
-This is where I will put some things to keep my .emacs.d folder clean
-
-#+begin_src emacs-lisp
-
-  ;;  (use-package no-littering)
-
-  ;;  (setq auto-save-file-name-transforms
-  ;;        '((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
-#+end_src
-
-* Swiper and Ivy
-
-Install and setup Ivy and swiper. Some keybindings for both swiper and counsel. which-key and ivy-rich.
-
-** Swiper
-
-#+begin_src emacs-lisp
-
-  (use-package swiper)
-#+end_src
-
-** Ivy
-
-#+begin_src emacs-lisp
-
-  (use-package ivy
-    :diminish
-    :bind (("C-s" . swiper)
-  	 :map ivy-minibuffer-map
-  	 ("TAB" . ivy-alt-done)
-  	 ("C-l" . ivy-alt-done)
-  	 ("C-j" . ivy-next-line)
-  	 ("C-k" . ivy-previous-line)
-  	 :map ivy-switch-buffer-map
-  	 ("C-k" . ivy-previous-line)
-  	 ("C-l" . ivy-done)
-  	 ("C-d" . ivy-reverse-buffer-kill)
-  	 :map ivy-reverse-i-search-map
-  	 ("C-k" . ivy-previous-line)
-  	 ("C-d" . ivy-reversee-i-search-kill))
-    :config
-    (ivy-mode 1))
-
-  (use-package ivy-rich
-    :after ivy
-    :init
-    (ivy-rich-mode 1))
-#+end_src
-
-** Counsel
-
-#+begin_src emacs-lisp
-
-  (use-package counsel
-    :bind (("M-x" . counsel-M-x)
-  	 ("C-x b" . counsel-ibuffer)
-  	 ("C-x C-f" . counsel-find-file)
-  	 :map minibuffer-local-map
-  	 ("C-r" .'counsel-minibuffer-history))
-    :config
-    (setq ivy-initial-inputs-alist nil)
-    (counsel-mode 1))
-#+end_src
-
-** Which key
-
-#+begin_src emacs-lisp
-
-  (use-package which-key
-    :defer 0
-    :diminish which-key-mode
-    :config
-    (which-key-mode)
-    (setq which-key-idle-delay 1))
-#+end_src
-
-* Org-mode
-
-Org-mode configuration :TODO Redo, it work but more work is needed
-
-*** basic
-
-#+begin_src emacs-lisp
-
-  (defun efs/org-mode-setup ()
-    (org-indent-mode)
-    (variable-pitch-mode 1)
-    (visual-line-mode 1))
-
-  ;; Org Mode Configuration  
-
-  (defun efs/org-font-setup ()
-    ;; Replace list hyphen with dot
-    (font-lock-add-keywords 'org-mode
-  			    '(("^ *\\([-]\\) "
-  			       (0 (prog1 () (compose-region
-  					     (match-beginning1)
-  					     (match-end 1)
-  					     "•")))))))
-
-  ;; Show overview when open
-  (setq org-startup-folded t)
-
-  ;; Set faces for heading levels
-  (with-eval-after-load 'org-faces
-    (dolist (face '((org-level-1 . 1.2)
-  		  (org-level-2 . 1.1)
-  		  (org-level-3 . 1.05)
-  		  (org-level-4 . 1.0)
-  		  (org-level-5 . 1.1)
-  		  (org-level-6 . 1.1)
-  		  (org-level-7 . 1.1)
-  		  (org-level-8 . 1.1)))
-      (set-face-attribute (car face) nil :font "MesloLGS NF" :weight 'regular
-  			:height (cdr face))
-
-      ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-      (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-      (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-      (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-      (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-      (set-face-attribute 'org-special-keyword nil :inherit
-  			'(font-lock-comment-face fixed-pitch))
-      (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face
-  						      fixed-pitch))
-      (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)))
-
-  (use-package org
-    :pin org
-    :commands (org-capture org-agenda)
-    :hook (org-mode . efs/org-mode-setup)
-    :config
-    (setq org-ellipsis " ▾")
-
-    (use-package org-bullets
-      :hook (org-mode . org-bullets-mode)
-      :custom
-      (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
-
-    (defun efs/org-mode-visual-fill ()
-      (setq visual-fill-column-width 100
-  	  visual-fill-column-center-text t)
-      (visual-fill-column-mode 1))
-
-    (use-package visual-fill-column
-      :hook (org-mode . efs/org-mode-visual-fill)))
-#+end_src
-
-*** org-babel
-
-Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
-
-#+begin_src emacs-lisp
-
-  (with-eval-after-load 'org
-    (require 'ob-go)
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((emacs-lisp . t)
-       (shell . t)
-       (go . t)
-       (python . t)))
-
-    (push '("conf-unix" . conf-unix) org-src-lang-modes))
-
-  (setq org-confirm-babel-evaluate nil)
-
-  ;; This is needed as of Org 9.2
-  (with-eval-after-load 'org
-    (require 'org-tempo)
-
-    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-    (add-to-list 'org-structure-template-alist '("py" . "src python"))
-    (add-to-list 'org-structure-template-alist '("go" . "src go"))
-    (add-to-list 'org-structure-template-alist '("nx" . "src nix")))
-
-
-  ;; Automaticly tangle Emacs.org on save
-  (defun geokkjer/org-babel-tangle-config ()
-    (when (string-equal (buffer-file-name)
-  		      (expand-file-name "~/dotfiles/emacs/Emacs.org"))
-
-      ;; Dynamic scoping to the rescue
-      (let ((org-confirm-babel-evaluate nil))
-        (org-babel-tangle))))
-
-  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'geokkjer/org-babel-tangle-config)))
-#+end_src
-
-*** org-agenda
-
-#+begin_src emacs-lisp
-
-  ;; Org-agenda config
-
-  (setq org-agenda-start-with-log-mode t)
-  (setq org-log-done 'time)
-  (setq org-log-into-drawer t)
-  (setq org-agenda-files
-        '("~/Projects/Code/dotfiles/emacs/OrgFiles/Tasks.org"
-  	"~/Projects/Code/dotfiles/emacs/OrgFiles/Birthdays.org"
-  	"~/Projects/Code/dotfiles/emacs/OrgFiles/Habits.org"))
-
-  (require 'org-habit)
-  (add-to-list 'org-modules 'org-habit)
-  (setq org-habit-graph-column 60)
-
-  (setq org-refile-targets
-        '(("Archive.org" :maxlevel . 1)
-  	("Tasks.org" :maxlevel . 1)))
-
-  ;; Save Org buffers after refiling!
-  (advice-add 'org-refile :after 'org-save-all-org-buffers)
-
-  (setq org-tag-alist
-      '((:startgroup)
-        ;; Put mutually exclusive tags here
-        (:endgroup)
-        ("@errand" . ?E)
-        ("@home" . ?H)
-        ("@work" . ?W)
-        ("agenda" . ?a)
-        ("planning" . ?p)
-        ("publish" . ?P)
-        ("batch" . ?b)
-        ("note" . ?n)
-        ("idea" . ?i)))
-
-  ;; Configure custom agenda views
-  (setq org-agenda-custom-commands
-        '(("d" "Dashboard"
-  	 ((agenda "" ((org-deadline-warning-days 7)))
-  	  (todo "NEXT"
-  		((org-agenda-overriding-header "Next Tasks")))
-  	  (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active
-  Projects")))))
-
-  	("n" "Next Tasks"
-  	 ((todo "NEXT"
-  		((org-agenda-overriding-header "Next Tasks")))))
-
-  	("W" "Work Tasks" tags-todo "+work-email")
-
-  	;; Low-effort next actions
-  	("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-  	((org-agenda-overriding-header "Low Effort Tasks")
-  	 (org-agenda-max-todos 20)
-  	 (org-agenda-files org-agenda-files)))
-
-  	("w" "Workflow Status"
-  	 ((todo "WAIT"
-  		((org-agenda-overriding-header "Waiting on External")
-  		 (org-agenda-files org-agenda-files)))
-  	  (todo "REVIEW"
-  		((org-agenda-overriding-header "In Review")
-  		 (org-agenda-files org-agenda-files)))
-  	  (todo "PLAN"
-  		((org-agenda-overriding-header "In Planning")
-  		 (org-agenda-todo-list-sublevels nil)
-  		 (org-agenda-files org-agenda-files)))
-  	  (todo "BACKLOG"
-  		((org-agenda-overriding-header "Project Backlog")
-  		 (org-agenda-todo-list-sublevels nil)
-  		 (org-agenda-files org-agenda-files)))
-  	  (todo "READY"
-  		((org-agenda-overriding-header "Ready for Work")
-  		 (org-agenda-files org-agenda-files)))
-  	  (todo "ACTIVE"
-  		((org-agenda-overriding-header "Active Projects")
-  		 (org-agenda-files org-agenda-files)))
-  	  (todo "COMPLETED"
-  		((org-agenda-overriding-header "Completed Projects")
-  		 (org-agenda-files org-agenda-files)))
-  	  (todo "CANC"
-  		((org-agenda-overriding-header "Cancelled Projects")
-  		 (org-agenda-files org-agenda-files)))))))
-
-
-  (setq org-capture-templates
-        `(("t" "Tasks / Projects")
-  	("tt" "Task" entry (file+olp
-  			    "~/Projects/Code/dotfiles/emacs/OrgFiles/Tasks.org"
-  			    "Inbox")
-  	 "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-
-  	("j" "Journal Entries")
-  	("jj" "Journal" entry
-  	 (file+olp+datetree
-  	  "~/Projects/Code/dotfiles/emacs/OrgFiles/Journal.org")
-  	"\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-  	;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
-  	:clock-in :clock-resume
-  	:empty-lines 1)
-  	("jm" "Meeting" entry
-  	 (file+olp+datetree
-  	  "~/Projects/Code/dotfiles/emacs/OrgFiles/Journal.org")
-  	 "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
-  	:clock-in :clock-resume
-  	:empty-lines 1)
-
-  	("w" "Workflows")
-  	("we" "Checking Email" entry (file+olp+date
-  				      "~/Projects/Code/dotfiles/emacs/OrgFiles/Journal.org")
-  	 "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines
-  	 1)
-
-  	("m" "Metrics Capture")
-  	("mw" "Weight" table-line (file+headline
-  				    "~/Projects/Code/dotfiles/emacs/OrgFiles/Metrics.org" "Weight")
-  	 "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
-
-  (define-key global-map (kbd "C-c j")
-    (lambda () (interactive) (org-capture nil "jj")))
-
-  (efs/org-font-setup)
-#+end_src
-
-* Development
-
-Making Emacs have the functionality of an IDE. And other things that are related to development.
-
-** Languages and lsp-mode configuration
-
-Configuration for different programming languages that I use, or want to learn.
-
-*** lsp-mode
-
-lsp-mode is a mode TODO:
-
-**** lsp-basic
-
-lsp-mode basic configuration including automatic headerline in lsp-mod . description. TODO
-
-#+begin_src emacs-lisp
-
-  (defun geokkjer/lsp-mode-setup ()
-    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-    (lsp-headerline-breadcrumb-mode))
-
-  (use-package lsp-mode
-    :commands (lsp lsp-deferred)
-    :hook ((lsp-mode . geokkjer/lsp-mode-setup)
-  	 (lsp-mode . lsp-enable-which-key-integration))
-    :init
-    (setq lsp-keymap-prefix "C-c l"))
-#+end_src
-
-**** lsp-ivy
-
-#+begin_src emacs-lisp
-
-  (use-package lsp-ivy
-    :after lsp)
-#+end_src
-
-**** lsp-ui
-
-lsp-ui is .. TODO
-
-#+begin_src emacs-lisp
-
-  (use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode)
-    :custom
-    (lsp-ui-doc-psition 'bottom))
-
-  (setq lsp-ui-sidline-enable nil)
-  (setq lsp-ui-sideline-show-hover nil)
-#+end_src
-
-**** lsp-treemacs
-
-TODO: explore treemacs
-
-#+begin_src emacs-lisp
-
-  (use-package lsp-treemacs
-    :after lsp)
-#+end_src
-
-*** Web-mode
-
-#+begin_src emacs-lisp
-
-  (use-package web-mode
-    :mode "\\.html\\'"
-    :hook (web-mode . lsp-deferred)
-    :config
-    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-    (setq web-mode-engines-alist '(("django" . "\\.html\\'"))))
-
-  ;; Simple-httpd webserver to preview webpages
-  (use-package simple-httpd
-    :ensure t)
-#+end_src
-
-*** Typescript
-
-Used as an example of how to 
-#+begin_src emacs-lisp
-
-  (use-package typescript-mode
-    :mode "\\.ts\\'"
-    :hook (typescript-mode . lsp-deferred)
-    :config
-    (setq typescript-indent-level 2))
-#+end_src
-
-*** Python
-
-Python IDE config. Sets up python mode to trigger on .py files. Then sets up lsp-python-ms to find python-language-server on NixOS.
-
-#+begin_src emacs-lisp
-
-  (use-package python-mode
-    :ensure nil
-    :hook (python-mode . lsp-deferred)
-    :custom
-    (python-shell-interpreter "python3")
-    :mode "\\.py\\'"
-    :config
-    )
-
-  (use-package pyvenv
-    :after python-mode
-    :config
-    (pyvenv-mode 1))
-
-  (use-package lsp-python-ms
-    :ensure t
-    :hook (python-mode . (lambda ()
-  		       (require 'lsp-python-ms)
-  		       (lsp-deferred)))
-    :init
-    (setq lsp-python-ms-executable (executable-find "python-language-server")))
-#+end_src
-
-*** GO
-#+begin_src emacs-lisp
-
-  (use-package ob-go)
-  (use-package go-mode)
-
-  (require 'lsp-mode)
-  (add-hook 'go-mode-hook #'lsp-deferred)
-
-  ;; Set up before-save hooks to format buffer and add/delete imports.
-  ;; Make sure you don't have other gofmt/goimports hooks enabled.
-  (defun lsp-go-install-save-hooks ()
-    (add-hook 'before-save-hook #'lsp-format-buffer t t)
-    (add-hook 'before-save-hook #'lsp-organize-imports t t))
-  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
-#+end_src
-
-*** Rust
-
-#+begin_src emacs-lisp
-
-#+end_src
-
-*** SQL
-
-#+begin_src emacs-lisp
-
-  (use-package sql-indent)
-#+end_src
-
-*** nix
-
-TODO
-
-#+begin_src emacs-lisp
-
-  (use-package nix-mode
-    :mode "\\.nix\\'")
-
-  (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
-  		  :major-modes '(nix-mode)
-  		  :server-id 'nix))
-#+end_src
-
-*** K8s
-
-#+begin_src emacs-lisp
-
-  (use-package kubernetes
-    :commands kubernetes-overview
-    :config
-    (setq kubernetes-poll-frequency 3600
-  	kubernetes-redraw-frequency 3600))
-
-  (use-package kubernetes-evil
-    :ensure t
-    :after kubernetes)
-#+end_src
-
-*** yaml mode
-#+begin_src emacs-lisp
-
-  (use-package yaml-mode)
-#+end_src
-** Code completion with company-mode
-
-Company provides bette completions TODO:
-
-#+begin_src emacs-lisp
-
-  (use-package company
-    :after lsp-mode
-    :hook (lsp-mode . company-mode)
-    :bind (:map company-active-map
-  	  ("<tab>" . company-complete-section))
-  	(:map lsp-mode-map
-  	  ("<tab>" . company-indent-or-complete-common))
-    :custom
-    (company-minimum-orefix-lenght 1)
-    (company-idle-delay 0.0))
-
-  (use-package company-box
-    :hook (company-mode . company-box-mode))
-#+end_src
-
-** Commenting
-
-Useeful for commenting or uncommenting lines of code in modal editing mode.
-
-#+begin_src emacs-lisp
-
-  (use-package evil-nerd-commenter
-    :bind ("M-/" . evilnc-comment-or-uncomment-lines))
-#+end_src
-
-** Rainbow Delimiters
-
-Really helpful
-
-#+begin_src emacs-lisp
-
-  ;; rainbow-delimiters
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
-#+end_src
-
-** Flycheck
-
-Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs, intended as replacement for the older Flymake extension which is part of GNU Emacs.
-
-[[https://www.flycheck.org/][Syntax checking for GNU Emacs
-]]
-#+begin_src emacs-lisp
-
-  (use-package flycheck
-    :ensure t
-    :init (global-flycheck-mode))
-#+end_src
-
-** Projectile
-
-Projectile description .TODO
-
-#+begin_src emacs-lisp
-
-  ;; TODO learn to use projectile
-  (use-package projectile
-    :diminish
-    :config
-    :custom ((projectile-completion-system 'ivy))
-    :bind-keymap
-    ("C-c p" . projectile-command-map)
-    :init
-    (when (file-directory-p "~/Projects/Code")
-      (setq projectile-projects-search-path '("~/Projects/Code")))
-    (setq projectile-switch-project-action #'projectile-dired))
-
-  (use-package counsel-projectile
-    :after projectile
-    :config (counsel-projectile-mode))
-#+end_src
-
-** Git and Magit
-
-MAGIT description. TODO
-
-#+begin_src emacs-lisp
-
-  ;; TODO learn git and Magit
-  (use-package magit
-    :commands magit-status
-    :custom
-    (magit-display-buffer-function
-     #'magit-display-buffer-same-window-except-diff-v1))
-
-  ;; TODO config for service
-  (use-package forge
-    :after magit)
-#+end_src
-
-* Helpful and general
-
-#+begin_src emacs-lisp
-
-  (use-package helpful
-    :commands (helpful-callable helpful-variable helpful-command helpful-key)
-    :custom
-    (counsel-describe-function-function #'helpful-callable)
-    (counsel-describe-variable-function #'helpful-variable)
-    :bind
-    ([remap describe-function] . counsel-describe-function)
-    ([remap describe-command] . helpful-command)
-    ([remap describe-variable] . counsel-describe-variable)
-    ([remap describe-key] . helpful-key))
-
-  (use-package general
-    :after evil
-    :config
-    (general-create-definer geokkjer/leader-keys
-      :keymaps '(normal insert visual emacs)
-      :prefix "SPC"
-      :global-prefix "C-SPC")
-    (geokkjer/leader-keys
-      "t"  '(:ignore t :which-key "toggles")
-      "tt" '(counsel-load-theme :which-key "choose theme")))
-#+end_src
-
-* Evil-mode
-
-#+begin_src emacs-lisp
-
-  (use-package evil
-    :init
-    (setq evil-want-integration t)
-    (setq evil-want-keybinding nil)
-    (setq evil-want-C-u-scroll t)
-    (setq evil-want-C-i-jump nil)
-    :config
-    (evil-mode 1)
-    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-    (define-key evil-insert-state-map (kbd "C-h")
-      'evil-delete-backeard-char-and-join)
-
-    ;; Use visual line motions even outside of visual-line-mode buffers
-    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
-    (evil-set-initial-state 'messages-buffer-mode 'normal)
-    (evil-set-initial-state 'dashboard-mode 'normal))
-
-  (use-package evil-collection
-    :after evil
-    :config
-    (evil-collection-init))
-#+end_src
-
-* GUIX
-
-#+begin_src emacs-lisp
-
-  (use-package guix)
-#+end_src
-
-* Hydra
-
-
-#+begin_src emacs-lisp
-
-  (use-package hydra
-    :defer t)
-
-  (defhydra hydra-text-scale (:timeout 4)
-    "scale text"
-    ("j" text-scale-increase "in")
-    ("k" text-scale-decrease "out")
-    ("f" nil "finished" :exit t))
-
-  (geokkjer/leader-keys
-    "ts" '(hydra-text-scale/body :which-key "scale text"))
-#+end_src
-
-* Shells and Terminals
-
-** term-mode
-
-#+begin_src emacs-lisp
-
-  (use-package term
-    :commands term
-    :config
-    (setq explicit-shell-file-name "bash")
-    ;; (setq explicit-zsh-args '())
-    (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
-
-  (use-package eterm-256color
-    :hook (term-mode . eterm-256color-mode))
-#+end_src
-
-** vterm
-
-TODO
-I used the package from NixOS repository rather than compile from source.
-
-#+begin_src scheme
-
-  "emacs-vterm"
-#+end_src
-
-#+begin_src emacs-lisp
-
-
-  (use-package vterm
-    :ensure t
-    :commands vterm
-    :config
-    (setq vterm-shell "bash")
-    (setq vterm-max-scrollback 10000))
-#+end_src
-
-** eshell
-
-built in shell written for emacs TODO:completions
-
-#+begin_src emacs-lisp
-
-  (defun geokkjer/configure-eshell ()
-    ;; Make eshell svae history when it is open  
-    (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
-
-    ;; Truncate buffer for performance
-    (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
-
-    ;; Bind some useful keys for evil-mode
-    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
-    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
-    (evil-normalize-keymaps)
-
-    (setq eshell-history-size         10000
-  	eshell-buffer-maximum-lines 10000
-  	eshell-hist-ignoredups t
-  	eshell-scroll-to-bottom-on-input t))
-
-  (use-package eshell-git-prompt
-    :after eshell)
-
-  (use-package eshell
-    :hook (eshell-first-time-mode . geokkjer/configure-eshell)
-    :config
-    (with-eval-after-load 'esh-opt
-      (setq eshell-destroy-buffer-when-process-dies t)
-      (setq eshell-visual-commands '("htop" "zsh" "vim" "glances")))
-
-    (eshell-git-prompt-use-theme 'powerline))
-#+end_src
-
-* File Management
-
-** Dired
-
-#+begin_src emacs-lisp
-
-  (use-package dired
-    :ensure nil
-    :commands (dired dired-jump)
-    :bind (("C-x C-j" . dired-jump))
-    :custom ((dired-listing-switches "-agho --group-directories-first"))
-    :config
-    (evil-collection-define-key 'normal 'dired-mode-map
-      "h" 'dired-up-directory
-      "l" 'dired-single-buffer))
-
-  (use-package dired-single
-    :after dired)
-
-  (use-package all-the-icons-dired
-    :hook (dired-mode . all-the-icons-dired-mode))
-
-  (use-package dired-open
-    :after dired
-    :config
-    (setq dired-open-exstensions '(("png" . "feh")
-  				 ("mkv" . "mpv"))))
-  (use-package dired-hide-dotfiles
-    :hook (dired-mode . dired-hide-dotfiles-mode)
-    :config
-    (evil-collection-define-key 'normal 'dired-mode-map
-      "H" 'dired-hide-dotfiles-mode))
-#+end_src
-
-* Window Managers
-** i3
-** EXVM
-
-EXVM is Emacs as a Window Manager
-
-*** Write the Desktop file and link it on non nixos/guix systems
-
-NOTE: For installation on traditional Linux distros like Ubuntu:
-
-#+begin_src conf-unix
-  [Desktop Entry]
-  Name=EXWM
-  Comment=Emacs Window Manager
-  Exec=sh /home/geir/dotfiles/emacs/exvm/start-exwm.sh
-  TryExec=sh
-  Type=Application
-  X-LightDM-DesktopName=exwm
-  DesktopNames=exwm
-#+end_src
-
-#+begin_src shell
-  sudo ln -f ~/dotfiles/emacs/exwm/exwm.desktop  /usr/share/xsessions/exwm.desktop 
-#+end_src
-
-#+begin_src shell
-  #!/bin/sh  
-
-  # start EXWM --mm maximize emacs --debug-init drop into debugger
-
-  exec dbus-launch --exit-with-session emacs -mm --debug-init
-#+end_src
-
-NOTE: On GNU Guix add "emacs-exwm" "emacs-desktop-environmet" to your config.scm
-NOTE: TODO NixOS
-
-*** Configuration
-
-NOTE: remember to install Xmodmap on your distro
-
-Configure CapsLock to act as CTRL
-
-#+begin_src conf-unix
-
-  clear lock
-  clear control
-  keycode 66 = Control_L
-  add control = Control_L
-  add Lock = Control_R
-#+end_src
-
-Use arandr to get screenresolution(s), usually saves to .screenlayout/yourfile
-
-Use xrandr to set screenresolution(s), copy the xrandr line from the file and paste it into the "start-process-shell-command "xrandr" nil" expression below. 
-
-This is a basic configuration for EXWM
-
-#+begin_src emacs-lisp
-
-  (defun geokkjer/exwm-update-class ()
-    (exwm-workspace-rename-buffer exwm-class-name))
-
-  (use-package exwm
-    :config
-    ;; Set the default number of workspaces
-    (setq exwm-workspace-number 5)
-
-    ;; When window "class" updates, use it to set the buffer name
-    (add-hook 'exwm-update-class-hook #'geokkjer/exwm-update-class)
-
-    ;; Rebind CapsLock to Ctrl
-    (start-process-shell-command "xmodmap" nil "xmodmap ~/dofiles/emacs/exwm/Xmodmap")
-
-    ;; Set the screen resolution (update this to be the correct resolution for your screen!)
-    (require 'exwm-randr)
-    (exwm-randr-enable)
-    (start-process-shell-command "xrandr" nil "xrandr --output eDP --primary --mode 1920x1080 --pos 0x0 --rotate normal --output HDMI-A-0 --off")
-
-    ;; Load the system tray before exwm-init
-    (require 'exwm-systemtray)
-    (exwm-systemtray-enable)
-
-    ;; These keys should always pass through to Emacs
-    (setq exwm-input-prefix-keys
-  	'(?\C-x
-  	  ?\C-u
-  	  ?\C-h
-  	  ?\M-x
-  	  ?\M-`
-  	  ?\M-&
-  	  ?\M-:
-  	  ?\C-\M-j  ;; Buffer list
-  	  ?\C-\ ))  ;; Ctrl+Space
-
-    ;; Ctrl+Q will enable the next key to be sent directly
-    (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
-
-    ;; Set up global key bindings.  These always work, no matter the input state!
-    ;; Keep in mind that changing this list after EXWM initializes has no effect.
-    (setq exwm-input-global-keys
-  	`(
-  	  ;; Reset to line-mode (C-c C-k switches to char-mode via exwm-input-release-keyboard)
-  	  ([?\s-r] . exwm-reset)
-
-  	  ;; move between windows
-  	  ([s-left] . windmove-left)
-  	  ([s-right] . windmove-right)
-  	  ([s-up] . windmove-up)
-  	  ([s-down] . windmove-down)
-
-  	  ;; Launch applications via shell command
-  	  ([?\s-&] . (lambda (command)
-  		       (interactive (list (read-shell-command "$ ")))
-  		       (start-process-shell-command command nil command)))
-
-  	  ;; Switch workspace
-  	  ([?\s-w] . exwm-workspace-switch)
-  	  ([?\s-'] . (lambda () (interactive) (exwm-workspace-switch-create 0)))
-
-  	  ;; 's-N': Switch to certain workspace with Super (Win) plus a number key (0 - 9)
-  	  ,@(mapcar (lambda (i)
-  		      `(,(kbd (format "s-%d" i)) .
-  			(lambda ()
-  			  (interactive)
-  			  (exwm-workspace-switch-create ,i))))
-  		    (number-sequence 0 9))))
-
-    (exwm-enable))
-#+end_src
-
-** StumpWM
-** Xmonad
 ** Sway
-* Other Applications examples
+*** nixos
+#+begin_src nix
+   { config, pkgs, lib, ... }:
+   let
+     # bash script to let dbus know about important env variables and
+     # propagate them to relevent services run at the end of sway config
+     # see
+     # https://github.com/emersion/xdg-desktop-portal-wlr/wiki/"It-doesn't-work"-Troubleshooting-Checklist
+     # note: this is pretty much the same as  /etc/sway/config.d/nixos.conf but also restarts  
+     # some user services to make sure they have the correct environment variables
+     dbus-sway-environment = pkgs.writeTextFile {
+       name = "dbus-sway-environment";
+       destination = "/bin/dbus-sway-environment";
+       executable = true;
+       text = ''
+         dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_C  URRENT_DESKTOP=sway
+         systemctl --user stop pipewire pipewire-media-session xdg-desktop-portal xdg-desktop-portal-wlr
+         systemctl --user start pipewire pipewire-media-session xdg-desktop-portal xdg-desktop-portal-wlr
+       ''; 
+     };
 
-Using emacs org-mode to configure other applications.
+  in
+   {
+     environment.systemPackages = with pkgs; [
+       sway
+       dbus-sway-environment
+       wayland
+       xdg-utils # for opening default programs when clicking links
+       glib # gsettings
+       dracula-theme # gtk theme
+       swaylock
+       swayidle
+       grim # screenshot functionality
+       slurp # screenshot functionality
+       wl-clipboard # wl-copy and wl-paste for copy/paste from stdin / stdout
+       bemenu # wayland clone of dmenu
+       mako # notification system developed by swaywm maintainer
+       waybar
+       gammastep
+     ];
 
-*** Some app
+     # xdg-desktop-portal works by exposing a series of D-Bus interfaces
+     # known as portals under a well-known name
+     # (org.freedesktop.portal.Desktop) and object path
+     # (/org/freedesktop/portal/desktop).
+     # The portal interfaces include APIs for file access, opening URIs,
+     # printing and others.
+     services.dbus.enable = true;
 
-#+begin_src conf-unix
-  (+ 42 42)
+     # enable sway window manager
+     programs.sway = {
+       enable = true;
+       wrapperFeatures.gtk = true;
+     };
+   }
 #+end_src
 
-* Runtime performance
-#+begin_src emacs-lisp
+*** Sway
+Sway Window Manager
+#+begin_src conf-unix
+    default_border none
+    ### Variables
+    #
+    # Logo key. Use Mod1 for Alt.
+    set $mod Mod4
+    # Home row direction keys, like vim
+    set $left h
+    set $down j
+    set $up k
+    set $right l
+    # Your preferred terminal emulator
+    set $term alacritty
 
-  ;; Make gc pauses faster by decreasing the threshold
-  (setq gc-cons-threshold (* 2 1000 1000))
+    set $menu bemenu-run
+    # Set gnome stuff
+    set $gnome-schema org.gnome.desktop.interface
+    ### Output configuration
+
+    #
+    # Default wallpaper (more resolutions are available in /run/current-system/sw/share/backgrounds/sway/)
+    output * bg /home/geir/Pictures/nord-rainbow-dark-nix.png fill
+    #
+    # Example configuration:
+    #
+    #   output HDMI-A-1 resolution 1920x1080 position 1920,0
+    #
+    # You can get the names of your outputs by running: swaymsg -t get_outputs
+
+    ### Idle configuration
+    #
+    # Example configuration:
+    #
+    # exec swayidle -w \
+    #          timeout 300 'swaylock -f -c 000000' \
+    #          timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+    #          before-sleep 'swaylock -f -c 000000'
+    #
+    # This will lock your screen after 300 seconds of inactivity, then turn off
+    # your displays after another 300 seconds, and turn your screens back on when
+    # resumed. It will also lock your screen before your computer goes to sleep.
+
+    ### Input configuration
+    #
+    # Example configuration:
+    #
+  input "1739:52781:MSFT0001:00_06CB:CE2D_Touchpad" {
+         dwt enabled
+         tap enabled
+         natural_scroll enabled
+         middle_emulation enabled
+       }
+    #
+    # You can get the names of your inputs by running: swaymsg -t get_inputs
+    # Read `man 5 sway-input` for more information about
+    # or input <identifier>
+  input "type:keyboard" {
+    xkb_layout no
+    xkb_variant ,nodeadkeys
+    xkb_options caps:ctrl_modifier
+  }
+    # screenshots
+    bindsym $mod+c exec grim  -g "$(slurp)" /tmp/$(date +'%H:%M:%S.png') 
+    ### Key bindings
+    #
+    # Basics:
+    #
+    # Start a terminal
+
+    bindsym $mod+Return exec $term
+
+    # Kill focused window
+    bindsym $mod+Shift+q kill
+
+    # Start your launcher
+    bindsym $mod+d exec $menu
+
+    # Drag floating windows by holding down $mod and left mouse button.
+    floating_modifier $mod normal
+
+    # Reload the configuration file
+    bindsym $mod+Shift+c reload
+
+    # Exit sway (logs you out of your Wayland session)
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+    #
+    # Moving around:
+    #
+        # Move your focus around
+        bindsym $mod+$left focus left
+        bindsym $mod+$down focus down
+        bindsym $mod+$up focus up
+        bindsym $mod+$right focus right
+        # Or use $mod+[up|down|left|right]
+        bindsym $mod+Left focus left
+        bindsym $mod+Down focus down
+        bindsym $mod+Up focus up
+        bindsym $mod+Right focus right
+
+        # Move the focused window with the same, but add Shift
+        bindsym $mod+Shift+$left move left
+        bindsym $mod+Shift+$down move down
+        bindsym $mod+Shift+$up move up
+        bindsym $mod+Shift+$right move right
+        # Ditto, with arrow keys
+        bindsym $mod+Shift+Left move left
+        bindsym $mod+Shift+Down move down
+        bindsym $mod+Shift+Up move up
+        bindsym $mod+Shift+Right move right
+    #
+    # Workspaces:
+    #
+        # Switch to workspace
+        bindsym $mod+1 workspace number 1
+        bindsym $mod+2 workspace number 2
+        bindsym $mod+3 workspace number 3
+        bindsym $mod+4 workspace number 4
+        bindsym $mod+5 workspace number 5
+        bindsym $mod+6 workspace number 6
+        bindsym $mod+7 workspace number 7
+        bindsym $mod+8 workspace number 8
+        bindsym $mod+9 workspace number 9
+        bindsym $mod+0 workspace number 10
+        # Move focused container to workspace
+        bindsym $mod+Shift+1 move container to workspace number 1
+        bindsym $mod+Shift+2 move container to workspace number 2
+        bindsym $mod+Shift+3 move container to workspace number 3
+        bindsym $mod+Shift+4 move container to workspace number 4
+        bindsym $mod+Shift+5 move container to workspace number 5
+        bindsym $mod+Shift+6 move container to workspace number 6
+        bindsym $mod+Shift+7 move container to workspace number 7
+        bindsym $mod+Shift+8 move container to workspace number 8
+        bindsym $mod+Shift+9 move container to workspace number 9
+        bindsym $mod+Shift+0 move container to workspace number 10
+
+    #
+    # Layout stuff:
+    #
+        # You can "split" the current object of your focus with
+        # $mod+b or $mod+v, for horizontal and vertical splits
+        # respectively.
+        bindsym $mod+b splith
+        bindsym $mod+v splitv
+
+        # Switch the current container between different layout styles
+        bindsym $mod+s layout stacking
+        bindsym $mod+w layout tabbed
+        bindsym $mod+e layout toggle split
+
+        # Make the current focus fullscreen
+        bindsym $mod+f fullscreen
+
+        # Toggle the current focus between tiling and floating mode
+        bindsym $mod+Shift+space floating toggle
+
+        # Swap focus between the tiling area and the floating area
+        bindsym $mod+space focus mode_toggle
+
+        # Move focus to the parent container
+        bindsym $mod+a focus parent
+    #
+    # Scratchpad:
+    #
+        # Sway has a "scratchpad", which is a bag of holding for windows.
+        # You can send windows there and get them back later.
+
+        # Move the currently focused window to the scratchpad
+        bindsym $mod+Shift+minus move scratchpad
+
+        # Show the next scratchpad window or hide the focused scratchpad window.
+        # If there are multiple scratchpad windows, this command cycles through them.
+        bindsym $mod+minus scratchpad show
+    #
+    # Resizing containers:
+    #
+    mode "resize" {
+        # left will shrink the containers width
+        # right will grow the containers width
+        # up will shrink the containers height
+        # down will grow the containers height
+        bindsym $left resize shrink width 10px
+        bindsym $down resize grow height 10px
+        bindsym $up resize shrink height 10px
+        bindsym $right resize grow width 10px
+
+        # Ditto, with arrow keys
+        bindsym Left resize shrink width 10px
+        bindsym Down resize grow height 10px
+        bindsym Up resize shrink height 10px
+        bindsym Right resize grow width 10px
+
+        # Return to default mode
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+    }
+    bindsym $mod+r mode "resize"
+
+    #
+    # Status Bar:
+    #
+  bar {
+     swaybar_command waybar 
+  } 
+
+  include /etc/sway/config.d/*
+  exec dbus-sway-environment
+  exec configure-gtk
+  exec gammastep
+#+end_src
+
+*** Waybar
+
+**** config
+
+#+begin_src conf-unix
+    {
+  	  "layer": "top",
+  	  "position": "top",
+
+  		      "modules-left": [
+  		      "sway/mode",
+  		      "sway/workspaces",
+  		      "custom/arrow10",
+  		      "sway/window"
+  		      ],
+
+  		      "modules-right": [
+  		      "custom/arrow9",
+  		      "pulseaudio",
+  		      "custom/arrow8",
+  		      "network",
+  		      "custom/arrow7",
+  		      "memory",
+  		      "custom/arrow6",
+  		      "cpu",
+  		      "custom/arrow5",
+  		      "temperature",
+  		      "custom/arrow4",
+  		      "battery",
+  		      "custom/arrow3",
+  		      "sway/language",
+  		      "custom/arrow2",
+  		      "tray",
+  		      "clock#date",
+  		      "custom/arrow1",
+  		      "clock#time"
+  		      ],
+
+  		      // Modules
+
+  		      "battery": {
+  			       "interval": 10,
+  			       "states": {
+  					 "warning": 30,
+  					 "critical": 15
+  					 },
+  				"format-time": "{H}:{M:02}",
+  				"format": "{icon} {capacity}% ({time})",
+  				"format-charging": " {capacity}% ({time})",
+  				"format-charging-full": " {capacity}%",
+  				"format-full": "{icon} {capacity}%",
+  				"format-alt": "{icon} {power}W",
+  				"format-icons": [
+  					"",
+  					"",
+  					"",
+  					"",
+  					""
+  				],
+  				"tooltip": false
+  			},
+
+  			"clock#time": {
+  				"interval": 10,
+  				"format": "{:%H:%M}",
+  				"tooltip": false
+  			},
+
+  			"clock#date": {
+  				"interval": 20,
+  				"format": "{:%e %b %Y}",
+  				"tooltip": false
+  				//"tooltip-format": "{:%e %B %Y}"
+  			},
+
+  			"cpu": {
+  				"interval": 5,
+  				"tooltip": false,
+  				"format": " {usage}%",
+  				"format-alt": " {load}",
+  				"states": {
+  					"warning": 70,
+  					"critical": 90
+  				}
+  			},
+
+  			"sway/language": {
+  				"format": " {}",
+  				"min-length": 5,
+  				"on-click": "swaymsg 'input * xkb_switch_layout next'",
+  				"tooltip": false
+  			},
+
+  			"memory": {
+  				"interval": 5,
+  				"format": " {used:0.1f}G/{total:0.1f}G",
+  				"states": {
+  					"warning": 70,
+  					"critical": 90
+  				},
+  				"tooltip": false
+  			},
+
+  			"network": {
+  				"interval": 5,
+  				"format-wifi": " {essid} ({signalStrength}%)",
+  				"format-ethernet": " {ifname}",
+  				"format-disconnected": "No connection",
+  				"format-alt": " {ipaddr}/{cidr}",
+  				"tooltip": false
+  			},
+
+  			"sway/mode": {
+  				"format": "{}",
+  				"tooltip": false
+  			},
+
+  			"sway/window": {
+  				"format": "{}",
+  				"max-length": 30,
+  				"tooltip": false
+  			},
+
+  			"sway/workspaces": {
+  				"disable-scroll-wraparound": true,
+  				"smooth-scrolling-threshold": 4,
+  				"enable-bar-scroll": true,
+  				"format": "{name}"
+  			},
+
+  			"pulseaudio": {
+  				"format": "{icon} {volume}%",
+  				"format-bluetooth": "{icon} {volume}%",
+  				"format-muted": "",
+  				"format-icons": {
+  					"headphone": "",
+  					"hands-free": "",
+  					"headset": "",
+  					"phone": "",
+  					"portable": "",
+  					"car": "",
+  					"default": ["", ""]
+  				},
+  				"scroll-step": 1,
+  				"on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+  				"tooltip": false
+  			},
+
+  			"temperature": {
+  				"critical-threshold": 90,
+  				"interval": 5,
+  				"format": "{icon} {temperatureC}°",
+  				"format-icons": [
+  					"",
+  					"",
+  					"",
+  					"",
+  					""
+  				],
+  				"tooltip": false
+  			},
+
+  			"tray": {
+  				"icon-size": 18
+  				//"spacing": 10
+  			},
+
+  			"custom/arrow1": {
+  				"format": "",
+  				"tooltip": false
+  			},
+
+  			"custom/arrow2": {
+  				"format": "",
+  				"tooltip": false
+  			},
+
+  			"custom/arrow3": {
+  				"format": "",
+  				"tooltip": false
+  			},
+
+  			"custom/arrow4": {
+  				"format": "",
+  				"tooltip": false
+  			},
+
+  			"custom/arrow5": {
+  				"format": "",
+  				"tooltip": false
+  			},
+
+  			"custom/arrow6": {
+  				"format": "",
+  				"tooltip": false
+  			},
+
+  			"custom/arrow7": {
+  				"format": "",
+  				"tooltip": false
+  			},
+
+  			"custom/arrow8": {
+  				"format": "",
+  				"tooltip": false
+  			},
+
+  			"custom/arrow9": {
+  				"format": "",
+  				"tooltip": false
+  			},
+
+  			"custom/arrow10": {
+  				"format": "",
+  				"tooltip": false
+  			}
+    }
+  // vi:ft=jsonc
+#+end_src
+
+**** css
+#+begin_src css
+  /* Keyframes */
+
+  @keyframes blink-critical {
+  	to {
+  		/*color: @white;*/
+  		background-color: @critical;
+  	}
+  }
+
+
+  /* Styles */
+
+  /* Colors (gruvbox) */
+  @define-color black	#282828;
+  @define-color red	#cc241d;
+  @define-color green	#98971a;
+  @define-color yellow	#d79921;
+  @define-color blue	#458588;
+  @define-color purple	#b16286;
+  @define-color aqua	#689d6a;
+  @define-color gray	#a89984;
+  @define-color brgray	#928374;
+  @define-color brred	#fb4934;
+  @define-color brgreen	#b8bb26;
+  @define-color bryellow	#fabd2f;
+  @define-color brblue	#83a598;
+  @define-color brpurple	#d3869b;
+  @define-color braqua	#8ec07c;
+  @define-color white	#ebdbb2;
+  @define-color bg2	#504945;
+
+
+  @define-color warning 	@bryellow;
+  @define-color critical	@red;
+  @define-color mode	@black;
+  @define-color unfocused	@bg2;
+  @define-color focused	@braqua;
+  @define-color inactive	@purple;
+  @define-color sound	@brpurple;
+  @define-color network	@purple;
+  @define-color memory	@braqua;
+  @define-color cpu	@green;
+  @define-color temp	@brgreen;
+  @define-color layout	@bryellow;
+  @define-color battery	@aqua;
+  @define-color date	@black;
+  @define-color time	@white;
+
+  /* Reset all styles */
+   ,* {
+  	border: none;
+  	border-radius: 0;
+  	min-height: 0;
+  	margin: 0;
+  	padding: 0;
+  	box-shadow: none;
+  	text-shadow: none;
+  	icon-shadow: none;
+  }
+
+  /* The whole bar */
+  #waybar {
+  	background: rgba(40, 40, 40, 0.8784313725); /* #282828e0 */
+  	color: @white;
+  	font-family: JetBrains Mono, Siji;
+  	font-size: 12pt;
+  	/*font-weight: bold;*/
+  }
+
+  /* Each module */
+  #battery,
+  #clock,
+  #cpu,
+  #language,
+  #memory,
+  #mode,
+  #network,
+  #pulseaudio,
+  #temperature,
+  #tray,
+  #backlight,
+  #idle_inhibitor,
+  #disk,
+  #user,
+  #mpris {
+  	padding-left: 8pt;
+  	padding-right: 8pt;
+  }
+
+  /* Each critical module */
+  #mode,
+  #memory.critical,
+  #cpu.critical,
+  #temperature.critical,
+  #battery.critical.discharging {
+  	animation-timing-function: linear;
+  	animation-iteration-count: infinite;
+  	animation-direction: alternate;
+  	animation-name: blink-critical;
+  	animation-duration: 1s;
+  }
+
+  /* Each warning */
+  #network.disconnected,
+  #memory.warning,
+  #cpu.warning,
+  #temperature.warning,
+  #battery.warning.discharging {
+  	color: @warning;
+  }
+
+  /* And now modules themselves in their respective order */
+
+  /* Current sway mode (resize etc) */
+  #mode {
+  	color: @white;
+  	background: @mode;
+  }
+
+  /* Workspaces stuff */
+  #workspaces button {
+  	/*font-weight: bold;*/
+  	padding-left: 2pt;
+  	padding-right: 2pt;
+  	color: @white;
+  	background: @unfocused;
+  }
+
+  /* Inactive (on unfocused output) */
+  #workspaces button.visible {
+  	color: @white;
+  	background: @inactive;
+  }
+
+  /* Active (on focused output) */
+  #workspaces button.focused {
+  	color: @black;
+  	background: @focused;
+  }
+
+  /* Contains an urgent window */
+  #workspaces button.urgent {
+  	color: @black;
+  	background: @warning;
+  }
+
+  /* Style when cursor is on the button */
+  #workspaces button:hover {
+  	background: @black;
+  	color: @white;
+  }
+
+  #window {
+  	margin-right: 35pt;
+  	margin-left: 35pt;
+  }
+
+  #pulseaudio {
+  	background: @sound;
+  	color: @black;
+  }
+
+  #network {
+  	background: @network;
+  	color: @white;
+  }
+
+  #memory {
+  	background: @memory;
+  	color: @black;
+  }
+
+  #cpu {
+  	background: @cpu;
+  	color: @white;
+  }
+
+  #temperature {
+  	background: @temp;
+  	color: @black;
+  }
+
+  #language {
+  	background: @layout;
+  	color: @black;
+  }
+
+  #battery {
+  	background: @battery;
+  	color: @white;
+  }
+
+  #tray {
+  	background: @date;
+  }
+
+  #clock.date {
+  	background: @date;
+  	color: @white;
+  }
+
+  #clock.time {
+  	background: @time;
+  	color: @black;
+  }
+
+  #custom-arrow1 {
+  	font-size: 11pt;
+  	color: @time;
+  	background: @date;
+  }
+
+  #custom-arrow2 {
+  	font-size: 11pt;
+  	color: @date;
+  	background: @layout;
+  }
+
+  #custom-arrow3 {
+  	font-size: 11pt;
+  	color: @layout;
+  	background: @battery;
+  }
+
+  #custom-arrow4 {
+  	font-size: 11pt;
+  	color: @battery;
+  	background: @temp;
+  }
+
+  #custom-arrow5 {
+  	font-size: 11pt;
+  	color: @temp;
+  	background: @cpu;
+  }
+
+  #custom-arrow6 {
+  	font-size: 11pt;
+  	color: @cpu;
+  	background: @memory;
+  }
+
+  #custom-arrow7 {
+  	font-size: 11pt;
+  	color: @memory;
+  	background: @network;
+  }
+
+  #custom-arrow8 {
+  	font-size: 11pt;
+  	color: @network;
+  	background: @sound;
+  }
+
+  #custom-arrow9 {
+  	font-size: 11pt;
+  	color: @sound;
+  	background: transparent;
+  }
+
+  #custom-arrow10 {
+  	font-size: 11pt;
+  	color: @unfocused;
+  	background: transparent;
+  }
+#+end_src
+
+*** gammastep
+
+#+begin_src conf-unix
+
+  ; Global settings
+  [general]
+  ; Set the day and night screen temperatures
+  temp-day=5700
+  temp-night=3500
+
+  ; Disable the smooth fade between temperatures when Redshift starts and stops.
+  ; 0 will cause an immediate change between screen temperatures.
+  ; 1 will gradually apply the new screen temperature over a couple of seconds.
+  fade=1
+
+  ; Solar elevation thresholds.
+  ; By default, Redshift will use the current elevation of the sun to determine
+  ; whether it is daytime, night or in transition (dawn/dusk). When the sun is
+  ; above the degrees specified with elevation-high it is considered daytime and
+  ; below elevation-low it is considered night.
+  ;elevation-high=3
+  ;elevation-low=-6
+
+  ; Custom dawn/dusk intervals.
+  ; Instead of using the solar elevation, the time intervals of dawn and dusk
+  ; can be specified manually. The times must be specified as HH:MM in 24-hour
+  ; format.
+  dawn-time=8:00-9:45
+  dusk-time=19:35-20:15
+
+  ; Set the screen brightness. Default is 1.0.
+  ;brightness=0.9
+  ; It is also possible to use different settings for day and night
+  ; since version 1.8.
+  ;brightness-day=0.7
+  ;brightness-night=0.4
+  ; Set the screen gamma (for all colors, or each color channel
+  ; individually)
+  gamma=0.8
+  ;gamma=0.8:0.7:0.8
+  ; This can also be set individually for day and night since
+  ; version 1.10.
+  ;gamma-day=0.8:0.7:0.8
+  ;gamma-night=0.6
+
+  ; Set the location-provider: 'geoclue2', 'manual'.
+  ; The location provider settings are in a different section.
+  location-provider=manual
+
+  ; Set the adjustment-method: 'randr', 'vidmode', 'drm', 'wayland'.
+  ; 'randr' is the preferred X11 method, 'vidmode' is an older API
+  ; that works in some cases when 'randr' does not.
+  ; The adjustment method settings are in a different section.
+  adjustment-method=wayland
+
+  ; Configuration of the location-provider:
+  ; type 'gammastep -l PROVIDER:help' to see the settings.
+  ; ex: 'gammastep -l manual:help'
+  ; Keep in mind that longitudes west of Greenwich (e.g. the Americas)
+  ; are negative numbers.
+  [manual]
+  lat=58.1
+  lon=7.9
+
+  ; Configuration of the adjustment-method
+  ; type 'gammastep -m METHOD:help' to see the settings.
+  ; ex: 'gammastep -m randr:help'
+  ; In this example, randr is configured to adjust only screen 0.
+  ; Note that the numbering starts from 0, so this is actually the first screen.
+  ; If this option is not specified, Redshift will try to adjust _all_ screens.
+  [randr]
+  screen=0
+#+end_src
+
+** Alacritty
+
+#+begin_src yaml
+  font:
+    normal:
+      family: MesloLGS NF
+      style: Regular
+    bold:
+      family:  MesloLGS NF
+      style: Bold
+
+    italic:
+      family:  MesloLGS NF
+      style: Italic
+
+    bold_italic:
+      family:  MesloLGS NF
+      style: Bold Italic
+
+    size: 14
+
+  import:
+    - ~/.config/alacritty/dracula.yml
+#+end_src
+
+#+begin_src conf-unix
+  # Colors (Dracula)
+  colors:
+    # Default colors
+    primary:
+      background: '0x282a36'
+      foreground: '0xf8f8f2'
+
+    # Normal colors
+    normal:
+      black:   '0x000000'
+      red:     '0xff5555'
+      green:   '0x50fa7b'
+      yellow:  '0xf1fa8c'
+      blue:    '0xbd93f9'
+      magenta: '0xff79c6'
+      cyan:    '0x8be9fd'
+      white:   '0xbbbbbb'
+
+    # Bright colors
+    bright:
+      black:   '0x555555'
+      red:     '0xff5555'
+      green:   '0x50fa7b'
+      yellow:  '0xf1fa8c'
+      blue:    '0xcaa9fa'
+      magenta: '0xff79c6'
+      cyan:    '0x8be9fd'
+      white:   '0xffffff'
+#+end_src
+
+** Bash
+
+#+begin_src conf-unix
+  eval "$(starship init bash)"
+#+end_src
+
+** Zsh
+
+#+begin_src nix
+  { config, pkgs, ... }:
+  {
+    environment.systemPackages = with pkgs;
+      [
+        zsh
+        zsh-completions
+        nix-zsh-completions
+      ];
+
+    programs.zsh.enable = true;
+    programs.zsh.syntaxHighlighting.enable = true;
+    programs.zsh.autosuggestions.enable = true;
+    programs.zsh.interactiveShellInit = ''
+    eval "$(starship init zsh)"
+    '';
+  }
+#+end_src
+
+** Starship
+
+#+begin_src conf-unix
+
+  # Editor completions based on the config schema
+  "$schema" = 'https://starship.rs/config-schema.json'
+
+  # Use custom format
+  format = '''(bold purple)$all '''
+
+  # Inserts a blank line between shell prompts
+  add_newline = true
+
+  [aws]
+  style = "bold #ffb86c"
+
+  [character]
+  error_symbol = "[λ](bold #ff5555)"
+  success_symbol = "[λ](bold #50fa7b)" # ❄
+
+  [cmd_duration]
+  style = "bold #f1fa8c"
+
+  [directory]
+  style = "bold #50fa7b"
+
+  [git_branch]
+  style = "bold #ff79c6"
+
+  [git_status]
+  style = "bold #ff5555"
+
+  [hostname]
+  style = "bold #bd93f9"
+
+  [username]
+  format = "[$user]($style) on "
+  style_user = "bold #8be9fd"
+#+end_src
+
+** LazyVim
+
+Install LazyVim
+
+#+begin_src shell
+
+  mv ~/.config/nvim ~/.config/nvim.bak
+  git clone https://github.com/LazyVim/starter ~/.config/nvim
+  rm -rf ~/.config/nvim/.git
+#+end_src
+
+* NixOS - Laptop
+
+This is the configuration for NixOs on my laptop
+
+** bootstrap
+
+backup org conf and remove other files from /etc/nixos
+As root or sudo
+
+#+begin_src shell
+
+  ln -s ~/configs /etc/nixos
+#+end_src
+
+** hardware-configuration.nix
+
+#+begin_src nix
+
+  # Do not modify this file!  It was generated by ‘~/dotfiles/systems/laptop.org’
+  # and may be overwritten by future invocations.
+  { config, lib, pkgs, modulesPath, ... }:
+
+  {
+    imports =
+      [ (modulesPath + "/installer/scan/not-detected.nix")
+      ];
+
+    boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usb_storage" "sd_mod" ];
+    boot.initrd.kernelModules = [ ];
+    boot.kernelModules = [ "kvm-amd" ];
+    boot.extraModulePackages = [ ];
+
+    fileSystems."/" =
+      { device = "/dev/disk/by-uuid/f425969c-9df5-4a3f-927e-b524a3d007d7";
+        fsType = "xfs";
+      };
+
+    fileSystems."/boot/efi" =
+      { device = "/dev/disk/by-uuid/EC44-1BA0";
+        fsType = "vfat";
+      };
+
+    swapDevices = [ ];
+    networking.useDHCP = lib.mkDefault true;
+    # networking.interfaces.wlp2s0.useDHCP = lib.mkDefault true;
+
+    nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+    hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  }
+#+end_src
+
+** configuration.nix
+
+#+begin_src nix
+  { config, pkgs, ... }:
+
+  {
+    imports =
+      [ # Include the results of the hardware scan.
+        ./hardware-configuration.nix
+        ./zsh.nix
+        ./sway.nix
+        ./tty.nix
+        ./aliases.nix
+      ];
+
+    # Bootloader.
+    boot.loader.systemd-boot.enable = true;
+    boot.loader.efi.canTouchEfiVariables = true;
+    boot.loader.efi.efiSysMountPoint = "/boot/efi";
+    boot.kernelPackages = pkgs.linuxPackages_latest;
+    zramSwap = {
+      enable = true;
+      algorithm = "zstd";
+    };
+    services.fwupd.enable = true;
+
+    networking.hostName = "the-laptop"; # Define your hostname.
+
+    # Enable networking
+    networking.networkmanager.enable = true;
+
+    # Set your time zone.
+    time.timeZone = "Europe/Oslo";
+
+    # Select internationalisation properties.
+    i18n.defaultLocale = "en_US.UTF-8";
+
+    # Enable the X11 windowing system.
+    services.xserver.enable = true;
+
+    # Enable the GNOME Desktop Environment.
+    services.xserver.displayManager.gdm.enable = true;
+    services.xserver.desktopManager.gnome.enable = true;
+
+    # Enable Sway compositor
+    # programs.sway.enable = true;
+
+    # Configure keymap in X11
+    services.xserver = {
+      layout = "no";
+      xkbVariant = "";
+    };
+
+    # Configure console keymap
+    console.keyMap = "no";
+
+    # Enable CUPS to print documents.
+    services.printing.enable = false;
+
+    # Enable sound with pipewire.
+    sound.enable = true;
+    hardware.pulseaudio.enable = false;
+    security.rtkit.enable = true;
+    services.pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+    };
+
+
+    # User account.
+    environment.localBinInPath = true;
+    programs.fish.enable = true;
+    programs.zsh.enable = true;
+    users.users.geir = {
+      isNormalUser = true;
+      description = "Geir Okkenhaug Jerstad";
+      extraGroups = [ "networkmanager" "wheel" ];
+      shell = pkgs.zsh;
+      packages = with pkgs; [
+        # Browsers
+        firefox google-chrome nyxt
+        # Fonts
+        fira-code fira-mono fira-code-symbols meslo-lgs-nf
+        # Gnome
+        gnome.gnome-tweaks
+        arc-icon-theme beauty-line-icon-theme
+        # Monitoring tools
+        htop glances zenith bottom fwupd
+        # shells & terminals
+        alacritty
+        starship
+        nushell
+        fishPlugins.done
+        fishPlugins.fzf-fish 
+        fishPlugins.forgit
+        fishPlugins.hydro
+        fzf
+        # Virtualisation
+        virt-manager
+        qemu
+        # Emacs
+        emacsPackages.vterm
+        libvterm libtool
+        # Coding
+        guile
+        python3Full
+        go gotools
+        rustup
+        # language servers
+        rnix-lsp
+        gopls
+        luajitPackages.lua-lsp
+        nodePackages.bash-language-server
+        vimPlugins.cmp-nvim-lsp
+        # building software
+        cmake
+        gcc
+        bintools
+        gnutar
+        sccache
+        # Remote desktop
+        remmina
+        # DevSecOps
+        kubectl
+      ];
+
+    };
+
+    nixpkgs.config.permittedInsecurePackages = [
+      "python-2.7.18.6"
+      "python3.10-certifi-2022.9.24"
+    ];
+
+    # Allow unfree packages
+    nixpkgs.config.allowUnfree = true;
+
+    # List packages installed in system profile. To search, run:
+    # $ nix search wget
+    environment.systemPackages = with pkgs; [
+       neovim emacs git
+       wget curl screen
+       neofetch inxi mlocate     
+    ];
+
+    # Turn on some experimental features for nix
+
+    nix.settings.experimental-features = [ "nix-command" "flakes" ];
+    # Enable the OpenSSH daemon.
+    services.openssh.enable = true;
+
+    # Open ports in the firewall.
+    # networking.firewall.allowedTCPPorts = [ ... ];
+    # networking.firewall.allowedUDPPorts = [ ... ];
+    # Or disable the firewall altogether.
+    # networking.firewall.enable = false;
+    system.stateVersion = "22.11";
+
+  } 
+#+end_src
+
+** Nix services and configs
+*** tty with colors
+#+begin_src nix
+  { pkgs, ... }:
+  {
+    services.getty.greetingLine = ''\l'';
+
+    console = {
+      earlySetup = true;
+
+      # Joker palette
+      colors = [
+        "1b161f"
+        "ff5555"
+        "54c6b5"
+        "d5aa2a"
+        "bd93f9"
+        "ff79c6"
+        "8be9fd"
+        "bfbfbf"
+
+        "1b161f"
+        "ff6e67"
+        "5af78e"
+        "ffce50"
+        "caa9fa"
+        "ff92d0"
+        "9aedfe"
+        "e6e6e6"
+      ];
+    };
+  }
+#+end_src
+
+*** Aliases and apps
+#+begin_src nix
+  { config, pkgs, ... }:
+  {
+    environment.systemPackages = with pkgs; [
+      tldr
+      exa
+      bat
+      ripgrep
+    ];
+    environment.shellAliases = {
+      h = "tldr";
+      # oxidized
+      ls = "exa -l";
+      cat = "bat";
+      grep = "rg";
+      top = "btm --color gruvbox";
+      # some tools
+      st = "curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -";
+    };
+  }
 #+end_src
