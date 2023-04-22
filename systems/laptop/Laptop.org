@@ -920,7 +920,7 @@ colors:
 ** Bash
 
 #+begin_src conf-unix :tangle ~/.bashrc
-   eval "$(starship init bash)"
+  eval "$(starship init bash)"
 #+end_src
 
 ** Zsh
@@ -1153,7 +1153,10 @@ As root or sudo
         # Virtualisation
         virt-manager
         qemu
-        # Emacs
+        # Editors & command line text utils
+        neovim
+        poppler_utils
+        emacs
         emacsPackages.vterm
         libvterm libtool
         # Coding
@@ -1173,8 +1176,6 @@ As root or sudo
         bintools
         gnutar
         sccache
-        # Remote desktop
-        remmina
         # DevSecOps
         kubectl
       ];
@@ -1192,8 +1193,8 @@ As root or sudo
     # List packages installed in system profile. To search, run:
     # $ nix search wget
     environment.systemPackages = with pkgs; [
-       neovim emacs git
-       wget curl screen
+       git
+       wget curl
        neofetch inxi mlocate
     ];
 
@@ -1260,6 +1261,7 @@ As root or sudo
       ripgrep
     ];
     environment.shellAliases = {
+      vi = "nvim";
       h = "tldr";
       # oxidized
       ls = "exa -l";
