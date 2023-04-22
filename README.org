@@ -25,7 +25,13 @@ deployment :  modularize nix services repo, containers/kubernetes k3s
    - make the hw one unified platform 
 4. ephemeral system
    - Rebuild whole infra fast fast
-    
+
+* TODO
+1. [ ]Nix and config for laptop
+2. [ ]Guix workstation
+3. [ ]OpenSuse MicoOS & Rancher cluster
+3.1 [ ] Install MicroOS on 12 core Intel 
+4. [ ]Openwrt router   
 * bootstrap
 ** automatic Pxe boot
 ** Premade iso
@@ -44,7 +50,6 @@ include emacs favourite editor
   ln -s
   
 #+end_src
-
 * Inspired by
 
 - [[https://www.youtube.com/playlist?list=PLEoMzSkcN8oPH1au7H6B7bBJ4ZO7BXjSZ][System Crafters - Emacs form scratch]]
