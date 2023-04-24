@@ -1075,12 +1075,22 @@ As root or sudo
       enable = true;
       algorithm = "zstd";
     };
+
+    # Enable all unfree hardware support.
+    hardware.firmware = with pkgs; [ firmwareLinuxNonfree ];
+    hardware.enableAllFirmware = true;
+    hardware.enableRedistributableFirmware = true;
+    nixpkgs.config.allowUnfree = true;
     services.fwupd.enable = true;
 
-    networking.hostName = "the-laptop"; # Define your hostname.
+    services.fstrim.enable = true;
 
-    # Enable networking
+    # Networking
     networking.networkmanager.enable = true;
+    networking.hostName = "the-laptop"; 
+
+    # Enable the OpenSSH daemon.
+    services.openssh.enable = true;
 
     # Set your time zone.
     time.timeZone = "Europe/Oslo";
@@ -1090,6 +1100,7 @@ As root or sudo
 
     # Enable the X11 windowing system.
     services.xserver.enable = true;
+    services.xserver.videoDrivers = [ "amdgpu" ];
 
     # Enable Gnome Desktop Environment.
     services.xserver.displayManager.gdm.enable = true;
@@ -1102,7 +1113,22 @@ As root or sudo
     };
 
     # Configure console keymap
-    console.keyMap = "no";
+    console = {
+      font = "Lat2-Terminus16";
+      keyMap = "no";
+      };
+
+    i18n.extraLocaleSettings = {
+      LC_ADDRESS = "nb_NO.utf8";
+      LC_IDENTIFICATION = "nb_NO.utf8";
+      LC_MEASUREMENT = "nb_NO.utf8";
+      LC_MONETARY = "nb_NO.utf8";
+      LC_NAME = "nb_NO.utf8";
+      LC_NUMERIC = "nb_NO.utf8";
+      LC_PAPER = "nb_NO.utf8";
+      LC_TELEPHONE = "nb_NO.utf8";
+      LC_TIME = "nb_NO.utf8";
+    };
 
     # Enable CUPS to print documents.
     services.printing.enable = false;
@@ -1118,10 +1144,15 @@ As root or sudo
       pulse.enable = true;
     };
 
+    # Enble flakes and other experimental features 
+    nix = {
+      extraOptions = "experimental-features = nix-command flakes";
+      package = pkgs.nixFlakes;
+    };
 
     # User account.
+    nix.settings.trusted-users = [ "root" "geir" ];
     environment.localBinInPath = true;
-    programs.fish.enable = true;
     users.users.geir = {
       isNormalUser = true;
       description = "Geir Okkenhaug Jerstad";
@@ -1141,10 +1172,6 @@ As root or sudo
         alacritty
         starship
         nushell
-        fishPlugins.done
-        fishPlugins.fzf-fish 
-        fishPlugins.forgit
-        fishPlugins.hydro
         fzf
         # Multiplexers
         screen
@@ -1178,17 +1205,10 @@ As root or sudo
         sccache
         # DevSecOps
         kubectl
+        k9s
       ];
 
     };
-
-    nixpkgs.config.permittedInsecurePackages = [
-      "python-2.7.18.6"
-      "python3.10-certifi-2022.9.24"
-    ];
-
-    # Allow unfree packages
-    nixpkgs.config.allowUnfree = true;
 
     # List packages installed in system profile. To search, run:
     # $ nix search wget
@@ -1198,17 +1218,11 @@ As root or sudo
        neofetch inxi mlocate
     ];
 
-    # Turn on some experimental features for nix
-
-    nix.settings.experimental-features = [ "nix-command" "flakes" ];
-    # Enable the OpenSSH daemon.
-    services.openssh.enable = true;
-
     # Open ports in the firewall.
     # networking.firewall.allowedTCPPorts = [ ... ];
     # networking.firewall.allowedUDPPorts = [ ... ];
     # Or disable the firewall altogether.
-    # networking.firewall.enable = false;
+    networking.firewall.enable = false;
     system.stateVersion = "22.11";
 
   } 
