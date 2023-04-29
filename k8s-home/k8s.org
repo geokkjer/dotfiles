@@ -1,2 +1,25 @@
 #+TITLE: Kubernetes at Home
 
+* NixOS k8s-tools for clients
+
+#+begin_src nix :tangle ~/config/k8s.nix :mkdirp yes
+  
+#+end_src
+* Operator
+** k9s
+** emacs k8s
+
+* GitOps
+** Flux
+* Talos
+* External Loadbalancer/reverse-proxy
+** metallb
+* Ingress
+** Traefik
+* Certs
+** Let's encrypt
+* DNS
+** externalDNS ??
+* Storage
+** nfs
+** distributed storage ceph 
