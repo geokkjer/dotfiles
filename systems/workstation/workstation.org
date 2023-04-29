@@ -1,3 +1,4 @@
+
 #+title: NixOS configuration for the-sober-counsel
 #+EXPORT_FILE_NAME: README.org
 
@@ -424,7 +425,7 @@ Tangle this document with C-c C-v t then change ownership and symlink ~/configs 
       wget curl git
       htop glances
       microcodeAmd
-      emacs screen
+      emacs
       calibre starship
     ];
 
