@@ -769,7 +769,6 @@ MAGIT description. TODO
 
 ** Hydra
 
-
 #+begin_src emacs-lisp
 
   (use-package hydra
