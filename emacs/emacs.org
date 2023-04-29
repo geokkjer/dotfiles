@@ -453,10 +453,6 @@ TODO: explore treemacs
 
 #+begin_src emacs-lisp
 
-  (use-package geiser-mit
-    :ensure t)
-  (use-package geiser-racket
-    :ensure t)
   (use-package geiser-guile
     :ensure t)
 
