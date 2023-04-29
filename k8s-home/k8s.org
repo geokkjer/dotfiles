@@ -1,17 +1,30 @@
 #+TITLE: Kubernetes at Home
 
-* NixOS k8s-tools for clients
+* Operator
+
+Hey, that's us. The human interacting with the system.
+
+** NixOS k8s-tools 
 
 #+begin_src nix :tangle ~/config/k8s.nix :mkdirp yes
   
-#+end_src
-* Operator
-** k9s
+#+end_src 
+
 ** emacs k8s
+** git provider
 
 * GitOps
 ** Flux
 * Talos
+
+the cluster is rather bare. It has one machine for k8s, one for storage and one for dns
+
+direct install
+
+#+begin_src shell
+
+#+end_src
+
 * External Loadbalancer/reverse-proxy
 ** metallb
 * Ingress
@@ -23,3 +36,9 @@
 * Storage
 ** nfs
 ** distributed storage ceph 
+* Security
+** trivy
+* Containers
+** Wolfi os/apko/melange
+** NixOS containers
+** external containers
