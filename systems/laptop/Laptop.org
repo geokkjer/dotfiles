@@ -1041,6 +1041,7 @@ colors:
         zsh-completions
         nix-zsh-completions
         starship
+        direnv
       ];
 
     programs.zsh.enable = true;
@@ -1048,6 +1049,7 @@ colors:
     programs.zsh.autosuggestions.enable = true;
     programs.zsh.interactiveShellInit = ''
     eval "$(starship init zsh)"
+    eval "$(direnv hook zsh)"
     '';
   }
 

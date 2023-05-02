@@ -449,6 +449,10 @@ TODO: explore treemacs
   
 #+end_src
 
+*** C
+#+begin_src emacs-lisp
+  (add-hook 'c-mode-hook 'lsp)
+#+end_src
 *** Lisp and Scheme
 
 #+begin_src emacs-lisp
