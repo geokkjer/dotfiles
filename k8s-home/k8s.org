@@ -25,6 +25,8 @@ direct install
 
 #+end_src
 
+* VPN
+wireguard - tail/headscale??xxxxxx
 * External Loadbalancer/reverse-proxy
 ** metallb
 * Ingress
@@ -37,8 +39,12 @@ direct install
 ** nfs
 ** distributed storage ceph 
 * Security
-** trivy
+** scanning - trivy
+** integrity/identity - spiffe/spire
 * Containers
 ** Wolfi os/apko/melange
 ** NixOS containers
 ** external containers
+** sigstore chainguard
+* Build CI/CD
+** tekon/jenkinsX
