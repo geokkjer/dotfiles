@@ -96,7 +96,7 @@ Sway Window Manager
     set $up k
     set $right l
     # Your preferred terminal emulator
-    set $term alacritty
+    set $term footclient
 
     set $menu yofi
     # Set gnome stuff
@@ -292,6 +292,7 @@ Sway Window Manager
   exec dbus-sway-environment
   exec configure-gtk
   exec gammastep
+  exec foot
 
 #+end_src
 
@@ -1279,6 +1280,7 @@ As root or sudo
         # Monitoring tools
         htop glances zenith bottom fwupd
         # shells & terminals
+        foot
         alacritty
         starship
         nushell
@@ -1318,7 +1320,7 @@ As root or sudo
         # DevSecOps
         kubectl
         k9s
-        
+
       ];
 
     };
