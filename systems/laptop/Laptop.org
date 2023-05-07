@@ -292,7 +292,7 @@ Sway Window Manager
   exec dbus-sway-environment
   exec configure-gtk
   exec gammastep
-  exec foot
+  exec foot -s
 
 #+end_src
 
