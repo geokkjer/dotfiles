@@ -13,9 +13,8 @@ Hey, that's us. The human interacting with the system.
 ** emacs k8s
 ** git provider
 
-* GitOps
-** Flux
-* Talos
+* OS
+** Talos
 
 the cluster is rather bare. It has one machine for k8s, one for storage and one for dns
 
@@ -25,6 +24,8 @@ direct install
 
 #+end_src
 
+* GitOps
+** Flux
 * VPN
 wireguard - tail/headscale??xxxxxx
 * External Loadbalancer/reverse-proxy
