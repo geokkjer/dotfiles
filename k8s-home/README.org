@@ -1,15 +1,17 @@
-#+TITLE: Kubernetes at Home
-#+EXPORT_FILE_NAME: README.org
+# Created 2023-05-18 to. 10:56
+#+title: Kubernetes at Home
+#+author: Geir Okkenhaug Jerstad
+#+export_file_name: README.org
 
 * Operator
 
 Hey, that's us. The human interacting with the system.
 
-** NixOS k8s-tools 
+** NixOS k8s-tools
 
-#+begin_src nix :tangle ~/config/k8s.nix :mkdirp yes
-  
-#+end_src 
+#+begin_src nix
+
+#+end_src
 
 ** emacs k8s
 ** git provider
@@ -44,7 +46,7 @@ wireguard - tail/headscale??xxxxxx
 ** externalDNS ??
 * Storage
 ** nfs
-** distributed storage ceph 
+** distributed storage ceph
 * Security
 ** scanning - trivy
 ** integrity/identity - spiffe/spire
