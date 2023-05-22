@@ -3,9 +3,15 @@
 
 * Operator
 
-Hey, that's us. The human interacting with the system.
+Hey, that's us. The human interacting with the system. This document is meant to be a exploration of litteral configuration.
+The cluster we are tryin to set up and the priciples we are trying to follow is not a trivial task. 
 
 ** NixOS k8s-tools 
+
+This section prepares a NixOS install for running and interacting with a k8s cluster.
+It is part of a declarative and modular configuration of my NixOS and this git repo aims to be a one stop solution to my home computing environment.
+
+Flakes later ??
 
 #+begin_src nix :tangle ~/config/k8s.nix :mkdirp yes
   
@@ -15,11 +21,14 @@ Hey, that's us. The human interacting with the system.
 ** git provider
 
 * OS/kubernetes distro
-** Talos
 
 the cluster is rather bare. It has one machine for k8s, one for storage and one for dns
+It isn't the ha clustering technologies of k8s that we are trying leverage, but rather the git driven deployment, encompassing principles of ephemerability, declarative configuration/deplyments and  
 
-direct install
+** Talos
+
+Talos serves a minimal k8s distribution on top of a minimal Linux base. api driven configuration with talosctl and yaml files.
+
 
 #+begin_src shell
 
@@ -27,9 +36,15 @@ direct install
 
 ** Alpine/K3s
 
-#+begin_src
+Alpine Linux is a minimal Linux distribution . It use Openrc and the apk package manager
+It serves as a stable minimal base upon we can run the minimal k3s kubernetes distro.
+Reducing the attack surface and leverage the apko/melange/wolfi chainguard container creation.
 
+
+#+begin_src bash
+  setup-alpine
 #+end_src
+
 * GitOps
 ** Flux
 * VPN
@@ -55,3 +70,5 @@ wireguard - tail/headscale??xxxxxx
 ** sigstore chainguard
 * Build CI/CD
 ** tekon/jenkinsX
+* Sources/Inspiration
+[[Phttps://michael-tissen.medium.com/production-like-kubernetes-on-raspberry-pi-setup-b13fcbaafdf7][Production K8s by Michael Tissen]]
