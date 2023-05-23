@@ -1,32 +1,30 @@
 #+TITLE: Kubernetes at Home
 #+EXPORT_FILE_NAME: README.org
 
-* Operator
+* Operator - Orchestrator - 
 
-Hey, that's us. The human interacting with the system. This document is meant to be a exploration of litteral configuration.
-The cluster we are tryin to set up and the priciples we are trying to follow is not a trivial task. 
+Hey, that's us. The human interacting with the system.
 
 ** NixOS k8s-tools 
 
-This section prepares a NixOS install for running and interacting with a k8s cluster.
-It is part of a declarative and modular configuration of my NixOS and this git repo aims to be a one stop solution to my home computing environment.
-
-Flakes later ??
-
-#+begin_src nix :tangle ~/config/k8s.nix :mkdirp yes
-  
+#+begin_src nix :tangle ~/configs/k8s.nix :mkdirp yes
+  { config, pkgs, ... }:
+  {
+    environment.systemPackages = with pkgs; [
+      kubectl
+      k9s
+      kubernetes-helm
+      k3sup
+    ];
+  }
 #+end_src 
 
 ** emacs k8s
 ** git provider
 
 * OS/kubernetes distro
-
 the cluster is rather bare. It has one machine for k8s, one for storage and one for dns
-It isn't the ha clustering technologies of k8s that we are trying leverage, but rather the git driven deployment, encompassing principles of ephemerability, declarative configuration/deplyments and  
-
 ** Talos
-
 Talos serves a minimal k8s distribution on top of a minimal Linux base. api driven configuration with talosctl and yaml files.
 
 
@@ -70,5 +68,3 @@ wireguard - tail/headscale??xxxxxx
 ** sigstore chainguard
 * Build CI/CD
 ** tekon/jenkinsX
-* Sources/Inspiration
-[[Phttps://michael-tissen.medium.com/production-like-kubernetes-on-raspberry-pi-setup-b13fcbaafdf7][Production K8s by Michael Tissen]]

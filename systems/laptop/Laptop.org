@@ -1383,6 +1383,7 @@ As root or sudo
         ./sway.nix
         ./tty.nix
         ./aliases.nix
+        ./k8s.nix
       ];
 
     # Bootloader.
