@@ -1,7 +1,7 @@
 #+TITLE: Kubernetes at Home
 #+EXPORT_FILE_NAME: README.org
 
-* Operator - Orchestrator - 
+* Operator - Orchestrator - tools for you!
 
 Hey, that's us. The human interacting with the system.
 
@@ -20,13 +20,24 @@ Hey, that's us. The human interacting with the system.
 #+end_src 
 
 ** emacs k8s
+
+#+begin_src emacs-lisp
+
+#+end_src
+
 ** git provider
+github,sourcehut, codeberg or selfhost
 
-* OS/kubernetes distro
-the cluster is rather bare. It has one machine for k8s, one for storage and one for dns
+* Infra and OS/kubernetes 
+
+the infrastructure is rather bare, as this is my home-lab. It has one machine for k8s(12 core xeon with 32 gb ram), one for remote storage(TrueNAS for now, TODO: switch to NixOS or distributed storage inside the cluster) and one for dns(currently pihole) and a router (openwrt :TODO maybe opnsense is a better fit) and maybe a headscale server/router in the cloud.
+
+The plan is to have talos as linux base/k8s distro, so the alpine k3s route is like an intermediate step to learn and test.
+
 ** Talos
-Talos serves a minimal k8s distribution on top of a minimal Linux base. api driven configuration with talosctl and yaml files.
 
+Talos serves a minimal k8s distribution on top of a minimal Linux base. api driven configuration with talosctl and yaml files.
+:TODO this whole section
 
 #+begin_src shell
 
@@ -38,13 +49,26 @@ Alpine Linux is a minimal Linux distribution . It use Openrc and the apk package
 It serves as a stable minimal base upon we can run the minimal k3s kubernetes distro.
 Reducing the attack surface and leverage the apko/melange/wolfi chainguard container creation.
 
+*** Install OS
+
+No real fuzz here. Alpine linux is really easy to install.
+Refer to [[https://wiki.alpinelinux.org/wiki/Installation][Install Alpine]] if you need to.
+After installation we have a small Linux base, using about 150mb ram.
+The tooling is a little bit differtent from the arch, ubuntu/debian or redhat distroes. It use the ash shell, musl instead of libc and doas instead of sudo , openrc instaed of systemd.
 
 #+begin_src bash
   setup-alpine
 #+end_src
 
+*** Install K3s
+
+#+begin_src shell
+  k3sup
+#+end_src
+
 * GitOps
 ** Flux
+Fulxcd is gitops continous delivery
 * VPN
 wireguard - tail/headscale??xxxxxx
 * External Loadbalancer/reverse-proxy
@@ -68,3 +92,5 @@ wireguard - tail/headscale??xxxxxx
 ** sigstore chainguard
 * Build CI/CD
 ** tekon/jenkinsX
+* Sources and inspiration
+Basicly what I read when creating this home-lab setup.
