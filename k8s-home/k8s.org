@@ -83,6 +83,8 @@ wireguard - tail/headscale??xxxxxx
 ** nfs
 ** distributed storage ceph 
 * Security
+** Kubescape
+ is an open-source Kubernetes security platform for your IDE, CI/CD pipelines, and clusters. It includes risk analysis, security, compliance, and misconfiguration scanning
 ** scanning - trivy
 ** integrity/identity - spiffe/spire
 * Containers
