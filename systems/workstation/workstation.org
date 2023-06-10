@@ -83,7 +83,7 @@ Tangle this document with C-c C-v t then change ownership and symlink ~/configs 
 
 *** System
 
-#+begin_src nix :tangle ~/configs/configuration.nix :mkdirp yes
+#+begin_src nix :tangle ~/.configs/configuration.nix :mkdirp yes
   #
   # This file is auto-generated from "workstation.org"
   #
@@ -321,7 +321,20 @@ Tangle this document with C-c C-v t then change ownership and symlink ~/configs 
 *** Nix-configs
 **** Musicprod
 #+begin_src nix
-
+  { pkgs, ... }:
+  {
+    environment.systemPackages = with pkgs; [
+      # sequensers
+      # midious from steam
+      # Synths
+      vcv-rack
+      cardinal
+      # Audio editing
+      audacity
+      # plugins
+      lsp-plugins
+     ];
+  }
 #+end_src
 
 **** Alacritty
@@ -347,7 +360,7 @@ Tangle this document with C-c C-v t then change ownership and symlink ~/configs 
 
   import:
     - ~/.config/alacritty/dracula.yml
-
+    
 #+end_src
 
 #+begin_src conf-unix :tangle ~/.config/alacritty/dracula.yml :mkdirp yes
@@ -405,6 +418,14 @@ colors:
 #+end_src
 
 **** Starship
+#+begin_src nix :tangle ~/.config/starship.nix
+  { pkgs, ... }:
+  {
+    environment.systemPackages = with pkgs; [
+      starship
+     ];
+  }
+#+end_src
 
 #+begin_src conf-unix :tangle ~/.config/starship.toml :mkdirp yes
 
