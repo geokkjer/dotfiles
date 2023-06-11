@@ -7,11 +7,20 @@
 This is an attempt to configure NixOS from an Emacs document usidn org-babel to tangle config files
 
 Install NixOS as you would noramlly from the iso -> run the code blocks in this file -> rebuild your system with:
+#+begin_src bash
+  #!/bin/sh
+  pushd ~/
+  sudo mv /etc/nixos/configuration.nix /etc/nixos/config.bak
+  sudo ln -sr .dotfiles/nixos/workstation /etc/nixos/
+  popd
+#+end_src
 
-#+begin_src shell
+#+begin_src bash :tangle ~/apply-system.sh
 
-  sudo nixos-rebuild boot --upgrade
-  
+  #!/bin/sh
+  pushd ~/.dotfiles
+  sudo nixos-rebuild switch -I nixos-config=./system/configuration.nix
+  popd
 #+end_src
 
 * NixOS - The Workstation
@@ -319,6 +328,9 @@ Tangle this document with C-c C-v t then change ownership and symlink ~/configs 
 #+end_src
 
 *** Nix-configs
+**** Sway
+**** tty
+**** aliases
 **** Musicprod
 #+begin_src nix
   { pkgs, ... }:
@@ -397,7 +409,7 @@ colors:
 
 **** Zsh
 
-#+begin_src nix :tangle ~/configs/zsh.nix :mkdirp yes
+#+begin_src nix :tangle ~/.configs/zsh.nix :mkdirp yes
   { config, pkgs, ... }:
   {
     environment.systemPackages = with pkgs;
