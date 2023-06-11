@@ -1453,6 +1453,10 @@ As root or sudo
 #+end_src
 
 ** Nix services and configs
+*** k8s
+#+begin_src nix :tangle ~/configs/k8s.nix
+
+#+end_src
 *** tty with colors
 
 #+begin_src nix :tangle ~/configs/tty.nix :mkdirp yes
@@ -1488,7 +1492,7 @@ As root or sudo
 
 #+end_src
 
-*** Aliases and apps
+*** Aliases and terminal apps
 
 #+begin_src nix :tangle ~/configs/aliases.nix :mkdirp yes
   { config, pkgs, ... }:
