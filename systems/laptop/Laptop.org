@@ -1455,7 +1455,10 @@ As root or sudo
 ** Nix services and configs
 *** k8s
 #+begin_src nix :tangle ~/configs/k8s.nix
-
+  { pkgs, ... }:
+  {
+  }
+    
 #+end_src
 *** tty with colors
 
