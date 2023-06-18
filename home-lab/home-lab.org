@@ -28,13 +28,16 @@ Hey, that's us. The human interacting with the system.
 ** git provider
 github,sourcehut, codeberg or selfhost
 
-* Infra and OS/kubernetes 
+* Infra 
 
 the infrastructure is rather bare, as this is my home-lab. It has one machine for k8s(12 core xeon with 32 gb ram), one for remote storage(TrueNAS for now, TODO: switch to NixOS or distributed storage inside the cluster) and one for dns(currently pihole) and a router (openwrt :TODO maybe opnsense is a better fit) and maybe a headscale server/router in the cloud.
 
 The plan is to have talos as linux base/k8s distro, so the alpine k3s route is like an intermediate step to learn and test.
 
-** Talos
+
+** opnewrt
+
+** wg-easy and pihole
 
 Talos serves a minimal k8s distribution on top of a minimal Linux base. api driven configuration with talosctl and yaml files.
 :TODO this whole section
@@ -43,7 +46,7 @@ Talos serves a minimal k8s distribution on top of a minimal Linux base. api driv
 
 #+end_src
 
-** Alpine/K3s
+** Alpine - multi function virt server with docker/podman lxd/lxc and kvm/qemu
 
 Alpine Linux is a minimal Linux distribution . It use Openrc and the apk package manager
 It serves as a stable minimal base upon we can run the minimal k3s kubernetes distro.
