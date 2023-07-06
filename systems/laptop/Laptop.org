@@ -1577,7 +1577,7 @@ As root or sudo
         # Gnome
         gnome.gnome-tweaks
         arc-icon-theme beauty-line-icon-theme
-       
+
         # Monitoring tools
         htop glances zenith bottom fwupd
         # shells & terminals
@@ -1612,6 +1612,7 @@ As root or sudo
         luajitPackages.lua-lsp
         nodePackages.bash-language-server
         vimPlugins.cmp-nvim-lsp
+        ccls
         # building software
         cmake
         gcc
@@ -1694,6 +1695,7 @@ As root or sudo
     ];
     environment.shellAliases = {
       vi = "nvim";
+      vim = "nvim";
       h = "tldr";
       # oxidized
       ls = "exa -l";
