@@ -107,13 +107,14 @@ Use doom-modeline, set height. Install all-the-icons and use doom-themes to set 
   ;; Doom modline, all-the-icons and doom-theme
   (use-package doom-modeline
     :ensure t
-    :hook (after-init . doom-modeline-mode)
+    :init (doom-modeline-mode 1)
     :custom ((doom-modeline-height 15)))
 
+  (setq doom-modeline-icon t)
   (use-package all-the-icons)
 
   (use-package doom-themes
-    :init (load-theme 'doom-dracula t))
+    :init (load-theme 'doom-miramare t))
 
 #+end_src
 
@@ -131,11 +132,11 @@ Set emacs to show line-numbers, some modes excluded.
 
   ;; Disable line numbers for some modes
   (dolist (mode '(org-mode-hook
-                  geiser-mode-hook
-                  term-mode-hook
-                  shell-mode-hook
-                  vterm-mode-hook
-                  eshell-mode-hook))
+		  geiser-mode-hook
+		  term-mode-hook
+		  shell-mode-hook
+		  vterm-mode-hook
+		  eshell-mode-hook))
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 #+end_src
@@ -329,7 +330,6 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
 #+begin_src emacs-lisp
 
   (with-eval-after-load 'org
-    (require 'ob-go)
     (org-babel-do-load-languages
      'org-babel-load-languages
      '((lisp . t)
@@ -440,7 +440,6 @@ TODO: explore treemacs
 #+begin_src emacs-lisp
   (use-package ccls
     :defer t
-    :if (not *sys/win32*)
     :hook ((c-mode c++-mode objc-mode) .
            (lambda () (require 'ccls) (lsp)))
     :custom
