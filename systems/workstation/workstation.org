@@ -7,11 +7,8 @@ This is an attempt to configure NixOS from an Emacs document usidn org-babel to 
 
 Install NixOS as you would noramlly from the iso -> run the code blocks in this file -> rebuild your system with:
 #+begin_src bash 
-  #!/bin/sh
-  pushd ~/
   sudo rm /etc/nixos/configuration.nix 
   ln -sr /home/geir/.configs/configuration.nix /etc/nixos/configuration.nix
-  popd
 #+end_src
 
 #+begin_src shell 
@@ -247,6 +244,7 @@ Tangle this document with C-c C-v t then change ownership and symlink ~/configs 
         screen
         tmux
         zellij
+        direnv
         # Virtualisation
         virt-manager
         qemu
@@ -316,6 +314,40 @@ Tangle this document with C-c C-v t then change ownership and symlink ~/configs 
 *** configs
 **** Sway
 **** tty
+
+#+begin_src nix :tangle ~/.configs/tty.nix :mkdirp yes
+{ pkgs, ... }:
+{
+  services.getty.greetingLine = ''\l'';
+
+  console = {
+    earlySetup = true;
+
+    # Joker palette
+    colors = [
+      "1b161f"
+      "ff5555"
+      "54c6b5"
+      "d5aa2a"
+      "bd93f9"
+      "ff79c6"
+      "8be9fd"
+      "bfbfbf"
+
+      "1b161f"
+      "ff6e67"
+      "5af78e"
+      "ffce50"
+      "caa9fa"
+      "ff92d0"
+      "9aedfe"
+      "e6e6e6"
+    ];
+  };
+}
+
+#+end_src
+
 **** aliases
 **** Musicprod
 #+begin_src nix :tangle ~/.configs/music.nix
@@ -394,6 +426,24 @@ colors:
 #+end_src
 
 **** Zsh
+#+begin_src conf-unix :tangle ~/.zshrc :mkdirp yes
+      zstyle ':completion:*' completer _expand _complete _ignored
+      zstyle ':completion:*' matcher-list ''
+      zstyle :compinstall filename '/home/geir/.zshrc'
+
+      autoload -Uz compinit
+      compinit
+      HISTFILE=~/.histfile
+      HISTSIZE=10000
+      SAVEHIST=10000
+      setopt autocd extendedglob
+      unsetopt beep nomatch
+      bindkey -e
+
+      eval "$(starship init zsh)"
+      eval "$(direnv hook zsh)"
+
+#+end_src
 
 #+begin_src nix :tangle ~/.configs/zsh.nix :mkdirp yes
   { config, pkgs, ... }:
@@ -408,9 +458,6 @@ colors:
     programs.zsh.enable = true;
     programs.zsh.syntaxHighlighting.enable = true;
     programs.zsh.autosuggestions.enable = true;
-    programs.zsh.interactiveShellInit = ''
-    eval "$(starship init zsh)"
-    '';
   }
 
 #+end_src
