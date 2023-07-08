@@ -532,24 +532,6 @@ Python IDE config. Sets up python mode to trigger on .py files. Then sets up lsp
 
 #+end_src
 
-*** GO
-#+begin_src emacs-lisp
-  
-  (use-package ob-go)
-  (use-package go-mode)
-
-  (require 'lsp-mode)
-  (add-hook 'go-mode-hook #'lsp-deferred)
-
-  ;; Set up before-save hooks to format buffer and add/delete imports.
-  ;; Make sure you don't have other gofmt/goimports hooks enabled.
-  (defun lsp-go-install-save-hooks ()
-    (add-hook 'before-save-hook #'lsp-format-buffer t t)
-    (add-hook 'before-save-hook #'lsp-organize-imports t t))
-  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
-
-#+end_src
-
 *** Rust
 
 #+begin_src emacs-lisp
@@ -839,7 +821,7 @@ I used the package from NixOS repository rather than compile from source.
     :ensure t
     :commands vterm
     :config
-    (setq vterm-shell "bash")
+    (setq vterm-shell "zsh")
     (setq vterm-max-scrollback 10000))
 
 #+end_src
