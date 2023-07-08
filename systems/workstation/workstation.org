@@ -360,6 +360,11 @@ Make zfs pools
 #+begin_src nix :tangle ~/.configs/hyprland.nix :mkdirp yes
   {pkgs, ...}: {
      programs.hyprland.enable = true;
+     environment.systemPackages = with pkgs; [
+       hyprland
+       waybar
+       gammastep
+    ];
   }
 #+end_src
 
@@ -367,7 +372,6 @@ Make zfs pools
 
   # See https://wiki.hyprland.org/Configuring/Monitors/
   monitor=eDP-1,1920x1080@60,0x0,1
-
 
   # See https://wiki.hyprland.org/Configuring/Keywords/ for more
 
