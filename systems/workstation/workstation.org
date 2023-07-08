@@ -87,6 +87,7 @@ Tangle this document with C-c C-v t then change ownership and symlink ~/configs 
     imports =
       [ 
         ./hardware-configuration.nix
+        ./tty.nix
         ./zsh.nix
         ./starship.nix
         ./music.nix
@@ -518,8 +519,6 @@ colors:
 #+end_src
 
 * Sources and Inspiration
-
-- [[https://www.alexeyshmalko.com/2020/literate-config/][4 Years with Literate Configuration]]
 
   
 
