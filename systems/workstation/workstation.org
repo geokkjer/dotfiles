@@ -321,12 +321,15 @@ Tangle this document with C-c C-v t then change ownership and symlink ~/configs 
 
 *** configs
 **** ZFS
+
 Generate hosID
+
 #+begin_src shell
   head -c4 /dev/urandom | od -A none -t x4
 #+end_src
 
-Here 
+Here is nixos configuration
+
 #+begin_src nix :tangle ~/.configs/zfs.nix :mkdirp yes
   { config, pkgs, ... }:
 
@@ -340,7 +343,9 @@ Here
       options zfs l2arc_noprefetch=0 l2arc_write_boost=33554432 l2arc_write_max=16777216 zfs_arc_max=2147483648
     '';
     services.zfs.trim.enable = true;
-
+    environment.systemPackages = with pkgs; [
+      zfs
+    ];
   }
 #+end_src
 
@@ -348,10 +353,11 @@ Make zfs pools
 #+begin_src shell
   zfs create -o mountpoint=legacy
 #+end_src
+
 **** Sway
 **** Hyprland
 
-#+begin_src nix :tangle ~/.configs/hyperland.nix :mkdirp yes
+#+begin_src nix :tangle ~/.configs/hyprland.nix :mkdirp yes
   {pkgs, ...}: {
      programs.hyprland.enable = true;
   }
