@@ -336,7 +336,6 @@ Enable Org-babbel for emacs-lisp, shell and python. Turn on org-babel-tangle.
        (scheme . t)
        (emacs-lisp . t)
        (shell . t)
-       (go . t)
        (python . t)))
 
     (push '("conf-unix" . conf-unix) org-src-lang-modes))
