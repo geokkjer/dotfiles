@@ -98,6 +98,8 @@ Tangle this document with C-c C-v t then change ownership and symlink ~/configs 
         ./zsh.nix
         ./starship.nix
         ./music.nix
+        ./hyprland.nix
+        ./zfs.nix
       ];
 
     # NFS
