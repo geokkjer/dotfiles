@@ -1614,6 +1614,7 @@ As root or sudo
         vimPlugins.cmp-nvim-lsp
         ccls
         # building software
+        direnv
         cmake
         gcc
         bintools
