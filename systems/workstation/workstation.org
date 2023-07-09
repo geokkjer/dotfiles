@@ -1,5 +1,4 @@
-
-* #+title: NixOS configuration for the-sober-counsel
+#+title: NixOS configuration for the workstation
 #+EXPORT_FILE_NAME: README.org
 
 * Welcome/bootstrap
@@ -17,17 +16,16 @@ Install NixOS as you would noramlly from the iso -> run the code blocks in this 
   chmod +x ~/.bin/install.sh
 #+end_src
 
-* NixOS - The Workstation
+* NixOS
 ** Setup
 
 Tangle this document with C-c C-v t then change ownership and symlink ~/configs dir to /etc/nixos/
 
 #+begin_src shell
-  install.sh
+  ln -s
 #+end_src
 
-** NixOS configuration
-*** Hardware
+** Hardware
 
 #+begin_src nix :tangle ~/configs/hardware-configuration :mkdirp yes
 
@@ -82,7 +80,7 @@ Tangle this document with C-c C-v t then change ownership and symlink ~/configs 
 
 #+end_src
 
-*** System
+** System
 
 #+begin_src nix :tangle ~/.configs/configuration.nix :mkdirp yes
   #
@@ -322,7 +320,7 @@ Tangle this document with C-c C-v t then change ownership and symlink ~/configs 
 
 #+end_src
 
-*** configs
+** configs
 **** ZFS
 
 Generate hosID

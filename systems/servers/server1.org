@@ -1,5 +1,5 @@
 #+TITLE: Server 1
-
+#+EXPORT_FILE_NAME: README.org
 
 * Nixos
 
@@ -48,62 +48,101 @@
 
 #+begin_src nix
 
-{ config, pkgs, ... }:
+  { config, pkgs, ... }:
 
-{
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+  {
+    imports =
+      [ # Include the results of the hardware scan.
+        ./hardware-configuration.nix
+      ];
+
+    # Swap zram
+    zramSwap = {
+      enable = true;
+      algorithm = "zstd";
+    };
+    # Use the GRUB 2 boot loader.
+    boot.loader.grub.enable = true;
+    boot.loader.grub.efiSupport = true;
+    boot.loader.grub.efiInstallAsRemovable = true;
+    boot.loader.efi.efiSysMountPoint = "/boot/";
+    boot.loader.grub.device = "nodev"; 
+
+    # Disks and Updates
+    services.fstrim.enable = true;
+
+    # Enable all unfree hardware support.
+    hardware.firmware = with pkgs; [ firmwareLinuxNonfree ];
+    hardware.enableAllFirmware = true;
+    hardware.enableRedistributableFirmware = true;
+    nixpkgs.config.allowUnfree = true;
+    services.fwupd.enable = true;
+
+    # Networking
+    networking.hostName = "server1"; 
+    networking.networkmanager.enable = true;  
+
+    # Set your time zone.
+    time.timeZone = "Europe/Oslo";
+
+
+    i18n.defaultLocale = "en_US.UTF-8";
+    console = {
+      font = "Lat2-Terminus16";
+      keyMap = "no";
+    };
+
+    users.users.geir = {
+      isNormalUser = true;
+      extraGroups = [ "wheel" "networkmanager" "libvirtd" ]; # Enable ‘sudo’ for the user.
+      packages = with pkgs; [
+          bottom
+      ];
+    };
+
+    environment.systemPackages = with pkgs; [
+      neovim emacs nano curl htop glances neofetch 
+      wget git
     ];
 
-  # Use the GRUB 2 boot loader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.efiSupport = true;
-  boot.loader.grub.efiInstallAsRemovable = true;
-  boot.loader.efi.efiSysMountPoint = "/boot/";
-  boot.loader.grub.device = "nodev"; 
+    # Enable the OpenSSH daemon.
+    services.openssh.enable = true;
 
-  networking.hostName = "server1"; # Define your hostname.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+    # Open ports in the firewall.
+    networking.firewall.allowedTCPPorts = [ 22 ];
+    networking.firewall.allowedUDPPorts = [ 22 ];
+    # Or disable the firewall altogether.
+    networking.firewall.enable = true;
 
-  # Set your time zone.
-  time.timeZone = "Europe/Oslo";
+    system.stateVersion = "23.05"; 
 
-
-  i18n.defaultLocale = "en_US.UTF-8";
-  console = {
-    font = "Lat2-Terminus16";
-    keyMap = "no";
-  };
-
-  users.users.geir = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "libvirtd" ]; # Enable ‘sudo’ for the user.
-    packages = with pkgs; [
-        bottom
-    ];
-  };
-
-  environment.systemPackages = with pkgs; [
-    neovim emacs nano curl htop glances neofetch 
-    wget git
-  ];
-
-  # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 22 ];
-  networking.firewall.allowedUDPPorts = [ 22 ];
-  # Or disable the firewall altogether.
-  networking.firewall.enable = true;
-
-  system.stateVersion = "23.05"; 
-
-}
+  }
 #+end_src
 
-
-
 ** services
+
+*** Pi-hole
+*** calibre web
+*** Jellyfin
+
 ** configs
+*** Shells
+
+Bash
+
+#+begin_src conf-unix :tangle ~/.bashrc :mkdirp yes
+  eval "$(starship init bash)"
+  neofetch
+#+end_src
+
+Zsh
+
+#+begin_src nix
+  { pkgs, ... }:
+  {
+  }
+#+end_src
+
+#+begin_src conf-unix :tangle ~/.zshrc
+
+#+end_src
