@@ -3,7 +3,11 @@
 
 * Nixos
 
-** hardware
+#+begin_src shell
+  emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "/home/geir/dotfiles/systems/server/server1.org")'
+#+end_src
+
+** Hardware
 
 #+begin_src nix
 { config, lib, pkgs, modulesPath, ... }:
@@ -119,7 +123,7 @@
   }
 #+end_src
 
-** services
+** Services
 *** Virtualization
 **** Qemu/KVM
 **** LXC/LXD
@@ -128,7 +132,7 @@
 *** calibre web
 *** Jellyfin
 
-** configs
+** Configs
 *** Shells
 
 Bash
