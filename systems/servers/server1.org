@@ -4,6 +4,10 @@
 * Nixos
 
 #+begin_src shell
+
+#+end_src
+
+#+begin_src shell
   emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "/home/geir/dotfiles/systems/server/server1.org")'
 #+end_src
 
