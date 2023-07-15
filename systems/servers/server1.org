@@ -132,6 +132,8 @@
 **** Qemu/KVM
 **** LXC/LXD
 **** Podman
+*** headscale
+*** dyndns
 *** Pi-hole
 *** calibre web
 *** Jellyfin
