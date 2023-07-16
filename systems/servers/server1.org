@@ -149,7 +149,7 @@
   { config, pkgs, ... }:
   {
     virtualisation.libvirtd.enable = true;
-    qenvironment.systemPackages = with pkgs; [
+    environment.systemPackages = with pkgs; [
       qemu_kvm
     ];
   }
