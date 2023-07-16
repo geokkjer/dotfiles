@@ -112,7 +112,7 @@
 
     users.users.geir = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "networkmanager" "libvirtd" "podman" ];
+      extraGroups = [ "wheel" "networkmanager" "libvirt" "podman" ];
       packages = with pkgs; [
           bottom
       ];
@@ -149,6 +149,9 @@
   { config, pkgs, ... }:
   {
     virtualisation.libvirtd.enable = true;
+    qenvironment.systemPackages = with pkgs; [
+      qemu_kvm
+    ];
   }
 #+end_src
 **** LXC/LXD
