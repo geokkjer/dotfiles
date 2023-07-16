@@ -163,7 +163,7 @@
   }
 #+end_src
 **** Podman
-#+begin_src nix :tangel ~/server1/podman.nix :mkdirp yes
+#+begin_src nix :tangle ~/server1/podman.nix :mkdirp yes
   { config, pkgs, ... }:
   {
     virtualisation.podman.enable = true;
