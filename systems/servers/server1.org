@@ -149,7 +149,9 @@ Starship
 #+begin_src nix :tangle ~/server1/starship.nix :mkdirp yes
   { pkgs, ... }:
   {
-    starship
+    environment.systemPackages = with pkgs; [
+      starship
+    ];
   }
 
 #+end_src
