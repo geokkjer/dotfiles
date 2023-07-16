@@ -13,7 +13,7 @@
 
 ** Hardware
 
-#+begin_src nix
+#+begin_src nix :tangle ~/server1/hardware-configuration.nix :mkdirp yes
 { config, lib, pkgs, modulesPath, ... }:
 
 {
@@ -141,7 +141,11 @@
 *** Jellyfin
 
 ** Configs
+
 *** Shell
+
+Starship
+
 #+begin_src nix :tangle ~/server1/starship.nix :mkdirp yes
   { pkgs, ... }:
   {
