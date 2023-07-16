@@ -132,9 +132,8 @@
 
     # Firewall
     networking.firewall.enable = true;
-    networking.firewall.allowedTCPPorts = [ 22 ];
+    networking.firewall.allowedTCPPorts = [ 22 19999 ];
     networking.firewall.allowedUDPPorts = [ 22 ];
-    networking.firewall.allowedTCPPorts = [ 19999 ];
     system.stateVersion = "23.05"; 
 
   }
