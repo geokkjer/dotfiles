@@ -69,6 +69,9 @@
       [ # Include the results of the hardware scan.
         ./hardware-configuration.nix
         ./starship.nix
+        ./podman.nix
+        ./lxc-lxd.nix
+        ./libvirt.nix
       ];
 
     # Swap zram
@@ -109,7 +112,7 @@
 
     users.users.geir = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "networkmanager" "libvirtd" ]; # Enable ‘sudo’ for the user.
+      extraGroups = [ "wheel" "networkmanager" "libvirtd" "podman" ];
       packages = with pkgs; [
           bottom
       ];
@@ -142,8 +145,32 @@
 ** Services
 *** Virtualization
 **** Qemu/KVM
+#+begin_src nix :tangle ~/server1/libvirt.nix :mkdirp yes
+  { config, pkgs, ... }:
+  {
+    virtualisation.libvirtd.enable = true;
+  }
+#+end_src
 **** LXC/LXD
+#+begin_src nix :tangle ~/server1/lxc-lxd.nix
+  { config, pkgs, ... }:
+  {
+    virtualisation.lxc.enable = true;
+    virtualisation.lxd.enable = true;
+
+    virtualisation.lxc.lxcfs.enable = true;
+    virtualisation.lxc.defaultConfig = "lxc.include = ${pkgs.lxcfs}/share/lxc/config/common.conf.d/00-lxcfs.conf";
+  }
+#+end_src
 **** Podman
+#+begin_src nix :tangel ~/server1/podman.nix :mkdirp yes
+  { config, pkgs, ... }:
+  {
+    virtualisation.podman.enable = true;
+    virtualisation.podman.dockerCompat = true;
+    virtualisation.podman.dockerSocket.enable = true;
+  }
+#+end_src
 *** headscale
 *** dyndns
 *** Pi-hole
