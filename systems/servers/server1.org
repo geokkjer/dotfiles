@@ -4,12 +4,17 @@
 * Nixos
 
 #+begin_src shell
-
+  # remove config files
+  sudo rm /etc/nixos/configuration.nix
+  sudo rm /etc/nixos/hardware-configuration.nix
+  # tangle this document
+  # symlink from local folder to config folder
+  sudo ln -s /home/geir/server1/configuration.nix /etc/nixos/configuration.nix
 #+end_src
 
 #+begin_src shell :tangle ~/tangle.sh
   #!/bin/env bash
-  emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "/home/geir/dotfiles/systems/server/server1.org")'
+  emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "/home/geir/dotfiles/systems/servers/server1.org")'
 #+end_src
 
 ** Hardware
