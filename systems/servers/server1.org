@@ -54,7 +54,7 @@
 
 ** System
 
-#+begin_src nix :tangle ~/server1 :mkdirp yes
+#+begin_src nix :tangle ~/server1/configuration.nix :mkdirp yes
 
   { config, pkgs, ... }:
 
@@ -62,6 +62,7 @@
     imports =
       [ # Include the results of the hardware scan.
         ./hardware-configuration.nix
+        ./starship.nix
       ];
 
     # Swap zram
@@ -110,11 +111,12 @@
 
     environment.systemPackages = with pkgs; [
       neovim emacs nano curl htop glances neofetch 
-      wget git
+      wget git 
     ];
 
     # Enable the OpenSSH daemon.
     services.openssh.enable = true;
+    services.openssh.settings.PermitRootLogin = no;
 
     # Open ports in the firewall.
     networking.firewall.allowedTCPPorts = [ 22 ];
@@ -139,7 +141,14 @@
 *** Jellyfin
 
 ** Configs
-*** Shells
+*** Shell
+#+begin_src nix :tangle ~/server1/starship.nix :mkdirp yes
+  { pkgs, ... }:
+  {
+    starship
+  }
+
+#+end_src
 
 Bash
 
@@ -153,6 +162,7 @@ Zsh
 #+begin_src nix
   { pkgs, ... }:
   {
+    
   }
 #+end_src
 
