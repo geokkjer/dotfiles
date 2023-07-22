@@ -1604,6 +1604,7 @@ As root or sudo
         emacs
         emacsPackages.vterm
         libvterm libtool
+        magic-wormhole
         #
         foliate
         # Coding
@@ -1627,13 +1628,12 @@ As root or sudo
         # DevSecOps
         kubectl
         k9s
+        # Audio tools  
+        ncpamixer
 
       ];
-
     };
 
-    # List packages installed in system profile. To search, run:
-    # $ nix search wget
     environment.systemPackages = with pkgs; [
        git unzip
        wget curl
@@ -1641,12 +1641,10 @@ As root or sudo
     ];
 
     # Open ports in the firewall.
-    # networking.firewall.allowedTCPPorts = [ ... ];
-    # networking.firewall.allowedUDPPorts = [ ... ];
-    # Or disable the firewall altogether.
-    networking.firewall.enable = false;
+    networking.firewall.allowedTCPPorts = [ 22 ];
+    networking.firewall.allowedUDPPorts = [ 22 ];
+    networking.firewall.enable = true;
     system.stateVersion = "22.11";
-
   } 
 
 #+end_src
