@@ -1460,6 +1460,13 @@ As root or sudo
 #+end_src
 
 ** network
+
+*** Wireguard
+
+#+begin_src nix
+
+#+end_src
+
 ** configuration.nix
 
 #+begin_src nix :tangle ~/configs/configuration.nix :mkdirp yes
@@ -1474,7 +1481,7 @@ As root or sudo
         ./tty.nix
         ./aliases.nix
         ./k8s.nix
-        ./hyperland.nix
+        ./wg.nix
       ];
 
     # Bootloader.
@@ -1709,5 +1716,35 @@ As root or sudo
       st = "curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -";
     };
   }
-  #+end_sr
+  #+end_src
 
+*** Agenix
+
+#+begin_src nix
+
+#+end_src
+
+*** Wireguard
+
+#+begin_src nix :tangle ~/configs/wg.nix :mkdirp yes
+  { config, pkgs, lib, ... }:
+  {
+    networking.firewall.checkReversePath = "loose";
+    networking.wg-quick.interfaces = {
+      wg0 = {
+        address = [ "192.168.100.2/24" ]; # "fdc9:281f:04d7:9ee9::2/64" 
+        #dns = [ "192.168.100.1" "192.168.1.1" ]; # "fdc9:281f:04d7:9ee9::1"
+        privateKeyFile = "/home/geir/wireguard-keys/private";
+        peers = [
+          {
+            publicKey = "pP2nvJVqacVYjeLaMVQBYm8w8KlNNQ+bkUeof9jSbk0=";
+            presharedKeyFile = "/home/geir/wireguard-keys/preshared";
+            allowedIPs = [ "192.168.100.1/24" ]; # "::/0"
+            endpoint = "46.226.104.98:51820";
+            persistentKeepalive = 25;
+          }
+        ];
+      };
+    };
+  }
+#+end_src

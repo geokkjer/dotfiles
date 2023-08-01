@@ -4,22 +4,19 @@
 * Nixos
 
 #+begin_src shell
-  # remove config files
-  sudo rm /etc/nixos/configuration.nix
-  sudo rm /etc/nixos/hardware-configuration.nix
-  # tangle this document
-  # symlink from local folder to config folder
-  sudo ln -s /home/geir/server1/configuration.nix /etc/nixos/configuration.nix
+  cd /home/geir/dotfiles/systems/server1/
+  # setup ssh with keys 
+  scp *.nix root@server1:/etc/nixos/
 #+end_src
 
-#+begin_src shell :tangle ~/tangle.sh
+#+begin_src shell :tangle tangle.sh
   #!/bin/env bash
   emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "/home/geir/dotfiles/systems/servers/server1.org")'
 #+end_src
 
 ** Hardware
 
-#+begin_src nix :tangle ~/server1/hardware-configuration.nix :mkdirp yes
+#+begin_src nix :tangle hardware-configuration.nix :mkdirp yes
 { config, lib, pkgs, modulesPath, ... }:
 
 {
@@ -44,10 +41,6 @@
 
   swapDevices = [ ];
 
-  # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
-  # (the default) this is the recommended approach. When using systemd-networkd it's
-  # still possible to use this option, but it's recommended to use it in conjunction
-  # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp1s0.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp5s0.useDHCP = lib.mkDefault true;
@@ -60,7 +53,7 @@
 
 ** System
 
-#+begin_src nix :tangle ~/server1/configuration.nix :mkdirp yes
+#+begin_src nix :tangle configuration-server1.nix :mkdirp yes
 
   { config, pkgs, ... }:
 
@@ -70,8 +63,8 @@
         ./hardware-configuration.nix
         ./starship.nix
         ./podman.nix
-        ./lxc-lxd.nix
         ./libvirt.nix
+        ./wg.nix
       ];
 
     # Swap zram
@@ -120,14 +113,12 @@
 
     environment.systemPackages = with pkgs; [
       neovim emacs nano curl htop glances neofetch 
-      wget git 
+      wget git wireguard-tools 
     ];
-
-    # Services
 
     # Enable the OpenSSH daemon.
     services.openssh.enable = true;
-    services.openssh.settings.PermitRootLogin = "no";
+    services.openssh.settings.PermitRootLogin = "yes";
     services.openssh.settings.PasswordAuthentication = false; 
 
     # Enable Netdata
@@ -143,10 +134,41 @@
 #+end_src
 
 ** Services
+*** Wireguard
+
+#+begin_src nix :tangle wg.nix
+{ config, pkgs, lib, ... }:
+  {
+    networking.firewall.checkReversePath = "loose";
+    networking.wg-quick.interfaces = {
+      wg0 = {
+        address = [ "192.168.100.3/24" ]; # "fdc9:281f:04d7:9ee9::2/64" 
+        #dns = [ "192.168.100.1" "192.168.1.1" ]; # "fdc9:281f:04d7:9ee9::1"
+        privateKeyFile = "/root/wireguard-keys/private";
+        peers = [
+          {
+            publicKey = "";
+            presharedKeyFile = "/root/wireguard-keys/preshared";
+            allowedIPs = [ "192.168.100.1/24" ]; # "::/0"
+            endpoint = "46.226.104.98:51820";
+            persistentKeepalive = 25;
+          }
+        ];
+      };
+    };
+  }
+#+end_src
+
+*** nginx
+
+#+begin_src nix
+
+#+end_src
+
 *** Virtualization
 
 **** Qemu/KVM
-#+begin_src nix :tangle ~/server1/libvirt.nix :mkdirp yes
+#+begin_src nix :tangle libvirt.nix :mkdirp yes
   { config, pkgs, ... }:
   {
     virtualisation.libvirtd.enable = true;
@@ -157,20 +179,8 @@
   }
 #+end_src
 
-**** LXC/LXD
-#+begin_src nix :tangle ~/server1/lxc-lxd.nix
-  { config, pkgs, ... }:
-  {
-    virtualisation.lxc.enable = true;
-    virtualisation.lxd.enable = true;
-
-    virtualisation.lxc.lxcfs.enable = true;
-    virtualisation.lxc.defaultConfig = "lxc.include = ${pkgs.lxcfs}/share/lxc/config/common.conf.d/00-lxcfs.conf";
-  }
-#+end_src
-
 **** Podman
-#+begin_src nix :tangle ~/server1/podman.nix :mkdirp yes
+#+begin_src nix :tangle podman.nix :mkdirp yes
   { config, pkgs, ... }:
   {
     virtualisation.podman.enable = true;
@@ -206,9 +216,7 @@
   };
 #+end_src
 
-*** headscale
 *** dyndns
-*** Pi-hole
 *** calibre web
 *** Jellyfin
 
@@ -218,7 +226,7 @@
 
 Starship
 
-#+begin_src nix :tangle ~/server1/starship.nix :mkdirp yes
+#+begin_src nix :tangle starship.nix :mkdirp yes
   { pkgs, ... }:
   {
     environment.systemPackages = with pkgs; [
