@@ -1535,7 +1535,7 @@ As root or sudo
     services.xserver.videoDrivers = [ "amdgpu" ];
 
     # Enable Gnome Desktop Environment.
-    services.xserver.displayManager.gdm.enable = true;
+    services.xserver.displayManager.gdm.enable = false;
     services.xserver.desktopManager.gnome.enable = true;
 
     # Configure keymap in X11
