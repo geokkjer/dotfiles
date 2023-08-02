@@ -1461,9 +1461,18 @@ As root or sudo
 
 ** network
 
-*** Wireguard
+*** Tailscale
 
-#+begin_src nix
+#+begin_src nix :tangle ~/configs/tail.nix :mkdirp yes
+  { pkgs, ...}:
+
+  {
+    environment.systemPackages = with pkgs; [
+      tailscale
+    ];
+
+    services.tailscale.enable = true;
+   }
 
 #+end_src
 
@@ -1482,6 +1491,7 @@ As root or sudo
         ./aliases.nix
         ./k8s.nix
         ./wg.nix
+        ./tail.nix
       ];
 
     # Bootloader.
@@ -1645,6 +1655,7 @@ As root or sudo
        git unzip
        wget curl
        neofetch inxi mlocate
+       tailscale
     ];
 
     # Open ports in the firewall.
