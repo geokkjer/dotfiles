@@ -5,7 +5,7 @@
 
   environment.systemPackages = with pkgs; [
     neovim curl htop glances neofetch
-    wireguard-tools
+    wireguard-tools tailscale
   ];
 
   # Firewall 
@@ -30,6 +30,8 @@
       ];
     };
   };
+  # tailscale
+  services.tailscale.enable = true;
 
   # nginx reverse proxy
   services.nginx = {
@@ -38,7 +40,7 @@
     recommendedOptimisation = true;
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
-       virtualHosts."vps1.geokkjer.eu" = { default = true; enableACME = true; addSSL = true; locations."/".proxyPass = "http://127.0.0.1:9955/"; };
+       virtualHosts."test.geokkjer.eu" = { default = true; enableACME = false; addSSL = false; locations."/".proxyPass = "http://192.168.1.104:80/"; };
   };
 
   # acme let's encrypt
