@@ -1535,6 +1535,7 @@ As root or sudo
     services.xserver.videoDrivers = [ "amdgpu" ];
 
     # Enable Gnome Desktop Environment.
+    services.xserver.displayManager.lightdm.enable = false;
     services.xserver.displayManager.gdm.enable = false;
     services.xserver.desktopManager.gnome.enable = true;
 
