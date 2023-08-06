@@ -26,7 +26,6 @@
     recommendedTlsSettings = true;
 
        virtualHosts."test.geokkjer.eu" = {
-         forceSSL = true;
          default = true;
          enableACME = true;
          addSSL = true;
