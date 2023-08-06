@@ -6,7 +6,7 @@
 #+begin_src shell
   cd /home/geir/dotfiles/systems/server1/
   # setup ssh with keys 
-  scp *.nix root@server1:/etc/nixos/
+  cp *.nix root@server1:/etc/nixos/
 #+end_src
 
 #+begin_src shell :tangle tangle.sh
@@ -65,6 +65,7 @@
         ./podman.nix
         ./libvirt.nix
         ./wg.nix
+        ./jellfin.nix
       ];
 
     # Swap zram
@@ -219,6 +220,13 @@
 *** dyndns
 *** calibre web
 *** Jellyfin
+
+#+begin_src nix :tangle jellyfin.nix
+  { pkgs, ... }:
+  {
+    services.jellyfin.enable = true;
+  }
+#+end_src
 
 ** Configs
 
