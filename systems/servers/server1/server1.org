@@ -67,6 +67,7 @@
         #./wg.nix
         ./jellyfin.nix
         ./tailscale.nix
+        ./calibre-web.nix
       ];
 
     # Swap zram
@@ -240,7 +241,7 @@
 *** dyndns
 *** calibre web
 
-#+begin_src nix
+#+begin_src nix :tangle calibre-web.nix :mkdirp yes
   { config, pkgs, ... }:
   {
     services.calibre-web = {

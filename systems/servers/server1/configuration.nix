@@ -10,6 +10,7 @@
       #./wg.nix
       ./jellyfin.nix
       ./tailscale.nix
+      ./calibre-web.nix
     ];
 
   # Swap zram
