@@ -5,8 +5,8 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./starship.nix
-      ./podman.nix
-      ./libvirt.nix
+      #./podman.nix
+      #./libvirt.nix
       ./wg.nix
       ./jellyfin.nix
     ];
