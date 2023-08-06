@@ -2,10 +2,12 @@
 {
   services.calibre-web = {
     enable = true;
-    group = "media";
+    #group = "media";
     options = {
       calibreLibrary = "/mnt/remote/media/books/calibre/";
       enableBookUploading = true;
       };
   };
+  networking.firewall.allowedTCPPorts = [ 8083 ];
+
 }
