@@ -239,6 +239,22 @@
 
 *** dyndns
 *** calibre web
+
+#+begin_src nix
+  { config, pkgs, ... }:
+  {
+    services.calibre-web = {
+      enable = true;
+      group = "media";
+      optinons = {
+        calibreLibrary = "/mnt/remote/media/books/calibre/";
+        enableBookUploading = true;
+        };
+    };
+  }
+
+#+end_src
+
 *** Jellyfin
 
 #+begin_src nix :tangle jellyfin.nix
