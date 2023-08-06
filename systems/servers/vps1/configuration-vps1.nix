@@ -39,8 +39,9 @@
          locations."/".proxyPass = "http://127.0.0.1/";
        };
   # acme let's encrypt
-  security.acme = {
+    security.acme = {
     acceptTerms = true;
     email = "geokkjer@gmail.com";
+    };
   };
 }
