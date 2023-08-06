@@ -7,8 +7,9 @@
       ./starship.nix
       #./podman.nix
       #./libvirt.nix
-      ./wg.nix
+      #./wg.nix
       ./jellyfin.nix
+      ./tailscale.nix
     ];
 
   # Swap zram
@@ -62,7 +63,7 @@
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-  services.openssh.settings.PermitRootLogin = "yes";
+  services.openssh.settings.PermitRootLogin = "no";
   services.openssh.settings.PasswordAuthentication = false; 
 
   # Enable Netdata
