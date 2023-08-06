@@ -5,7 +5,7 @@ This is the config for a wireguard nginx reverse proxy @
 * Install
 #+begin_src bash :tangle copy-conf-vps1.sh
   #!/usr/bin/env bash
-  scp ~/dotfiles/systems/servers/configuration-vps1.nix root@46.226.104.98:/etc/nixos/configuration.nix
+  scp ~/dotfiles/systems/servers/vps1/configuration-vps1.nix root@46.226.104.98:/etc/nixos/configuration.nix
 
 #+end_src
 
@@ -63,7 +63,7 @@ This is the config for a wireguard nginx reverse proxy @
       recommendedOptimisation = true;
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
-         virtualHosts."test.geokkjer.eu" = { default = true; enableACME = false; addSSL = false; locations."/".proxyPass = "http://192.168.1.110:19999/"; };
+         virtualHosts."test.geokkjer.eu" = { default = true; enableACME = false; addSSL = false; locations."/".proxyPass = "http://100.75.29.52:19999/"; };
     };
 
     # acme let's encrypt

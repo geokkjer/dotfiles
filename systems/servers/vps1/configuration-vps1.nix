@@ -10,8 +10,8 @@
 
   # Firewall 
   networking.firewall = {
-    allowedTCPPorts = [ ];
-    allowedUDPPorts = [ 51820 ];
+    allowedTCPPorts = [ 80 443 ];
+    allowedUDPPorts = [ 80 443 51820 ];
   };
   # Wireguard quick
   networking.wg-quick.interfaces = {
@@ -40,7 +40,7 @@
     recommendedOptimisation = true;
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
-       virtualHosts."test.geokkjer.eu" = { default = true; enableACME = false; addSSL = false; locations."/".proxyPass = "http://192.168.1.104:80/"; };
+       virtualHosts."test.geokkjer.eu" = { default = true; enableACME = false; addSSL = false; locations."/".proxyPass = "http://100.75.29.52:19999/"; };
   };
 
   # acme let's encrypt
