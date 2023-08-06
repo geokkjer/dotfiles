@@ -8,7 +8,7 @@
       ./podman.nix
       ./libvirt.nix
       ./wg.nix
-      ./jellfin.nix
+      ./jellyfin.nix
     ];
 
   # Swap zram
