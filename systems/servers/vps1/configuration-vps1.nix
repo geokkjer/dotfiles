@@ -31,12 +31,12 @@
          addSSL = true;
          locations."/".proxyPass = "http://100.75.29.52:19999/";
        };
-       virtualHosts."geokkjer.eu" = {
-         default = true;
-         forceSSL = true;
-         enableACME = true;
-         locations."/".proxyPass = "http://127.0.0.1/";
-       };
+       #virtualHosts."geokkjer.eu" = {
+       #  default = true;
+       #  forceSSL = true;
+       #  enableACME = true;
+       #  locations."/".proxyPass = "http://127.0.0.1/";
+       #};
   };
   # acme let's encrypt
   security.acme = {
