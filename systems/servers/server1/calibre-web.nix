@@ -3,7 +3,7 @@
   services.calibre-web = {
     enable = true;
     group = "media";
-    optinons = {
+    options = {
       calibreLibrary = "/mnt/remote/media/books/calibre/";
       enableBookUploading = true;
       };
