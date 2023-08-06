@@ -41,7 +41,6 @@ This is the config for a wireguard nginx reverse proxy @
       recommendedTlsSettings = true;
 
          virtualHosts."test.geokkjer.eu" = {
-           forceSSL = true;
            default = true;
            enableACME = true;
            addSSL = true;
