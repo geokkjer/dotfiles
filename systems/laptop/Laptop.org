@@ -28,7 +28,9 @@ tangle this document with C-c C-v t then change ownership and symlink out folder
 Here are some configs for other software I use .
 
 ** Sway
+
 *** nixos
+
 #+begin_src nix :tangle ~/configs/sway.nix
    { config, pkgs, lib, ... }:
    let
@@ -1490,7 +1492,6 @@ As root or sudo
         ./tty.nix
         ./aliases.nix
         ./k8s.nix
-        ./wg.nix
         ./tail.nix
       ];
 
@@ -1657,6 +1658,7 @@ As root or sudo
        wget curl
        neofetch inxi mlocate
        tailscale
+       python3Minimal
     ];
 
     # Open ports in the firewall.
@@ -1725,7 +1727,7 @@ As root or sudo
       grep = "rg";
       top = "btm --color gruvbox";
       # some tools
-      st = "curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -";
+      st = "curl -s https://github.com/sivel/speedtest-cli/blob/master/speedtest.py | python3 -";
     };
   }
   #+end_src
@@ -1736,27 +1738,3 @@ As root or sudo
 
 #+end_src
 
-*** Wireguard
-
-#+begin_src nix :tangle ~/configs/wg.nix :mkdirp yes
-  { config, pkgs, lib, ... }:
-  {
-    networking.firewall.checkReversePath = "loose";
-    networking.wg-quick.interfaces = {
-      wg0 = {
-        address = [ "192.168.100.2/24" ]; # "fdc9:281f:04d7:9ee9::2/64" 
-        #dns = [ "192.168.100.1" "192.168.1.1" ]; # "fdc9:281f:04d7:9ee9::1"
-        privateKeyFile = "/home/geir/wireguard-keys/private";
-        peers = [
-          {
-            publicKey = "pP2nvJVqacVYjeLaMVQBYm8w8KlNNQ+bkUeof9jSbk0=";
-            presharedKeyFile = "/home/geir/wireguard-keys/preshared";
-            allowedIPs = [ "192.168.100.1/24" ]; # "::/0"
-            endpoint = "46.226.104.98:51820";
-            persistentKeepalive = 25;
-          }
-        ];
-      };
-    };
-  }
-#+end_src
