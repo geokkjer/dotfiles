@@ -1727,7 +1727,7 @@ As root or sudo
       grep = "rg";
       top = "btm --color gruvbox";
       # some tools
-      st = "curl -s https://github.com/sivel/speedtest-cli/blob/master/speedtest.py | python3 -";
+      
     };
   }
   #+end_src
