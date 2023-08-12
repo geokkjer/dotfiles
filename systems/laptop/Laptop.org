@@ -1626,11 +1626,14 @@ As root or sudo
         magic-wormhole
         #
         foliate
-        # Coding
+
+        # Languages
+        python3Minimal python3Packages.pip
         guile
         go gotools golint
         rustup
         # language servers
+        python3Packages.python-lsp-server
         rnix-lsp
         gopls
         luajitPackages.lua-lsp
@@ -1658,7 +1661,6 @@ As root or sudo
        wget curl
        neofetch inxi mlocate
        tailscale
-       python3Minimal
     ];
 
     # Open ports in the firewall.
