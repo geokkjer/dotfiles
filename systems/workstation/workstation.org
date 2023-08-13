@@ -293,11 +293,11 @@ Tangle this document with C-c C-v t.Remove configuration from /etc and symlink ~
       wget curl git
       htop glances
       microcodeAmd
-      calibre
+      calibre teamviewer
     ];
 
     # List services that you want to enable:
-
+    services.teamviewer.enable = true;
     # OpenSSH daemon.
     services.openssh.enable = true;
     # Flatpack 
