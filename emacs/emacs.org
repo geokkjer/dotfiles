@@ -141,17 +141,6 @@ Set emacs to show line-numbers, some modes excluded.
 
 #+end_src
 
-** Command Log mode
-
-Shows key commands in a pane. :commands ensures that the package is loade when the command is invoked and not before.
-
-#+begin_src emacs-lisp
-
-  (use-package command-log-mode
-    :commands command-log-mode)
-  
-#+end_src
-
 ** Font configuration
 
 I like the MesloLGS Nerd and the Fira Code fonts, it fits nicely with the theme and my zsh prompt.
@@ -170,25 +159,11 @@ I like the MesloLGS Nerd and the Fira Code fonts, it fits nicely with the theme 
 
 #+end_src
 
-** KEEP the folders clean
-
-This is where I will put some things to keep my .emacs.d folder clean
-
-#+begin_src emacs-lisp
-
-;;  (use-package no-littering)
-  
-;;  (setq auto-save-file-name-transforms
-;;        '((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
-
-#+end_src
-
 ** Swiper
 
 #+begin_src emacs-lisp
 
   (use-package swiper)
-
 
 #+end_src
 
@@ -489,19 +464,6 @@ TODO: explore treemacs
   
 #+end_src
 
-*** Typescript
-
-Used as an example of how to 
-#+begin_src emacs-lisp
-
-  (use-package typescript-mode
-    :mode "\\.ts\\'"
-    :hook (typescript-mode . lsp-deferred)
-    :config
-    (setq typescript-indent-level 2))
-
-#+end_src
-
 *** Python
 
 Python IDE config. Sets up python mode to trigger on .py files. Then sets up lsp-python-ms to find python-language-server on NixOS.
@@ -758,33 +720,6 @@ MAGIT description. TODO
     :config
     (evil-collection-init))
 
-#+end_src
-
-** Hydra
-
-
-#+begin_src emacs-lisp
-
-  (use-package hydra
-    :defer t)
-  
-  (defhydra hydra-text-scale (:timeout 4)
-    "scale text"
-    ("j" text-scale-increase "in")
-    ("k" text-scale-decrease "out")
-    ("f" nil "finished" :exit t))
-
-  (geokkjer/leader-keys
-    "ts" '(hydra-text-scale/body :which-key "scale text"))
-
-#+end_src
-
-** Nov mode for epub
-
-#+begin_src emacs-lisp
-  (use-package nov
-    :defer t)
-  (add-to-list 'auto-mode-alist' '("\\.epub\\'" . nov-mode))
 #+end_src
 
 ** term-mode
