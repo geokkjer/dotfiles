@@ -1625,7 +1625,7 @@ As root or sudo
         magic-wormhole
         #
         foliate
-
+        mpv
         # Languages
         python3 python3Packages.pip
         guile
