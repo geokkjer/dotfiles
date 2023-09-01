@@ -1600,7 +1600,6 @@ As root or sudo
         # Gnome
         gnome.gnome-tweaks
         arc-icon-theme beauty-line-icon-theme
-
         # Monitoring tools
         htop glances zenith bottom fwupd
         # shells & terminals
@@ -1626,9 +1625,9 @@ As root or sudo
         magic-wormhole
         #
         foliate
-
+        mpv
         # Languages
-        python3Minimal python3Packages.pip
+        python3 python3Packages.pip
         guile
         go gotools golint
         rustup
