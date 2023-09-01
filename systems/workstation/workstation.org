@@ -96,6 +96,7 @@ Tangle this document with C-c C-v t.Remove configuration from /etc and symlink ~
         ./tty.nix
         ./zsh.nix
         ./starship.nix
+        ./virt.nix
         ./music.nix
         ./hyprland.nix
         ./zfs.nix
@@ -257,9 +258,7 @@ Tangle this document with C-c C-v t.Remove configuration from /etc and symlink ~
         tmux
         zellij
         direnv
-        # Virtualisation
-        virt-manager
-        qemu
+        
         # Editors & command line text utils
         neovim
         poppler_utils
@@ -323,10 +322,34 @@ Tangle this document with C-c C-v t.Remove configuration from /etc and symlink ~
 
 #+end_src
 
+** Virualization/Containers
+
+*** KVM/Qemu/Libvirtd
+
+#+begin_src nix  :tangle ~/.configs/virt.nix :mkdirp yes
+  { config, pkgs, ... }:
+  {
+    virtualisation.libvirtd.enable = true;
+    programs.dconf.enable = true;
+    environment.systemPackages = with pkgs; [
+      virt-manager
+      qemu
+      gnome.gnome-boxes
+    ];
+  }
+#+end_src
+
+*** Podman
+
+
+*** LXC/LXD
+
+
 ** configs
+
 **** ZFS
 
-Generate hosID
+Generate hostID
 
 #+begin_src shell
   head -c4 /dev/urandom | od -A none -t x4
