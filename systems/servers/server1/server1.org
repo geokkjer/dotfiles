@@ -228,6 +228,50 @@
 #+end_src
 
 *** dyndns
+*** Soft-Serve
+
+ref: [[https://gist.github.com/meowgorithm/3e039e2414a6f3e01b156e574b3a6b48][Github Gist]]
+
+#+begin_src nix :tangle soft-serve.nix :mkdirp yes
+
+  { pkgs,
+    modulesPAth,
+    libs,
+    ...
+  }: let
+    sshdPort = 8888;
+    softServePort = 22;
+  in {
+    networking.firewall.allowedTCPPorts = [ sshdPort, softServePort ];
+
+    environment.systemPackages = with pkgs; [
+      soft-serve
+    ];
+    systemd.services = {
+      soft-serve = {
+        description = "Soft Serve";
+        wantedBy = ["multi-user.target"];
+        restartIfChanged = true;
+        enviromant = {
+          SOFT_SERVE_PORT = builtins.toString softServePort;
+          SOFT_SERVE_HOST = "git.geokkjer.eu";
+        };
+        serviceConfig = {
+          Type = "simple";
+          Restart = "always";
+          RestartSec = "1";
+          WorkingDirectory = "/soft";
+          ExecStart = ''
+                    ${pkgs.soft-serve}/bin/soft serve
+                    '';
+        };
+      };
+    };
+  }
+
+
+#+end_src
+
 *** calibre web
 
 #+begin_src nix :tangle calibre-web.nix :mkdirp yes
