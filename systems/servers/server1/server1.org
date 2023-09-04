@@ -1,4 +1,4 @@
-#+TITLE: Server 1
++TITLE: Server 1
 #+EXPORT_FILE_NAME: README.org
 
 * Nixos
@@ -142,6 +142,66 @@
 #+end_src
 
 ** Services
+*** NextCloud
+
+#+begin_src nix
+  { pkgs, ... }:
+
+  {
+  #  Nextcloud Config
+    services.nextcloud = {
+      enable = true;
+      hostName = "cloud.geokkjer.eu";
+      # Enable built-in virtual host management
+      # Takes care of somewhat complicated setup
+      # See here: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/web-apps/nextcloud.nix#L529
+      nginx.enable = true;
+
+      # Use HTTPS for links
+      https = true;
+
+      # Auto-update Nextcloud Apps
+      autoUpdateApps.enable = true;
+      # Set what time makes sense for you
+      autoUpdateApps.startAt = "05:00:00";
+
+      config = {
+        # Further forces Nextcloud to use HTTPS
+        overwriteProtocol = "https";
+
+        # Nextcloud PostegreSQL database configuration, recommended over using SQLite
+        dbtype = "pgsql";
+        dbuser = "nextcloud";
+        dbhost = "/run/postgresql"; # nextcloud will add /.s.PGSQL.5432 by itself
+        dbname = "nextcloud";
+        dbpassFile = "/var/nextcloud-db-pass";
+        adminpassFile = "/var/nextcloud-admin-pass";
+        adminuser = "admin";
+      };
+    };
+
+    # Enable PostgreSQL 
+    services.postgresql = {
+      enable = true;
+
+      # Ensure the database, user, and permissions always exist
+      ensureDatabases = [ "nextcloud" ];
+      ensureUsers = [
+        { name = "nextcloud";
+          ensurePermissions."DATABASE nextcloud" = "ALL PRIVILEGES";
+        }
+      ];
+    };
+
+    # Ensure that postgres is running before running the setup
+    systemd.services."nextcloud-setup" = {
+      requires = ["postgresql.service"];
+      after = ["postgresql.service"];
+    };
+  }
+
+#+end_src
+
 *** Tailscle
 
 #+begin_src nix :tangle tailscale.nix :mkdirp yes
@@ -234,11 +294,13 @@ ref: [[https://gist.github.com/meowgorithm/3e039e2414a6f3e01b156e574b3a6b48][Git
 
 #+begin_src nix :tangle soft-serve.nix :mkdirp yes
 
-  { pkgs,
+  {
+    pkgs,
     modulesPAth,
     libs,
     ...
-  }: let
+  }:
+  let
     sshdPort = 8888;
     softServePort = 22;
   in {
@@ -269,6 +331,12 @@ ref: [[https://gist.github.com/meowgorithm/3e039e2414a6f3e01b156e574b3a6b48][Git
     };
   }
 
+
+#+end_src
+
+*** Gogs
+
+#+begin_src nix
 
 #+end_src
 
