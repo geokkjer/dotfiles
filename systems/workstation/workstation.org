@@ -98,7 +98,6 @@ Tangle this document with C-c C-v t.Remove configuration from /etc and symlink ~
         ./starship.nix
         ./virt.nix
         ./music.nix
-        ./hyprland.nix
         ./zfs.nix
       ];
 
@@ -248,6 +247,7 @@ Tangle this document with C-c C-v t.Remove configuration from /etc and symlink ~
         # Monitoring tools
         htop glances zenith bottom fwupd
         # shells & terminals
+        powershell
         foot
         terminator
         starship
@@ -258,7 +258,7 @@ Tangle this document with C-c C-v t.Remove configuration from /etc and symlink ~
         tmux
         zellij
         direnv
-        
+
         # Editors & command line text utils
         neovim
         poppler_utils
