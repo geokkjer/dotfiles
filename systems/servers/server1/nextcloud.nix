@@ -5,7 +5,7 @@
   environment.etc."nextcloud-admin-pass".text = "siKKerhet666";
   services.nextcloud = {
     enable = true;
-    hostname = "nextcloud.geokkjer.eu";
+    hostName = "nextcloud.geokkjer.eu";
 
     # Ssl Let'encrypt
     #hostName = "cloud.geokkjer.eu";
