@@ -5,7 +5,7 @@
   ];
 
   services.tailscale.enable = true;
-  firewall = {
+  networking.firewall = {
     # trace: warning: Strict reverse path filtering breaks Tailscale exit node
     # use and some subnet routing setups. Consider setting
     # `networking.firewall.checkReversePath` = 'loose'
