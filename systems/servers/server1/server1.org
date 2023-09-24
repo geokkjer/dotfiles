@@ -164,7 +164,7 @@
       # Set what time makes sense for you
       autoUpdateApps.startAt = "05:00:00";
       # enable redis cache
-      configureRedis = True;
+      configureRedis = true;
       # Create db locally , maybe not needed with sqlite
       database.createLocally = true;
       # Config options
