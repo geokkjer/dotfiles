@@ -6,7 +6,7 @@
 #+begin_src shell
   cd /home/geir/dotfiles/systems/server1/
   # setup ssh with keys 
-  cp *.nix root@server1:/etc/nixos/
+  scp *.nix root@server1:/etc/nixos/
 #+end_src
 
 #+begin_src shell :tangle tangle.sh
@@ -127,7 +127,7 @@
 
     # Enable the OpenSSH daemon.
     services.openssh.enable = true;
-    services.openssh.settings.PermitRootLogin = "no";
+    services.openssh.settings.PermitRootLogin = "yes";
     services.openssh.settings.PasswordAuthentication = false; 
 
     # Enable Netdata

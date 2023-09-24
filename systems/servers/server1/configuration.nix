@@ -10,6 +10,7 @@
       ./jellyfin.nix
       ./tailscale.nix
       ./calibre-web.nix
+      ./nextcloud.nix
     ];
 
   # Swap zram
@@ -69,7 +70,7 @@
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-  services.openssh.settings.PermitRootLogin = "no";
+  services.openssh.settings.PermitRootLogin = "yes";
   services.openssh.settings.PasswordAuthentication = false; 
 
   # Enable Netdata
