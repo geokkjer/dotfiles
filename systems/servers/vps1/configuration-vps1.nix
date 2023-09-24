@@ -29,8 +29,7 @@
          default = false;
          enableACME = true;
          addSSL = true;
-         locations."Host".proxySetHeader = "vps1.tail807ea.ts.net";
-         locations."/".proxyPass = "http://server1.tail807ea.ts.net";
+         locations."/".proxyPass = "http://server1.tail807ea.ts.net".proxy_set_header = "vps1.tail807ea.ts.net";
        };
        #virtualHosts."geokkjer.eu" = {
        #  default = true;
