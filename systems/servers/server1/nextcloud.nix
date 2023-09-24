@@ -23,7 +23,7 @@
     config = {
       dbtype = "sqlite";
       adminpassFile = "/etc/nextcloud-admin-pass";
-      extraTrustedDomains = [ "localhost" "workstation.tail807ea.ts.net" "the-laptop.tail807ea.ts.net" "*.tail807ea.ts.net" "46.226.104.98" "vps1.tail807ea.ts.net" "0.0.0.0" ];
+      extraTrustedDomains = [ "localhost" "*.cloudflare.net" "*.tail807ea.ts.net" "46.226.104.98" ];
     };
   };
 }
