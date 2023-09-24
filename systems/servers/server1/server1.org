@@ -67,6 +67,7 @@
         ./jellyfin.nix
         ./tailscale.nix
         ./calibre-web.nix
+        ./nextcloud.nix
       ];
 
     # Swap zram
@@ -144,7 +145,7 @@
 ** Services
 *** NextCloud
 
-#+begin_src nix
+#+begin_src nix :tangle nextcloud.nix
   { pkgs, ... }:
 
   {
