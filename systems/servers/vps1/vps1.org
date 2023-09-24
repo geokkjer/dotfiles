@@ -39,27 +39,27 @@ This is the config for a wireguard nginx reverse proxy @
       enable = true;
       recommendedGzipSettings = true;
       recommendedOptimisation = true;
-        recommendedProxySettings = true;
-        recommendedTlsSettings = true;
+      recommendedProxySettings = true;
+      recommendedTlsSettings = true;
 
-        virtualHosts = {
-          "cloud.geokkjer.eu" = {
-            default = false;
-            enableACME = true;
-            addSSL = true;
+      virtualHosts = {
+        "cloud.geokkjer.eu" = {
+          default = false;
+          enableACME = true;
+          addSSL = true;
           locations."/" = {
             proxyPass = "http://server1.tail807ea.ts.net";
           };
-          };
-          #virtualHosts."geokkjer.eu" = {
-          #  default = true;
-          #  forceSSL = true;
-          #  enableACME = true;
-          #  locations."/".proxyPass = "http://127.0.0.1/";
-          #};
         };
+        #virtualHosts."geokkjer.eu" = {
+        #  default = true;
+        #  forceSSL = true;
+        #  enableACME = true;
+        #  locations."/".proxyPass = "http://127.0.0.1/";
+        #};
+      };
     };
-        # acme let's encrypt
+    # acme let's encrypt
     security.acme = {
       acceptTerms = true;
       email = "geokkjer@gmail.com";
