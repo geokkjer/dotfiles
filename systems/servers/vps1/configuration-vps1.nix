@@ -25,11 +25,11 @@
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
 
-       virtualHosts."test.geokkjer.eu" = {
-         default = true;
+       virtualHosts."cloud.geokkjer.eu" = {
+         default = false;
          enableACME = true;
          addSSL = true;
-         locations."/".proxyPass = "http://100.75.29.52:19999/";
+         locations."/".proxyPass = "http://server1.tail807ea.ts.net";
        };
        #virtualHosts."geokkjer.eu" = {
        #  default = true;
