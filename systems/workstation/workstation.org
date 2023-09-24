@@ -265,6 +265,7 @@ Tangle this document with C-c C-v t.Remove configuration from /etc and symlink ~
         emacs
         emacsPackages.vterm
         libvterm libtool
+        logseq slides
         # Coding
         guile
         go gotools golint
