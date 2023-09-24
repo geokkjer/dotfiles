@@ -1,5 +1,7 @@
 { pkgs, configs, ... }:
-
+let
+  Host = "vps1.tail807ea.ts.net";
+in
 {
   imports = [ ./gandicloud.nix ];
 
@@ -18,13 +20,10 @@
   services.tailscale.enable = true;
 
   # nginx reverse proxy
-  let
-    Host = "vps1.tail807ea.ts.net"
-  in
-    services.nginx = {
-      enable = true;
-      recommendedGzipSettings = true;
-      recommendedOptimisation = true;
+  services.nginx = {
+    enable = true;
+    recommendedGzipSettings = true;
+    recommendedOptimisation = true;
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
 
@@ -38,13 +37,13 @@
         };
         };
         #virtualHosts."geokkjer.eu" = {
-      #  default = true;
+        #  default = true;
         #  forceSSL = true;
         #  enableACME = true;
         #  locations."/".proxyPass = "http://127.0.0.1/";
-      #};
+        #};
       };
-    };
+  };
       # acme let's encrypt
   security.acme = {
     acceptTerms = true;
