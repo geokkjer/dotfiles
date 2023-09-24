@@ -23,6 +23,7 @@
     config = {
       dbtype = "sqlite";
       adminpassFile = "/etc/nextcloud-admin-pass";
+      extraTrustedDomains = "100.92.198.47";
     };
   };
 }
