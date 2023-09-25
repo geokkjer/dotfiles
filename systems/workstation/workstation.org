@@ -238,6 +238,7 @@ Tangle this document with C-c C-v t.Remove configuration from /etc and symlink ~
         # tools
         transmission-gtk
         magic-wormhole
+        protonvpn-cli
         # Fonts could be in its own file
         fira-code fira-mono fira-code-symbols meslo-lgs-nf
         # Gnome
