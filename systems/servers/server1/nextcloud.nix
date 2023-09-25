@@ -23,7 +23,7 @@
     config = {
       dbtype = "sqlite";
       adminpassFile = "/etc/nextcloud-admin-pass";
-      trustedProxies = [ "46.226.104.98" "100.75.29.52" ]
+      trustedProxies = [ "46.226.104.98" "100.75.29.52" ];
       extraTrustedDomains = [ "localhost" "*.cloudflare.net" "*.tail807ea.ts.net" "46.226.104.98" "*.geokkjer.eu" ];
     };
   };
