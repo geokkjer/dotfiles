@@ -1534,7 +1534,7 @@ As root or sudo
     services.xserver.displayManager.lightdm.enable = false;
     services.xserver.displayManager.gdm.enable = false;
     services.xserver.desktopManager.gnome.enable = true;
-    
+
     # Configure keymap in X11
     services.xserver = {
       layout = "no";
@@ -1618,6 +1618,7 @@ As root or sudo
         emacsPackages.vterm
         libvterm libtool
         magic-wormhole
+        protonvpn-cli
         #
         foliate
         mpv
