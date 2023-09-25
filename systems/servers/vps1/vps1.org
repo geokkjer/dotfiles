@@ -48,7 +48,7 @@ This is the config for a wireguard nginx reverse proxy @
           enableACME = true;
           addSSL = true;
           locations."/" = {
-            proxyPass = "http://server1.tail807ea.ts.net";
+            proxyPass = "https://server1.tail807ea.ts.net";
           };
         };
         #virtualHosts."geokkjer.eu" = {
