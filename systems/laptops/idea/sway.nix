@@ -31,13 +31,10 @@ in
      grim # screenshot functionality
      slurp # screenshot functionality
      wl-clipboard # wl-copy and wl-paste for copy/paste from stdin / stdout
-     bemenu # wayland clone of dmenu
      mako # notification system developed by swaywm maintainer
      waybar
      gammastep
      fuzzel
-     nwg-bar
-     nwg-panel
    ];
 
    # xdg-desktop-portal works by exposing a series of D-Bus interfaces
@@ -47,7 +44,7 @@ in
    # The portal interfaces include APIs for file access, opening URIs,
    # printing and others.
    services.dbus.enable = true;
-
+   xdg.portal.wlr.enable = true;
    # enable sway window manager
    programs.sway = {
      enable = true;
