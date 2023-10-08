@@ -1215,8 +1215,6 @@ colors:
 
 * NixOS - Laptop
 
-This is the configuration for NixOs on my laptop
-
 ** bootstrap
 
 backup org conf and remove other files from /etc/nixos
@@ -1335,7 +1333,7 @@ As root or sudo
 
     # Enable the KDE Plasma Desktop Environment.
     services.xserver.displayManager.gdm.enable = true;
-    services.xserver.desktopManager.gnome.enable = false;
+    services.xserver.desktopManager.gnome.enable = true;
 
     # Configure keymap in X11
     services.xserver = {
@@ -1531,4 +1529,5 @@ As root or sudo
 #+begin_src nix
 
 #+end_src
+
 
