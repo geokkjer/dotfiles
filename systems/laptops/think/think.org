@@ -91,7 +91,9 @@ Here are some configs for other software I use .
 #+end_src
 
 *** Sway
+
 Sway Window Manager
+
 #+begin_src conf-unix :tangle ~/.config/sway/config :mkdirp yes
     default_border none
     ### Variables
@@ -1320,6 +1322,7 @@ colors:
 #+end_src
 
 ** Zsh
+
 #+begin_src conf-unix :tangle ~/.zshrc
       zstyle ':completion:*' completer _expand _complete _ignored
       zstyle ':completion:*' matcher-list ''
@@ -1668,6 +1671,7 @@ As root or sudo
 #+end_src
 
 ** Nix services and configs
+
 *** tty with colors
 
 #+begin_src nix :tangle ~/configs/tty.nix :mkdirp yes

@@ -444,6 +444,21 @@ TODO: explore treemacs
 
 #+end_src
 
+*** Go
+
+#+begin_src emacs-lisp
+  (use-package go-mode
+    :ensure t
+    :hook (go-mode . (require 'golsp))
+    :mode "\\.go\\'")
+
+  (use-package flycheck-gometalinter
+    :ensure t
+    :config
+    (progn
+      (flycheck-gometalinter-setup)))
+#+end_src
+
 *** Web-mode
 
 
