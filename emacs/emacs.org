@@ -449,7 +449,10 @@ TODO: explore treemacs
 #+begin_src emacs-lisp
   (use-package go-mode
     :ensure t
-    :hook (go-mode . (require 'golsp))
+    :hook (go-mode . (lambda ()
+                       (require 'golsp
+                                (lsp-deferred))
+                       (prettify-symbols-mode)))
     :mode "\\.go\\'")
 
   (use-package flycheck-gometalinter
