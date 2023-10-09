@@ -68,6 +68,7 @@
         ./tailscale.nix
         ./calibre-web.nix
         ./nextcloud.nix
+        ./audiobook.nix
       ];
 
     # Swap zram
@@ -122,7 +123,7 @@
 
     environment.systemPackages = with pkgs; [
       neovim emacs nano curl htop glances neofetch 
-      wget git  
+      wget git inxi
     ];
 
     # Enable the OpenSSH daemon.
@@ -238,7 +239,7 @@
 
 #+end_src
 
-*** container tamplate
+*** container template
 
 #+begin_src nix
   {
@@ -347,6 +348,18 @@ ref: [[https://gist.github.com/meowgorithm/3e039e2414a6f3e01b156e574b3a6b48][Git
     services.jellyfin.enable = true;
     networking.firewall.allowedTCPPorts = [ 8096 8920 ];
     networking.firewall.allowedUDPPorts = [ 1900 7359 ];
+  }
+#+end_src
+
+**** Audiobookshelf
+
+#+begin_src nix :tangle audiobook.nix
+  { configs, pkgs, ... }:
+  {
+    services.audiobookshelf.enable = true;
+    services.audiobookshelf.host = [ 0.0.0.0 ];
+    services.audiobookshelf.port = 8000;
+    services.audiobookshelf.openFirewall = true;
   }
 #+end_src
 

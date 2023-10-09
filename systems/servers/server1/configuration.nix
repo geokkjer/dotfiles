@@ -11,6 +11,7 @@
       ./tailscale.nix
       ./calibre-web.nix
       ./nextcloud.nix
+      ./audiobook.nix
     ];
 
   # Swap zram
@@ -65,7 +66,7 @@
 
   environment.systemPackages = with pkgs; [
     neovim emacs nano curl htop glances neofetch 
-    wget git  
+    wget git inxi
   ];
 
   # Enable the OpenSSH daemon.
