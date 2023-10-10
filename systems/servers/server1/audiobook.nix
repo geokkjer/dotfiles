@@ -1,7 +1,6 @@
 { configs, pkgs, ... }:
 let
   audioBookShelfPort = 8000;
-  audioBookSHelfHost = 0.0.0.0;
 in
 {
   environment.systemPackages = [
@@ -14,7 +13,7 @@ in
       restartIfChanged = true;
       environment = {
         PORT = builtins.toString audioBookShelfPort;
-        HOST = builtins.toString audioBookShelfHost;
+        HOST = "0.0.0.0";
       };
       serviceConfig = {
         Type = "simple";

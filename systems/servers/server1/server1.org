@@ -352,7 +352,6 @@ ref: [[https://gist.github.com/meowgorithm/3e039e2414a6f3e01b156e574b3a6b48][Git
   { configs, pkgs, ... }:
   let
     audioBookShelfPort = 8000;
-    audioBookSHelfHost = 0.0.0.0;
   in
   {
     environment.systemPackages = [
@@ -365,7 +364,7 @@ ref: [[https://gist.github.com/meowgorithm/3e039e2414a6f3e01b156e574b3a6b48][Git
         restartIfChanged = true;
         environment = {
           PORT = builtins.toString audioBookShelfPort;
-          HOST = builtins.toString audioBookShelfHost;
+          HOST = "0.0.0.0";
         };
         serviceConfig = {
           Type = "simple";
