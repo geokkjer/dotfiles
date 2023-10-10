@@ -7,7 +7,7 @@ in
     pkgs.audiobookshelf
   ];
   systemd.services = {
-    sudiobookshelf = {
+    audiobookshelf = {
       description = "Audiobookshelf";
       wantedBy = ["multi-user.target"];
       restartIfChanged = true;
@@ -18,8 +18,7 @@ in
       serviceConfig = {
         Type = "simple";
         Restart = "always";
-        RestartSec = "1";
-        WorkingDirectory = "/soft";
+        RestartSec = "5";
         ExecStart = ''
                   ${pkgs.audiobookshelf}/bin/audiobookshelf
                   '';
