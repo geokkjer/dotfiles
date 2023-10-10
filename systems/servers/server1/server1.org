@@ -272,12 +272,7 @@ ref: [[https://gist.github.com/meowgorithm/3e039e2414a6f3e01b156e574b3a6b48][Git
 
 #+begin_src nix :tangle soft-serve.nix :mkdirp yes
 
-  {
-    pkgs,
-    modulesPAth,
-    libs,
-    ...
-  }:
+  { pkgs, modulesPath, libs, ... }:
   let
     sshdPort = 8888;
     softServePort = 22;
@@ -292,7 +287,7 @@ ref: [[https://gist.github.com/meowgorithm/3e039e2414a6f3e01b156e574b3a6b48][Git
         description = "Soft Serve";
         wantedBy = ["multi-user.target"];
         restartIfChanged = true;
-        enviromant = {
+        environment = {
           SOFT_SERVE_PORT = builtins.toString softServePort;
           SOFT_SERVE_HOST = "git.geokkjer.eu";
         };
@@ -355,10 +350,35 @@ ref: [[https://gist.github.com/meowgorithm/3e039e2414a6f3e01b156e574b3a6b48][Git
 
 #+begin_src nix :tangle audiobook.nix
   { configs, pkgs, ... }:
+  let
+    audioBookShelfPort = 8000;
+    audioBookSHelfHost = 0.0.0.0;
+  in
   {
     environment.systemPackages = [
       pkgs.audiobookshelf
     ];
+    systemd.services = {
+      sudiobookshelf = {
+        description = "Audiobookshelf";
+        wantedBy = ["multi-user.target"];
+        restartIfChanged = true;
+        environment = {
+          PORT = builtins.toString audioBookShelfPort;
+          HOST = builtins.toString audioBookShelfHost;
+        };
+        serviceConfig = {
+          Type = "simple";
+          Restart = "always";
+          RestartSec = "1";
+          WorkingDirectory = "/soft";
+          ExecStart = ''
+                    ${pkgs.audiobookshelf}/bin/audiobookshelf
+                    '';
+        };
+      };
+    };
+    networking.firewall.allowedTCPPorts = [ audioBookShelfPort ];
     #services.audiobookshelf.enable = true;
     #services.audiobookshelf.host = 0.0.0.0 ;
     #services.audiobookshelf.port = 8000;

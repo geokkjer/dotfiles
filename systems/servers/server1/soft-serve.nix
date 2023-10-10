@@ -1,9 +1,4 @@
-{
-  pkgs,
-  modulesPAth,
-  libs,
-  ...
-}:
+{ pkgs, modulesPath, libs, ... }:
 let
   sshdPort = 8888;
   softServePort = 22;
@@ -18,7 +13,7 @@ in {
       description = "Soft Serve";
       wantedBy = ["multi-user.target"];
       restartIfChanged = true;
-      enviromant = {
+      environment = {
         SOFT_SERVE_PORT = builtins.toString softServePort;
         SOFT_SERVE_HOST = "git.geokkjer.eu";
       };
