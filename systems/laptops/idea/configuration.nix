@@ -122,7 +122,7 @@
       zellij
       # Editors & command line text utils
       arianna
-      kate
+      mc 
       neovim
       poppler_utils
       emacs
