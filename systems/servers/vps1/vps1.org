@@ -55,7 +55,7 @@ SCHEDULED: <2023-10-14 lø.>
         "audiobooks.geokkjer.eu" = {
           default = false;
           enableACME = true;
-          addSSl = true;
+          addSSL = true;
           locations."/" = {
             proxyPass = "http://100.75.29.51:8000";
           };
@@ -69,7 +69,8 @@ SCHEDULED: <2023-10-14 lø.>
       };
     };
     # acme let's encrypt
-    security.acme = {
+    
+    security.acme.defaults = {
       acceptTerms = true;
       email = "geokkjer@gmail.com";
     };

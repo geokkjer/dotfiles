@@ -39,7 +39,7 @@ in
       "audiobooks.geokkjer.eu" = {
         default = false;
         enableACME = true;
-        addSSl = true;
+        addSSL = true;
         locations."/" = {
           proxyPass = "http://100.75.29.51:8000";
         };
