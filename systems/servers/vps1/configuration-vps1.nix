@@ -36,6 +36,14 @@ in
           proxyPass = "http://server1.tail807ea.ts.net";
         };
       };
+      "audiobooks.geokkjer.eu" = {
+        default = false;
+        enableACME = true;
+        addSSl = true;
+        locations."/" = {
+          proxyPass = "http://100.75.29.51:8000";
+        };
+      };
       #virtualHosts."geokkjer.eu" = {
       #  default = true;
       #  forceSSL = true;
