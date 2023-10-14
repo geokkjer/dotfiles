@@ -10,6 +10,7 @@ This is the config for a wireguard nginx reverse proxy @
 #+end_src
 
 * Configuration
+SCHEDULED: <2023-10-14 lø.>
 
 #+begin_src nix :tangle configuration-vps1.nix
 
@@ -48,7 +49,15 @@ This is the config for a wireguard nginx reverse proxy @
           enableACME = true;
           addSSL = true;
           locations."/" = {
-            proxyPass = "https://server1.tail807ea.ts.net";
+            proxyPass = "http://server1.tail807ea.ts.net";
+          };
+        };
+        "audiobooks.geokkjer.eu" = {
+          default = false;
+          enableACME = true;
+          addSSl = true;
+          locations."/" = {
+            proxyPass = "http://100.75.29.51:8000";
           };
         };
         #virtualHosts."geokkjer.eu" = {
