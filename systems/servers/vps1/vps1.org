@@ -58,8 +58,8 @@ SCHEDULED: <2023-10-14 lø.>
           addSSL = true;
           locations."/" = {
             proxyPass = "http://server1:8000";
+            proxyWebsockets = true;
           };
-          proxyWebsockets = true;
         };
         #virtualHosts."geokkjer.eu" = {
         #  default = true;

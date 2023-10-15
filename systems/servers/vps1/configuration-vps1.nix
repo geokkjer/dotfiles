@@ -42,8 +42,8 @@ in
         addSSL = true;
         locations."/" = {
           proxyPass = "http://server1:8000";
+          proxyWebsockets = true;
         };
-        proxyWebsockets = true;
       };
       #virtualHosts."geokkjer.eu" = {
       #  default = true;
