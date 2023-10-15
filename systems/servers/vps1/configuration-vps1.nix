@@ -41,8 +41,9 @@ in
         enableACME = true;
         addSSL = true;
         locations."/" = {
-          proxyPass = "http://100.75.29.51:8000";
+          proxyPass = "http://server1:8000";
         };
+        proxyWebsockets = true;
       };
       #virtualHosts."geokkjer.eu" = {
       #  default = true;
@@ -53,7 +54,7 @@ in
     };
   };
   # acme let's encrypt
-  security.acme = {
+  security.acme.defaults = {
     acceptTerms = true;
     email = "geokkjer@gmail.com";
   };
