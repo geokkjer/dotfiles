@@ -70,9 +70,11 @@ SCHEDULED: <2023-10-14 lø.>
       };
     };
     # acme let's encrypt
-    security.acme.defaults = {
+    security.acme = {
       acceptTerms = true;
+      defaults = {
       email = "geokkjer@gmail.com";
+      };
     };
   }
 

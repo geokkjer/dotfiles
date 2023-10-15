@@ -54,8 +54,10 @@ in
     };
   };
   # acme let's encrypt
-  security.acme.defaults = {
+  security.acme = {
     acceptTerms = true;
+    defaults = {
     email = "geokkjer@gmail.com";
+    };
   };
 }
