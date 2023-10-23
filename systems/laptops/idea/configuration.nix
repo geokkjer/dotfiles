@@ -105,7 +105,7 @@
     shell = pkgs.zsh;
     packages = with pkgs; [
       # Browsers
-      firefox 
+      firefox
       # Fonts
       fira-code fira-mono fira-code-symbols meslo-lgs-nf
       # Monitoring tools
@@ -121,6 +121,7 @@
       tmux
       zellij
       # Editors & command line text utils
+      gurk-rs # Signal tui
       arianna
       mc 
       neovim

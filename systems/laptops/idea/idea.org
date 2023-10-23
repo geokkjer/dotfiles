@@ -1277,7 +1277,6 @@ As root or sudo
 #+end_src
 
 ** configuration.nix
-
 #+begin_src nix :tangle configuration.nix :mkdirp yes
   { config, pkgs, ... }:
   {
@@ -1386,7 +1385,7 @@ As root or sudo
       shell = pkgs.zsh;
       packages = with pkgs; [
         # Browsers
-        firefox 
+        firefox
         # Fonts
         fira-code fira-mono fira-code-symbols meslo-lgs-nf
         # Monitoring tools
@@ -1402,6 +1401,7 @@ As root or sudo
         tmux
         zellij
         # Editors & command line text utils
+        gurk-rs # Signal tui
         arianna
         mc 
         neovim
