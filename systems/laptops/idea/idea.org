@@ -1386,7 +1386,7 @@ As root or sudo
       shell = pkgs.zsh;
       packages = with pkgs; [
         # Browsers
-        firefox 
+        firefox qutebrowser 
         # Fonts
         fira-code fira-mono fira-code-symbols meslo-lgs-nf
         # Monitoring tools
