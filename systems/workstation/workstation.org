@@ -234,7 +234,7 @@ Tangle this document with C-c C-v t.Remove configuration from /etc and symlink ~
       shell = pkgs.zsh;
       packages = with pkgs; [
         # Browsers
-        firefox google-chrome
+        firefox google-chrome qutebrowser
         # tools
         transmission-gtk
         magic-wormhole
