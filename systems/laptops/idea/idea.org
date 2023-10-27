@@ -1,0 +1,1530 @@
+#+:title Ideapad
+
+
+* Configs
+
+Here are some configs for other software I use .
+
+** Sway
+
+*** nixos
+
+#+begin_src nix :tangle sway.nix
+   { config, pkgs, lib, ... }:
+   let
+     # bash script to let dbus know about important env variables and
+     # propagate them to relevent services run at the end of sway config
+     # see
+     # https://github.com/emersion/xdg-desktop-portal-wlr/wiki/"It-doesn't-work"-Troubleshooting-Checklist
+     # note: this is pretty much the same as  /etc/sway/config.d/nixos.conf but also restarts  
+     # some user services to make sure they have the correct environment variables
+     dbus-sway-environment = pkgs.writeTextFile {
+       name = "dbus-sway-environment";
+       destination = "/bin/dbus-sway-environment";
+       executable = true;
+       text = ''
+         dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_C  URRENT_DESKTOP=sway
+         systemctl --user stop pipewire pipewire-media-session xdg-desktop-portal xdg-desktop-portal-wlr
+         systemctl --user start pipewire pipewire-media-session xdg-desktop-portal xdg-desktop-portal-wlr
+       ''; 
+     };
+
+  in
+   {
+     environment.systemPackages = with pkgs; [
+       sway
+       dbus-sway-environment
+       wayland
+       xdg-utils # for opening default programs when clicking links
+       glib # gsettings
+       dracula-theme # gtk theme
+       swaylock
+       swayidle
+       grim # screenshot functionality
+       slurp # screenshot functionality
+       wl-clipboard # wl-copy and wl-paste for copy/paste from stdin / stdout
+       mako # notification system developed by swaywm maintainer
+       waybar
+       gammastep
+       fuzzel
+     ];
+
+     # xdg-desktop-portal works by exposing a series of D-Bus interfaces
+     # known as portals under a well-known name
+     # (org.freedesktop.portal.Desktop) and object path
+     # (/org/freedesktop/portal/desktop).
+     # The portal interfaces include APIs for file access, opening URIs,
+     # printing and others.
+     services.dbus.enable = true;
+     xdg.portal.wlr.enable = true;
+     # enable sway window manager
+     programs.sway = {
+       enable = true;
+       wrapperFeatures.gtk = true;
+     };
+   }
+#+end_src
+
+*** Sway
+
+Sway Window Manager
+
+#+begin_src conf-unix :tangle ~/.config/sway/config :mkdirp yes
+    default_border none
+    ### Variables
+    #
+    # Logo key. Use Mod1 for Alt.
+    set $mod Mod4
+    # Home row direction keys, like vim
+    set $left h
+    set $down j
+    set $up k
+    set $right l
+    # Your preferred terminal emulator
+    set $term footclient
+
+    set $menu fuzzel
+    # Set gnome stuff
+    set $gnome-schema org.gnome.desktop.interface
+    ### Output configuration
+
+    #
+    # Default wallpaper (more resolutions are available in /run/current-system/sw/share/backgrounds/sway/)
+    output * bg /home/geir/Pictures/wall.png fill
+    #
+    # Example configuration:
+    #
+    #   output HDMI-A-1 resolution 1920x1080 position 1920,0
+    #
+    # You can get the names of your outputs by running: swaymsg -t get_outputs
+
+    ### Idle configuration
+    #
+    # Example configuration:
+    #
+    exec swayidle -w \
+             timeout 1200 'swaylock -f -c 000000' \
+             timeout 1800 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+             before-sleep 'swaylock -f -c 000000'
+   
+    # This will lock your screen after 600 seconds of inactivity, then turn off
+    # your displays after another 600 seconds, and turn your screens back on when
+    # resumed. It will also lock your screen before your computer goes to sleep.
+
+    ### Input configuration
+    #
+    # Example configuration:
+    #
+  input "1739:52781:MSFT0001:00_06CB:CE2D_Touchpad" {
+         dwt enabled
+         tap enabled
+         natural_scroll enabled
+         middle_emulation enabled
+       }
+    #
+    # You can get the names of your inputs by running: swaymsg -t get_inputs
+    # Read `man 5 sway-input` for more information about
+    # or input <identifier>
+  input "type:keyboard" {
+    xkb_layout no
+    xkb_variant ,nodeadkeys
+    xkb_options caps:ctrl_modifier
+  }
+    # screenshots
+    bindsym $mod+c exec grim  -g "$(slurp)" /tmp/$(date +'%H:%M:%S.png') 
+    ### Key bindings
+    #
+    # Basics:
+    #
+    # Start a terminal
+
+    bindsym $mod+Return exec $term
+
+    # Kill focused window
+    bindsym $mod+Shift+q kill
+
+    # Start your launcher
+    bindsym $mod+d exec $menu
+
+    # Drag floating windows by holding down $mod and left mouse button.
+    floating_modifier $mod normal
+
+    # Reload the configuration file
+    bindsym $mod+Shift+c reload
+
+    # Exit sway (logs you out of your Wayland session)
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+    #
+    # Moving around:
+    #
+        # Move your focus around
+        bindsym $mod+$left focus left
+        bindsym $mod+$down focus down
+        bindsym $mod+$up focus up
+        bindsym $mod+$right focus right
+        # Or use $mod+[up|down|left|right]
+        bindsym $mod+Left focus left
+        bindsym $mod+Down focus down
+        bindsym $mod+Up focus up
+        bindsym $mod+Right focus right
+
+        # Move the focused window with the same, but add Shift
+        bindsym $mod+Shift+$left move left
+        bindsym $mod+Shift+$down move down
+        bindsym $mod+Shift+$up move up
+        bindsym $mod+Shift+$right move right
+        # Ditto, with arrow keys
+        bindsym $mod+Shift+Left move left
+        bindsym $mod+Shift+Down move down
+        bindsym $mod+Shift+Up move up
+        bindsym $mod+Shift+Right move right
+    #
+    # Workspaces:
+    #
+        # Switch to workspace
+        bindsym $mod+1 workspace number 1
+        bindsym $mod+2 workspace number 2
+        bindsym $mod+3 workspace number 3
+        bindsym $mod+4 workspace number 4
+        bindsym $mod+5 workspace number 5
+        bindsym $mod+6 workspace number 6
+        bindsym $mod+7 workspace number 7
+        bindsym $mod+8 workspace number 8
+        bindsym $mod+9 workspace number 9
+        bindsym $mod+0 workspace number 10
+        # Move focused container to workspace
+        bindsym $mod+Shift+1 move container to workspace number 1
+        bindsym $mod+Shift+2 move container to workspace number 2
+        bindsym $mod+Shift+3 move container to workspace number 3
+        bindsym $mod+Shift+4 move container to workspace number 4
+        bindsym $mod+Shift+5 move container to workspace number 5
+        bindsym $mod+Shift+6 move container to workspace number 6
+        bindsym $mod+Shift+7 move container to workspace number 7
+        bindsym $mod+Shift+8 move container to workspace number 8
+        bindsym $mod+Shift+9 move container to workspace number 9
+        bindsym $mod+Shift+0 move container to workspace number 10
+
+    #
+    # Layout stuff:
+    #
+        # You can "split" the current object of your focus with
+        # $mod+b or $mod+v, for horizontal and vertical splits
+        # respectively.
+        bindsym $mod+b splith
+        bindsym $mod+v splitv
+
+        # Switch the current container between different layout styles
+        bindsym $mod+s layout stacking
+        bindsym $mod+w layout tabbed
+        bindsym $mod+e layout toggle split
+
+        # Make the current focus fullscreen
+        bindsym $mod+f fullscreen
+
+        # Toggle the current focus between tiling and floating mode
+        bindsym $mod+Shift+space floating toggle
+
+        # Swap focus between the tiling area and the floating area
+        bindsym $mod+space focus mode_toggle
+
+        # Move focus to the parent container
+        bindsym $mod+a focus parent
+    #
+    # Scratchpad:
+    #
+        # Sway has a "scratchpad", which is a bag of holding for windows.
+        # You can send windows there and get them back later.
+
+        # Move the currently focused window to the scratchpad
+        bindsym $mod+Shift+minus move scratchpad
+
+        # Show the next scratchpad window or hide the focused scratchpad window.
+        # If there are multiple scratchpad windows, this command cycles through them.
+        bindsym $mod+minus scratchpad show
+    #
+    # Resizing containers:
+    #
+    mode "resize" {
+        # left will shrink the containers width
+        # right will grow the containers width
+        # up will shrink the containers height
+        # down will grow the containers height
+        bindsym $left resize shrink width 10px
+        bindsym $down resize grow height 10px
+        bindsym $up resize shrink height 10px
+        bindsym $right resize grow width 10px
+
+        # Ditto, with arrow keys
+        bindsym Left resize shrink width 10px
+        bindsym Down resize grow height 10px
+        bindsym Up resize shrink height 10px
+        bindsym Right resize grow width 10px
+
+        # Return to default mode
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+    }
+    bindsym $mod+r mode "resize"
+
+    #
+    # Status Bar:
+    #
+  bar {
+     swaybar_command waybar 
+  } 
+
+  include /etc/sway/config.d/*
+  exec dbus-sway-environment
+  exec configure-gtk
+  exec gammastep
+  exec foot -s
+
+#+end_src
+
+*** Waybar
+**** config
+
+#+begin_src conf-unix :tangle ~/.config/waybar/config :mkdirp yes
+   {
+     "layer": "top",
+     "position": "top",
+
+                        "modules-left": [
+                        "sway/mode",
+                        "sway/workspaces",
+                        "custom/arrow10",
+                        "sway/window"
+                        ],
+
+                        "modules-right": [
+                        "custom/arrow9",
+                        "pulseaudio",
+                        "custom/arrow8",
+                        "network",
+                        "custom/arrow7",
+                        "memory",
+                        "custom/arrow6",
+                        "cpu",
+                        "custom/arrow5",
+                        "temperature",
+                        "custom/arrow4",
+                        "battery",
+                        "custom/arrow3",
+                        "sway/language",
+                        "custom/arrow2",
+                        "tray",
+                        "clock#date",
+                        "custom/arrow1",
+                        "clock#time"
+                        ],
+
+                        // Modules
+
+                        "battery": {
+                                 "interval": 10,
+                                 "states": {
+                                           "warning": 30,
+                                           "critical": 15
+                                           },
+                                  "format-time": "{H}:{M:02}",
+                                  "format": "{icon} {capacity}% ({time})",
+                                  "format-charging": " {capacity}% ({time})",
+                                  "format-charging-full": " {capacity}%",
+                                  "format-full": "{icon} {capacity}%",
+                                  "format-alt": "{icon} {power}W",
+                                  "format-icons": [
+                                          "",
+                                          "",
+                                          "",
+                                          "",
+                                          ""
+                                  ],
+                                  "tooltip": false
+                          },
+
+                          "clock#time": {
+                                  "interval": 10,
+                                  "format": "{:%H:%M}",
+                                  "tooltip": false
+                          },
+
+                          "clock#date": {
+                                  "interval": 20,
+                                  "format": "{:%e %b %Y}",
+                                  "tooltip": false
+                                  //"tooltip-format": "{:%e %B %Y}"
+                          },
+
+                          "cpu": {
+                                  "interval": 5,
+                                  "tooltip": false,
+                                  "format": " {usage}%",
+                                  "format-alt": " {load}",
+                                  "states": {
+                                          "warning": 70,
+                                          "critical": 90
+                                  }
+                          },
+
+                          "sway/language": {
+                                  "format": " {}",
+                                  "min-length": 5,
+                                  "on-click": "swaymsg 'input * xkb_switch_layout next'",
+                                  "tooltip": false
+                          },
+
+                          "memory": {
+                                  "interval": 5,
+                                  "format": " {used:0.1f}G/{total:0.1f}G",
+                                  "states": {
+                                          "warning": 70,
+                                          "critical": 90
+                                  },
+                                  "tooltip": false
+                          },
+
+                          "network": {
+                                  "interval": 5,
+                                  "format-wifi": " {essid} ({signalStrength}%)",
+                                  "format-ethernet": " {ifname}",
+                                  "format-disconnected": "No connection",
+                                  "format-alt": " {ipaddr}/{cidr}",
+                                  "tooltip": false
+                          },
+
+                          "sway/mode": {
+                                  "format": "{}",
+                                  "tooltip": false
+                          },
+
+                          "sway/window": {
+                                  "format": "{}",
+                                  "max-length": 30,
+                                  "tooltip": false
+                          },
+
+                          "sway/workspaces": {
+                                  "disable-scroll-wraparound": true,
+                                  "smooth-scrolling-threshold": 4,
+                                  "enable-bar-scroll": true,
+                                  "format": "{name}"
+                          },
+
+                          "pulseaudio": {
+                                  "format": "{icon} {volume}%",
+                                  "format-bluetooth": "{icon} {volume}%",
+                                  "format-muted": "",
+                                  "format-icons": {
+                                          "headphone": "",
+                                          "hands-free": "",
+                                          "headset": "",
+                                          "phone": "",
+                                          "portable": "",
+                                          "car": "",
+                                          "default": ["", ""]
+                                  },
+                                  "scroll-step": 1,
+                                  "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+                                  "tooltip": false
+                          },
+
+                          "temperature": {
+                                  "critical-threshold": 90,
+                                  "interval": 5,
+                                  "format": "{icon} {temperatureC}°",
+                                  "format-icons": [
+                                          "",
+                                          "",
+                                          "",
+                                          "",
+                                          ""
+                                  ],
+                                  "tooltip": false
+                          },
+
+                          "tray": {
+                                  "icon-size": 18
+                                  //"spacing": 10
+                          },
+
+                          "custom/arrow1": {
+                                  "format": "",
+                                  "tooltip": false
+                          },
+
+                          "custom/arrow2": {
+                                  "format": "",
+                                  "tooltip": false
+                          },
+
+                          "custom/arrow3": {
+                                  "format": "",
+                                  "tooltip": false
+                          },
+
+                          "custom/arrow4": {
+                                  "format": "",
+                                  "tooltip": false
+                          },
+
+                          "custom/arrow5": {
+                                  "format": "",
+                                  "tooltip": false
+                          },
+
+                          "custom/arrow6": {
+                                  "format": "",
+                                  "tooltip": false
+                          },
+
+                          "custom/arrow7": {
+                                  "format": "",
+                                  "tooltip": false
+                          },
+
+                          "custom/arrow8": {
+                                  "format": "",
+                                  "tooltip": false
+                          },
+
+                          "custom/arrow9": {
+                                  "format": "",
+                                  "tooltip": false
+                          },
+
+                          "custom/arrow10": {
+                                  "format": "",
+                                  "tooltip": false
+                          }
+    }
+  // vi:ft=jsonc
+#+end_src
+
+**** css
+#+begin_src css  :tangle ~/.config/waybar/style.css :mkdirp yes
+  /* Keyframes */
+
+  @keyframes blink-critical {
+      to {
+          /*color: @white;*/
+          background-color: @critical;
+      }
+  }
+
+
+  /* Styles */
+
+  /* Colors (gruvbox) */
+  @define-color black	#282828;
+  @define-color red	#cc241d;
+  @define-color green	#98971a;
+  @define-color yellow	#d79921;
+  @define-color blue	#458588;
+  @define-color purple	#b16286;
+  @define-color aqua	#689d6a;
+  @define-color gray	#a89984;
+  @define-color brgray	#928374;
+  @define-color brred	#fb4934;
+  @define-color brgreen	#b8bb26;
+  @define-color bryellow	#fabd2f;
+  @define-color brblue	#83a598;
+  @define-color brpurple	#d3869b;
+  @define-color braqua	#8ec07c;
+  @define-color white	#ebdbb2;
+  @define-color bg2	#504945;
+
+
+  @define-color warning 	@bryellow;
+  @define-color critical	@red;
+  @define-color mode	@black;
+  @define-color unfocused	@bg2;
+  @define-color focused	@braqua;
+  @define-color inactive	@purple;
+  @define-color sound	@brpurple;
+  @define-color network	@purple;
+  @define-color memory	@braqua;
+  @define-color cpu	@green;
+  @define-color temp	@brgreen;
+  @define-color layout	@bryellow;
+  @define-color battery	@aqua;
+  @define-color date	@black;
+  @define-color time	@white;
+
+  /* Reset all styles */
+  ,* {
+      border: none;
+      border-radius: 0;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      box-shadow: none;
+      text-shadow: none;
+      icon-shadow: none;
+  }
+
+  /* The whole bar */
+  #waybar {
+      background: rgba(40, 40, 40, 0.8784313725); /* #282828e0 */
+      color: @white;
+      font-family: JetBrains Mono, Siji;
+      font-size: 12pt;
+      /*font-weight: bold;*/
+  }
+
+  /* Each module */
+  #battery,
+  #clock,
+  #cpu,
+  #language,
+  #memory,
+  #mode,
+  #network,
+  #pulseaudio,
+  #temperature,
+  #tray,
+  #backlight,
+  #idle_inhibitor,
+  #disk,
+  #user,
+  #mpris {
+      padding-left: 8pt;
+      padding-right: 8pt;
+  }
+
+  /* Each critical module */
+  #mode,
+  #memory.critical,
+  #cpu.critical,
+  #temperature.critical,
+  #battery.critical.discharging {
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+      animation-name: blink-critical;
+      animation-duration: 1s;
+  }
+
+  /* Each warning */
+  #network.disconnected,
+  #memory.warning,
+  #cpu.warning,
+  #temperature.warning,
+  #battery.warning.discharging {
+      color: @warning;
+  }
+
+  /* And now modules themselves in their respective order */
+
+  /* Current sway mode (resize etc) */
+  #mode {
+      color: @white;
+      background: @mode;
+  }
+
+  /* Workspaces stuff */
+  #workspaces button {
+      /*font-weight: bold;*/
+      padding-left: 2pt;
+      padding-right: 2pt;
+      color: @white;
+      background: @unfocused;
+  }
+
+  /* Inactive (on unfocused output) */
+  #workspaces button.visible {
+      color: @white;
+      background: @inactive;
+  }
+
+  /* Active (on focused output) */
+  #workspaces button.focused {
+      color: @black;
+      background: @focused;
+  }
+
+  /* Contains an urgent window */
+  #workspaces button.urgent {
+      color: @black;
+      background: @warning;
+  }
+
+  /* Style when cursor is on the button */
+  #workspaces button:hover {
+      background: @black;
+      color: @white;
+  }
+
+  #window {
+      margin-right: 35pt;
+      margin-left: 35pt;
+  }
+
+  #pulseaudio {
+      background: @sound;
+      color: @black;
+  }
+
+  #network {
+      background: @network;
+      color: @white;
+  }
+
+  #memory {
+      background: @memory;
+      color: @black;
+  }
+
+  #cpu {
+      background: @cpu;
+      color: @white;
+  }
+
+  #temperature {
+      background: @temp;
+      color: @black;
+  }
+
+  #language {
+      background: @layout;
+      color: @black;
+  }
+
+  #battery {
+      background: @battery;
+      color: @white;
+  }
+
+  #tray {
+      background: @date;
+  }
+
+  #clock.date {
+      background: @date;
+      color: @white;
+  }
+
+  #clock.time {
+      background: @time;
+      color: @black;
+  }
+
+  #custom-arrow1 {
+      font-size: 11pt;
+      color: @time;
+      background: @date;
+  }
+
+  #custom-arrow2 {
+      font-size: 11pt;
+      color: @date;
+      background: @layout;
+  }
+
+  #custom-arrow3 {
+      font-size: 11pt;
+      color: @layout;
+      background: @battery;
+  }
+
+  #custom-arrow4 {
+      font-size: 11pt;
+      color: @battery;
+      background: @temp;
+  }
+
+  #custom-arrow5 {
+      font-size: 11pt;
+      color: @temp;
+      background: @cpu;
+  }
+
+  #custom-arrow6 {
+      font-size: 11pt;
+      color: @cpu;
+      background: @memory;
+  }
+
+  #custom-arrow7 {
+      font-size: 11pt;
+      color: @memory;
+      background: @network;
+  }
+
+  #custom-arrow8 {
+      font-size: 11pt;
+      color: @network;
+      background: @sound;
+  }
+
+  #custom-arrow9 {
+      font-size: 11pt;
+      color: @sound;
+      background: transparent;
+  }
+
+  #custom-arrow10 {
+      font-size: 11pt;
+      color: @unfocused;
+      background: transparent;
+  }
+#+end_src
+
+*** fuzzel
+#+begin_src conf-unix
+          
+#+end_src
+
+*** gammastep
+
+#+begin_src conf-unix :tangle ~/.config/gammastep/config.ini :mkdirp yes
+
+  ; Global settings
+  [general]
+  ; Set the day and night screen temperatures
+  temp-day=5700
+  temp-night=3500
+
+  ; Disable the smooth fade between temperatures when Redshift starts and stops.
+  ; 0 will cause an immediate change between screen temperatures.
+  ; 1 will gradually apply the new screen temperature over a couple of seconds.
+  fade=1
+
+  ; Solar elevation thresholds.
+  ; By default, Redshift will use the current elevation of the sun to determine
+  ; whether it is daytime, night or in transition (dawn/dusk). When the sun is
+  ; above the degrees specified with elevation-high it is considered daytime and
+  ; below elevation-low it is considered night.
+  ;elevation-high=3
+  ;elevation-low=-6
+
+  ; Custom dawn/dusk intervals.
+  ; Instead of using the solar elevation, the time intervals of dawn and dusk
+  ; can be specified manually. The times must be specified as HH:MM in 24-hour
+  ; format.
+  dawn-time=8:00-9:45
+  dusk-time=19:35-20:15
+
+  ; Set the screen brightness. Default is 1.0.
+  ;brightness=0.9
+  ; It is also possible to use different settings for day and night
+  ; since version 1.8.
+  ;brightness-day=0.7
+  ;brightness-night=0.4
+  ; Set the screen gamma (for all colors, or each color channel
+  ; individually)
+  gamma=0.8
+  ;gamma=0.8:0.7:0.8
+  ; This can also be set individually for day and night since
+  ; version 1.10.
+  ;gamma-day=0.8:0.7:0.8
+  ;gamma-night=0.6
+
+  ; Set the location-provider: 'geoclue2', 'manual'.
+  ; The location provider settings are in a different section.
+  location-provider=manual
+
+  ; Set the adjustment-method: 'randr', 'vidmode', 'drm', 'wayland'.
+  ; 'randr' is the preferred X11 method, 'vidmode' is an older API
+  ; that works in some cases when 'randr' does not.
+  ; The adjustment method settings are in a different section.
+  adjustment-method=wayland
+
+  ; Configuration of the location-provider:
+  ; type 'gammastep -l PROVIDER:help' to see the settings.
+  ; ex: 'gammastep -l manual:help'
+  ; Keep in mind that longitudes west of Greenwich (e.g. the Americas)
+  ; are negative numbers.
+  [manual]
+  lat=58.1
+  lon=7.9
+          
+  ; Configuration of the adjustment-method
+  ; type 'gammastep -m METHOD:help' to see the settings.
+  ; ex: 'gammastep -m randr:help'
+  ; In this example, randr is configured to adjust only screen 0.
+  ; Note that the numbering starts from 0, so this is actually the first screen.
+  ; If this option is not specified, Redshift will try to adjust _all_ screens.
+  [randr]
+  screen=0
+
+#+end_src
+
+** k8s
+
+#+begin_src nix :tangle k8s.nix
+  { pkgs, ... }:
+  {
+  }
+#+end_src
+
+** Alacritty
+
+#+begin_src yaml :tangle ~/.config/alacritty/alacritty.yml :mkdirp yes
+  font:
+    normal:
+      family: MesloLGS NF
+      style: Regular
+    bold:
+      family:  MesloLGS NF
+      style: Bold
+
+    italic:
+      family:  MesloLGS NF
+      style: Italic
+
+    bold_italic:
+      family:  MesloLGS NF
+      style: Bold Italic
+
+    size: 14
+
+  import:
+    - ~/.config/alacritty/dracula.yml
+
+#+end_src
+
+#+begin_src conf-unix :tangle ~/.config/alacritty/dracula.yml :mkdirp yes
+# Colors (Dracula)
+colors:
+  # Default colors
+  primary:
+    background: '0x282a36'
+    foreground: '0xf8f8f2'
+ 
+  # Normal colors
+  normal:
+    black:   '0x000000'
+    red:     '0xff5555'
+    green:   '0x50fa7b'
+    yellow:  '0xf1fa8c'
+    blue:    '0xbd93f9'
+    magenta: '0xff79c6'
+    cyan:    '0x8be9fd'
+    white:   '0xbbbbbb'
+ 
+  # Bright colors
+  bright:
+    black:   '0x555555'
+    red:     '0xff5555'
+    green:   '0x50fa7b'
+    yellow:  '0xf1fa8c'
+    blue:    '0xcaa9fa'
+    magenta: '0xff79c6'
+    cyan:    '0x8be9fd'
+    white:   '0xffffff'
+
+#+end_src
+
+** Foot
+
+#+begin_src conf-unix :tangle ~/.config/foot/foot.ini :mkdirp yes
+    # -*- conf -*-
+
+    # shell=$SHELL (if set, otherwise user's default shell from /etc/passwd)
+    # term=foot (or xterm-256color if built with -Dterminfo=disabled)
+    # login-shell=no
+
+    # app-id=foot
+    # title=foot
+    # locked-title=no
+
+    font=MesloLGS NF:size=9
+    # font-bold=<bold variant of regular font>
+    # font-italic=<italic variant of regular font>
+    # font-bold-italic=<bold+italic variant of regular font>
+    # font-size-adjustment=0.5
+    # line-height=<font metrics>
+    # letter-spacing=0
+    # horizontal-letter-offset=0
+    # vertical-letter-offset=0
+    # underline-offset=<font metrics>
+    # underline-thickness=<font underline thickness>
+    # box-drawings-uses-font-glyphs=no
+    dpi-aware=auto
+
+    # initial-window-size-pixels=700x500  # Or,
+    # initial-window-size-chars=<COLSxROWS>
+    # initial-window-mode=windowed
+    # pad=0x0                             # optionally append 'center'
+    # resize-delay-ms=100
+
+    # notify=notify-send -a ${app-id} -i ${app-id} ${title} ${body}
+
+    # bold-text-in-bright=no
+    # word-delimiters=,│`|:"'()[]{}<>
+    # selection-target=primary
+    # workers=<number of logical CPUs>
+    # utempter=/usr/lib/utempter/utempter
+
+    [environment]
+    # name=value
+
+    [bell]
+    # urgent=no
+    # notify=no
+    # command=
+    # command-focused=no
+
+    [scrollback]
+    lines=10000
+    # multiplier=3.0
+    # indicator-position=relative
+    # indicator-format=""
+
+    [url]
+    # launch=xdg-open ${url}
+    # label-letters=sadfjklewcmpgh
+    # osc8-underline=url-mode
+    # protocols=http, https, ftp, ftps, file, gemini, gopher
+    # uri-characters=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.,~:;/?#@!$&%*+="'()[]
+
+    [cursor]
+    # style=block
+    # color=<inverse foreground/background>
+    # blink=no
+    # beam-thickness=1.5
+    # underline-thickness=<font underline thickness>
+
+    [mouse]
+    # hide-when-typing=no
+    # alternate-scroll-mode=yes
+
+    [colors]
+    alpha=1.0
+    foreground=ebdbb2
+    background=262423
+    # background=282828
+    regular0=282828 # black
+    regular1=cc241d # red
+    regular2=98971a # green
+    regular3=d79921 # yellow
+    regular4=458588 # blue
+    regular5=b16286 # magenta
+    regular6=689d6a # cyan
+    regular7=a89984 # white
+    bright0=928374 # bright black
+    bright1=fb4934 # bright red
+    bright2=b8bb26 # bright green
+    bright3=fabd2f # bright yellow
+    bright4=83a598 # bright blue
+    bright5=d3869b # bright magenta
+    bright6=8ec07c # bright cyan
+    bright7=ebdbb2 # bright white
+  # 16 = <256-color palette #16>
+  # ...
+  # 255 = <256-color palette #255>
+  # selection-foreground=<inverse foreground/background>
+  # selection-background=<inverse foreground/background>
+  # jump-labels=<regular0> <regular3>
+  # urls=<regular3>
+  # scrollback-indicator=<regular0> <bright4>
+    ## dimmed colors (see foot.ini(5) man page)
+    # dim0=<not set>
+    # ...
+    # dim7=<not-set>
+
+    ## The remaining 256-color palette
+    # 16 = <256-color palette #16>
+    # ...
+    # 255 = <256-color palette #255>
+
+    ## Misc colors
+    # selection-foreground=<inverse foreground/background>
+    # selection-background=<inverse foreground/background>
+    # jump-labels=<regular0> <regular3>          # black-on-yellow
+    # scrollback-indicator=<regular0> <bright4>  # black-on-bright-blue
+    # search-box-no-match=<regular0> <regular1>  # black-on-red
+    # search-box-match=<regular0> <regular3>     # black-on-yellow
+    # urls=<regular3>
+
+    [csd]
+    # preferred=server
+    # size=26
+    # font=<primary font>
+    # color=<foreground color>
+    # hide-when-typing=no
+    # border-width=0
+    # border-color=<csd.color>
+    # button-width=26
+    # button-color=<background color>
+    # button-minimize-color=<regular4>
+    # button-maximize-color=<regular2>
+    # button-close-color=<regular1>
+
+    [key-bindings]
+    # scrollback-up-page=Shift+Page_Up
+    # scrollback-up-half-page=none
+    # scrollback-up-line=none
+    # scrollback-down-page=Shift+Page_Down
+    # scrollback-down-half-page=none
+    # scrollback-down-line=none
+    # clipboard-copy=Control+Shift+c XF86Copy
+    # clipboard-paste=Control+Shift+v XF86Paste
+    # primary-paste=Shift+Insert
+    # search-start=Control+Shift+r
+    # font-increase=Control+plus Control+equal Control+KP_Add
+    # font-decrease=Control+minus Control+KP_Subtract
+    # font-reset=Control+0 Control+KP_0
+    # spawn-terminal=Control+Shift+n
+    # minimize=none
+    # maximize=none
+    # fullscreen=none
+    # pipe-visible=[sh -c "xurls | fuzzel | xargs -r firefox"] none
+    # pipe-scrollback=[sh -c "xurls | fuzzel | xargs -r firefox"] none
+    # pipe-selected=[xargs -r firefox] none
+    # show-urls-launch=Control+Shift+u
+    # show-urls-copy=none
+    # show-urls-persistent=none
+    # prompt-prev=Control+Shift+z
+    # prompt-next=Control+Shift+x
+    # unicode-input=none
+    # noop=none
+
+    [search-bindings]
+    # cancel=Control+g Control+c Escape
+    # commit=Return
+    # find-prev=Control+r
+    # find-next=Control+s
+    # cursor-left=Left Control+b
+    # cursor-left-word=Control+Left Mod1+b
+    # cursor-right=Right Control+f
+    # cursor-right-word=Control+Right Mod1+f
+    # cursor-home=Home Control+a
+    # cursor-end=End Control+e
+    # delete-prev=BackSpace
+    # delete-prev-word=Mod1+BackSpace Control+BackSpace
+    # delete-next=Delete
+    # delete-next-word=Mod1+d Control+Delete
+    # extend-to-word-boundary=Control+w
+    # extend-to-next-whitespace=Control+Shift+w
+    # clipboard-paste=Control+v Control+Shift+v Control+y XF86Paste
+    # primary-paste=Shift+Insert
+    # unicode-input=none
+
+    [url-bindings]
+    # cancel=Control+g Control+c Control+d Escape
+    # toggle-url-visible=t
+
+    [text-bindings]
+    # \x03=Mod4+c  # Map Super+c -> Ctrl+c
+
+    [mouse-bindings]
+    # selection-override-modifiers=Shift
+    # primary-paste=BTN_MIDDLE
+    # select-begin=BTN_LEFT
+    # select-begin-block=Control+BTN_LEFT
+    # select-extend=BTN_RIGHT
+    # select-extend-character-wise=Control+BTN_RIGHT
+    # select-word=BTN_LEFT-2
+    # select-word-whitespace=Control+BTN_LEFT-2
+    # select-row=BTN_LEFT-3
+
+    # vim: ft=dosini
+
+#+end_src
+
+** Bash
+
+#+begin_src conf-unix :tangle ~/.bashrc
+  eval "$(starship init bash)"
+#+end_src
+
+** Zsh
+
+#+begin_src conf-unix :tangle ~/.zshrc
+      zstyle ':completion:*' completer _expand _complete _ignored
+      zstyle ':completion:*' matcher-list ''
+      zstyle :compinstall filename '/home/geir/.zshrc'
+
+      autoload -Uz compinit
+      compinit
+      HISTFILE=~/.histfile
+      HISTSIZE=10000
+      SAVEHIST=10000
+      setopt autocd extendedglob
+      unsetopt beep nomatch
+      bindkey -e
+
+      eval "$(starship init zsh)"
+      eval "$(direnv hook zsh)"
+
+#+end_src
+
+#+begin_src nix :tangle zsh.nix :mkdirp yes
+  { config, pkgs, ... }:
+  {
+    environment.systemPackages = with pkgs;
+      [
+        zsh
+        zsh-completions
+        nix-zsh-completions
+        starship
+        direnv
+      ];
+
+    programs.zsh.enable = true;
+    programs.zsh.syntaxHighlighting.enable = true;
+    programs.zsh.autosuggestions.enable = true;
+    }
+
+#+end_src
+
+** Starship
+
+#+begin_src conf-unix :tangle ~/.config/starship.toml :mkdirp yes
+
+  # Editor completions based on the config schema
+  "$schema" = 'https://starship.rs/config-schema.json'
+
+  # Use custom format
+  format = '''(bold purple)$all '''
+
+  # Inserts a blank line between shell prompts
+  add_newline = true
+
+  [aws]
+  style = "bold #ffb86c"
+
+  [character]
+  error_symbol = "[λ](bold #ff5555)"
+  success_symbol = "[λ](bold #50fa7b)" # ❄
+
+  [cmd_duration]
+  style = "bold #f1fa8c"
+
+  [directory]
+  style = "bold #50fa7b"
+
+  [git_branch]
+  style = "bold #ff79c6"
+
+  [git_status]
+  style = "bold #ff5555"
+
+  [hostname]
+  style = "bold #bd93f9"
+
+  [username]
+  format = "[$user]($style) on "
+  style_user = "bold #8be9fd"
+
+#+end_src
+
+* NixOS - Laptop
+
+** bootstrap
+
+backup org conf and remove other files from /etc/nixos
+As root or sudo
+
+#+begin_src shell :tangle install.sh
+  #!/bin/env sh
+  pushd ~/dotfiles/systems/laptops/idea
+  sudo cp *.nix /etc/nixos/
+  popd
+#+end_src
+
+** hardware-configuration.nix
+
+#+begin_src nix :tangle hardware-configuration.nix :mkdirp yes
+
+  { config, lib, pkgs, modulesPath, ... }:
+
+  {
+    imports =
+      [ (modulesPath + "/installer/scan/not-detected.nix")
+      ];
+
+    boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usb_storage" "sd_mod" ];
+    boot.initrd.kernelModules = [ ];
+    boot.kernelModules = [ "kvm-amd" ];
+    boot.extraModulePackages = [ ];
+
+    fileSystems."/" =
+      { device = "/dev/disk/by-uuid/c00b4f87-0c38-45e8-a65e-acb63b837124";
+        fsType = "ext4";
+      };
+
+    fileSystems."/boot" =
+      { device = "/dev/disk/by-uuid/28E2-7988";
+        fsType = "vfat";
+      };
+
+    swapDevices = [ ];
+
+    networking.useDHCP = lib.mkDefault true;
+    # networking.interfaces.wlp1s0.useDHCP = lib.mkDefault true;
+
+    nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+    hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  }
+#+end_src
+
+** network
+*** Tailscale
+
+#+begin_src nix :tangle tail.nix :mkdirp yes
+  { pkgs, ...}:
+
+  {
+    environment.systemPackages = with pkgs; [
+      tailscale
+    ];
+
+    services.tailscale.enable = true;
+   }
+
+#+end_src
+
+** configuration.nix
+#+begin_src nix :tangle configuration.nix :mkdirp yes
+  { config, pkgs, ... }:
+  {
+    imports =
+      [ # Include the results of the hardware scan.
+        ./hardware-configuration.nix
+        ./zsh.nix
+        ./sway.nix
+        ./tty.nix
+        ./aliases.nix
+        ./k8s.nix
+        ./tail.nix
+      ];
+
+    # Bootloader.
+    # Bootloader.
+    boot.loader.systemd-boot.enable = true;
+    boot.loader.efi.canTouchEfiVariables = true;
+    boot.kernelPackages = pkgs.linuxPackages_latest;
+    zramSwap = {
+      enable = true;
+      algorithm = "zstd";
+    };
+
+    # Enable all unfree hardware support.
+    hardware.firmware = with pkgs; [ firmwareLinuxNonfree ];
+    hardware.enableAllFirmware = true;
+    hardware.enableRedistributableFirmware = true;
+    nixpkgs.config.allowUnfree = true;
+    services.fwupd.enable = true;
+
+    services.fstrim.enable = true;
+
+    # Networking
+    networking.networkmanager.enable = true;
+    networking.hostName = "idea"; 
+
+    # Enable the OpenSSH daemon.
+    services.openssh.enable = true;
+
+    # Set your time zone.
+    time.timeZone = "Europe/Oslo";
+
+    # Select internationalisation properties.
+    i18n.defaultLocale = "en_US.UTF-8";
+
+    # Enable the X11 windowing system.
+    services.xserver.enable = true;
+    services.xserver.videoDrivers = [ "amdgpu" ];
+
+    # Enable the KDE Plasma Desktop Environment.
+    services.xserver.displayManager.gdm.enable = true;
+    services.xserver.desktopManager.gnome.enable = true;
+
+    # Configure keymap in X11
+    services.xserver = {
+      layout = "no";
+      xkbVariant = "";
+    };
+
+    # Configure console keymap
+    console = {
+      font = "Lat2-Terminus16";
+      keyMap = "no";
+      };
+
+    i18n.extraLocaleSettings = {
+      LC_ADDRESS = "nb_NO.utf8";
+      LC_IDENTIFICATION = "nb_NO.utf8";
+      LC_MEASUREMENT = "nb_NO.utf8";
+      LC_MONETARY = "nb_NO.utf8";
+      LC_NAME = "nb_NO.utf8";
+      LC_NUMERIC = "nb_NO.utf8";
+      LC_PAPER = "nb_NO.utf8";
+      LC_TELEPHONE = "nb_NO.utf8";
+      LC_TIME = "nb_NO.utf8";
+    };
+
+    # Enable CUPS to print documents.
+    services.printing.enable = false;
+
+    # Enable sound with pipewire.
+    sound.enable = true;
+    hardware.pulseaudio.enable = false;
+    security.rtkit.enable = true;
+    services.pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+    };
+
+    # Enble flakes and other experimental features 
+    nix = {
+      extraOptions = "experimental-features = nix-command flakes";
+      package = pkgs.nixFlakes;
+    };
+
+    # User account.
+    nix.settings.trusted-users = [ "root" "geir" ];
+    environment.localBinInPath = true;
+    users.users.geir = {
+      isNormalUser = true;
+      description = "Geir Okkenhaug Jerstad";
+      extraGroups = [ "networkmanager" "wheel" ];
+      shell = pkgs.zsh;
+      packages = with pkgs; [
+        # Browsers
+        firefox
+        # Fonts
+        fira-code fira-mono fira-code-symbols meslo-lgs-nf
+        # Monitoring tools
+        htop glances zenith bottom fwupd
+        # shells & terminals
+        terminator
+        foot
+        starship
+        nushell
+        fzf
+        # Multiplexers
+        screen
+        tmux
+        zellij
+        # Editors & command line text utils
+        gurk-rs # Signal tui
+        arianna
+        mc 
+        neovim
+        poppler_utils
+        emacs
+        emacsPackages.vterm
+        libvterm libtool
+        magic-wormhole
+        protonvpn-cli
+        #
+        mpv
+        # Languages
+        python3 python3Packages.pip
+        guile
+        go gotools golint
+        rustup
+        # language servers
+        python3Packages.python-lsp-server
+        rnix-lsp
+        gopls
+        luajitPackages.lua-lsp
+        nodePackages.bash-language-server
+        vimPlugins.cmp-nvim-lsp
+        ccls
+        # building software
+        direnv
+        cmake
+        gcc
+        bintools
+        gnutar
+        sccache
+        # DevSecOps
+        kubectl
+        k9s
+        # Audio tools  
+        ncpamixer
+
+      ];
+    };
+
+    environment.systemPackages = with pkgs; [
+       git unzip
+       wget curl
+       neofetch inxi mlocate
+       tailscale
+    ];
+
+    # Open ports in the firewall.
+    networking.firewall.allowedTCPPorts = [ 22 ];
+    networking.firewall.allowedUDPPorts = [ 22 ];
+    networking.firewall.enable = true;
+    system.stateVersion = "22.11";
+  } 
+
+#+end_src
+
+** Nix services and configs
+
+*** tty with colors
+
+#+begin_src nix :tangle tty.nix :mkdirp yes
+{ pkgs, ... }:
+{
+  services.getty.greetingLine = ''\l'';
+
+  console = {
+    earlySetup = true;
+
+    # Joker palette
+    colors = [
+      "1b161f"
+      "ff5555"
+      "54c6b5"
+      "d5aa2a"
+      "bd93f9"
+      "ff79c6"
+      "8be9fd"
+      "bfbfbf"
+
+      "1b161f"
+      "ff6e67"
+      "5af78e"
+      "ffce50"
+      "caa9fa"
+      "ff92d0"
+      "9aedfe"
+      "e6e6e6"
+    ];
+  };
+}
+
+#+end_src
+
+*** Aliases and terminal apps
+
+#+begin_src nix :tangle aliases.nix :mkdirp yes
+  { config, pkgs, ... }:
+  {
+    environment.systemPackages = with pkgs; [
+      tldr
+      exa
+      bat
+      ripgrep
+    ];
+    environment.shellAliases = {
+      vi = "nvim";
+      vim = "nvim";
+      h = "tldr";
+      # oxidized
+      ls = "exa -l";
+      cat = "bat";
+      grep = "rg";
+      top = "btm --color gruvbox";
+      # some tools
+      
+    };
+  }
+  #+end_src
+
+*** Agenix
+
+#+begin_src nix
+
+#+end_src
+
+
