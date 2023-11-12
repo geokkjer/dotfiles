@@ -111,7 +111,6 @@
       # Monitoring tools
       htop glances zenith bottom fwupd
       # shells & terminals
-      terminator
       foot
       starship
       nushell
@@ -121,7 +120,6 @@
       tmux
       zellij
       # Editors & command line text utils
-      gurk-rs # Signal tui
       mc 
       neovim
       poppler_utils
@@ -132,33 +130,12 @@
       protonvpn-cli
       #
       mpv
-      # Languages
-      python3 python3Packages.pip
-      guile
-      go gotools golint
-      rustup
-      # language servers
-      python3Packages.python-lsp-server
-      rnix-lsp
-      gopls
-      luajitPackages.lua-lsp
-      nodePackages.bash-language-server
-      vimPlugins.cmp-nvim-lsp
-      ccls
-      # building software
-      direnv
-      cmake
-      gcc
-      bintools
-      gnutar
-      sccache
       # DevSecOps
       kubectl
       k9s
       virt-manager
       # Audio tools  
       ncpamixer
-
     ];
   };
 
@@ -167,6 +144,26 @@
      wget curl
      neofetch inxi mlocate
      tailscale
+     # Languages
+     python3 python3Packages.pip
+     guile
+     go gotools golint
+     rustup
+     # language servers
+     python3Packages.python-lsp-server
+     rnix-lsp
+     gopls
+     luajitPackages.lua-lsp
+     nodePackages.bash-language-server
+     vimPlugins.cmp-nvim-lsp
+     ccls
+     # building software
+     direnv
+     cmake
+     gcc
+     bintools
+     gnutar
+     sccache
   ];
 
   # Open ports in the firewall.
