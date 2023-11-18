@@ -111,6 +111,7 @@
       # Monitoring tools
       htop glances zenith bottom fwupd
       # shells & terminals
+      terminator
       foot
       starship
       nushell
