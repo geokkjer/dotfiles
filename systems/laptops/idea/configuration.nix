@@ -124,7 +124,7 @@
       mc 
       neovim
       poppler_utils
-      emacs
+      emacs-nox
       emacsPackages.vterm
       libvterm libtool
       magic-wormhole

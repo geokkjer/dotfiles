@@ -115,7 +115,7 @@ Sway Window Manager
     #
     # Example configuration:
     #
-  input "1739:52781:MSFT0001:00_06CB:CE2D_Touchpad" {
+  input "type:touchpad" {
          dwt enabled
          tap enabled
          natural_scroll enabled
@@ -1404,7 +1404,7 @@ As root or sudo
         mc 
         neovim
         poppler_utils
-        emacs
+        emacs-nox
         emacsPackages.vterm
         libvterm libtool
         magic-wormhole
