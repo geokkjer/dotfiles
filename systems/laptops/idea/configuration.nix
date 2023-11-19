@@ -159,6 +159,7 @@
      vimPlugins.cmp-nvim-lsp
      ccls
      # building software
+     qemu
      direnv
      cmake
      gcc

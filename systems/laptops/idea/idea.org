@@ -1439,6 +1439,7 @@ As root or sudo
        vimPlugins.cmp-nvim-lsp
        ccls
        # building software
+       qemu
        direnv
        cmake
        gcc
