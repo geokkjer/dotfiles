@@ -147,13 +147,13 @@ I like the MesloLGS Nerd and the Fira Code fonts, it fits nicely with the theme 
   
   (defvar geokkjer/default-font-size 140)
 
-  (set-face-attribute 'default nil :font "MesloLGS NF" :height geokkjer/default-font-size)
+  (set-face-attribute 'default nil :font "Fira Code" :height geokkjer/default-font-size)
 
   ;; Set the fixed pitch face
   (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 140)
 
   ;; Set the variable pitch face
-  (set-face-attribute 'variable-pitch nil :font "MesloLGS NF" :height 130 :weight 'regular)
+  (set-face-attribute 'variable-pitch nil :font "Fira Code" :height 130 :weight 'regular)
 
 #+end_src
 
@@ -638,7 +638,6 @@ Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs, intende
 #+end_src
 
 ** Projectile
-
 Projectile description .TODO
 
 #+begin_src emacs-lisp
