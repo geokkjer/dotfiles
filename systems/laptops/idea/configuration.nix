@@ -9,6 +9,7 @@
       ./aliases.nix
       ./k8s.nix
       ./tail.nix
+      ./river.nix
     ];
 
   # Bootloader.

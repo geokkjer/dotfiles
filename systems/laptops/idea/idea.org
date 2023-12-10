@@ -5,6 +5,25 @@
 
 Here are some configs for other software I use .
 
+** River
+
+#+begin_src nix :tangle river.nix
+  { configs, pkgs, ... }:
+  {
+    environment.systemPackages = with pkgs; [
+      river
+    ];
+    programs.river = {
+      enable = true;
+    };
+  }
+
+#+end_src
+
+
+
+
+
 ** Sway
 
 *** nixos
@@ -1289,6 +1308,7 @@ As root or sudo
         ./aliases.nix
         ./k8s.nix
         ./tail.nix
+        ./river.nix
       ];
 
     # Bootloader.
