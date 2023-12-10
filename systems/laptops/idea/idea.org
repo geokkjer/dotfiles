@@ -1521,7 +1521,7 @@ As root or sudo
   {
     environment.systemPackages = with pkgs; [
       tldr
-      exa
+      eza
       bat
       ripgrep
     ];

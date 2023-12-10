@@ -2,7 +2,7 @@
 {
   environment.systemPackages = with pkgs; [
     tldr
-    exa
+    eza
     bat
     ripgrep
   ];
