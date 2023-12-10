@@ -147,11 +147,13 @@
      neofetch inxi mlocate
      tailscale
      # Languages
+     zig
      python3 python3Packages.pip
      guile
      go gotools golint
      rustup
      # language servers
+     zls
      python3Packages.python-lsp-server
      rnix-lsp
      gopls
