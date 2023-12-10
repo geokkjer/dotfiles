@@ -110,7 +110,7 @@
       # Fonts
       fira-code fira-mono fira-code-symbols meslo-lgs-nf
       # Monitoring tools
-      htop glances zenith bottom fwupd
+      htop glances bottom fwupd
       # shells & terminals
       terminator
       foot
