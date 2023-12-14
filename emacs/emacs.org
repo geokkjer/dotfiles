@@ -433,6 +433,18 @@ TODO: explore treemacs
       :library-folders-fn nil)))
 #+end_src
 
+*** Zig
+
+#+begin_src emacs-lisp
+  (use-package zig-mode
+    :ensure t
+    :hook (zig-mode . (lambda ()
+                        (require 'zls
+                                 (lsp-deferred))
+                        (prettify-symbols-mode)))
+    :mode "\\.zig\\'")
+#+end_src
+
 *** Lisp and Scheme
 
 #+begin_src emacs-lisp
