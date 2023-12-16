@@ -21,7 +21,6 @@ Here are some configs for other software I use .
 #+end_src
 
 
-
 ** Sway
 
 *** nixos

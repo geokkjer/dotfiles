@@ -340,6 +340,17 @@ Sometimes you need some dummy text
   (use-package lorem-ipsum
     :after org)
 #+end_src
+  
+** Treemacs
+
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :ensure t
+    :bind ("<f5>" . treemacs)
+    :custom (treemacs-is-never-other-window t)
+    :hook (treemacs-mode . treemacs-project-follow-mode))
+  
+#+end_src
 
 ** Languages and lsp-mode configuration
 
