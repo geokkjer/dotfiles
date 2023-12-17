@@ -63,12 +63,12 @@
         ./hardware-configuration.nix
         ./starship.nix
         ./podman.nix
-        #./libvirt.nix
+        ./libvirt.nix
         ./jellyfin.nix
         ./tailscale.nix
         ./calibre-web.nix
-        ./nextcloud.nix
         ./audiobook.nix
+        ./ollama.nix
       ];
 
     # Swap zram
@@ -144,38 +144,14 @@
 #+end_src
 
 ** Services
-*** NextCloud
+*** Ollama
 
-#+begin_src nix :tangle nextcloud.nix
-  { pkgs, ... }:
-
+#+begin_src nix :tangle ollama.nix
+  { config, pkgs, ... }:
   {
-    #  Nextcloud Config
-    environment.etc."nextcloud-admin-pass".text = "siKKerhet666";
-    services.nextcloud = {
-      enable = true;
-      hostName = "server1.tail807ea.ts.net";
-
-      # Ssl Let'encrypt
-      #hostName = "cloud.geokkjer.eu";
-      #https = true;
-
-      # Auto-update Nextcloud Apps
-      autoUpdateApps.enable = true;
-      # Set what time makes sense for you
-      autoUpdateApps.startAt = "05:00:00";
-      # enable redis cache
-      configureRedis = true;
-      # Create db locally , maybe not needed with sqlite
-      database.createLocally = true;
-      # Config options
-      config = {
-        dbtype = "sqlite";
-        adminpassFile = "/etc/nextcloud-admin-pass";
-        trustedProxies = [ "46.226.104.98" "100.75.29.52" ];
-        extraTrustedDomains = [ "localhost" "*.cloudflare.net" "*.tail807ea.ts.net" "46.226.104.98" "*.geokkjer.eu" ];
-      };
-    };
+    environment.systemPackages = with pkgs; [
+      ollama
+    ];
   }
 
 #+end_src
@@ -216,7 +192,7 @@
     virtualisation.libvirtd.enable = true;
     environment.systemPackages = with pkgs; [
       qemu_kvm
-      libvirtd
+      libvirt
     ];
   }
 #+end_src
@@ -269,54 +245,6 @@
       };
     };
   };
-#+end_src
-
-*** dyndns
-*** Soft-Serve
-
-ref: [[https://gist.github.com/meowgorithm/3e039e2414a6f3e01b156e574b3a6b48][Github Gist]]
-
-#+begin_src nix :tangle soft-serve.nix :mkdirp yes
-
-  { pkgs, modulesPath, libs, ... }:
-  let
-    sshdPort = 8888;
-    softServePort = 22;
-  in {
-    networking.firewall.allowedTCPPorts = [ sshdPort, softServePort ];
-
-    environment.systemPackages = with pkgs; [
-      soft-serve
-    ];
-    systemd.services = {
-      soft-serve = {
-        description = "Soft Serve";
-        wantedBy = ["multi-user.target"];
-        restartIfChanged = true;
-        environment = {
-          SOFT_SERVE_PORT = builtins.toString softServePort;
-          SOFT_SERVE_HOST = "git.geokkjer.eu";
-        };
-        serviceConfig = {
-          Type = "simple";
-          Restart = "always";
-          RestartSec = "1";
-          WorkingDirectory = "/soft";
-          ExecStart = ''
-                    ${pkgs.soft-serve}/bin/soft serve
-                    '';
-        };
-      };
-    };
-  }
-
-
-#+end_src
-
-*** Gogs
-
-#+begin_src nix
-
 #+end_src
 
 *** calibre web

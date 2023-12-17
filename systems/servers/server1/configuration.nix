@@ -6,12 +6,12 @@
       ./hardware-configuration.nix
       ./starship.nix
       ./podman.nix
-      #./libvirt.nix
+      ./libvirt.nix
       ./jellyfin.nix
       ./tailscale.nix
       ./calibre-web.nix
-      ./nextcloud.nix
       ./audiobook.nix
+      ./ollama.nix
     ];
 
   # Swap zram
