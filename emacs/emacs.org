@@ -139,7 +139,18 @@ Set emacs to show line-numbers, some modes excluded.
 
 #+end_src
 
+** Spacious padding
+
+#+begin_src emacs-lisp
+
+  (use-package spacious-padding
+    :ensure t
+    :hook (after-init . spacious-padding-mode))
+  
+#+end_src
+
 ** Font configuration
+
 
 I like the MesloLGS Nerd and the Fira Code fonts, it fits nicely with the theme and my zsh prompt.
 
@@ -191,7 +202,11 @@ I like the MesloLGS Nerd and the Fira Code fonts, it fits nicely with the theme 
     :after ivy
     :init
     (ivy-rich-mode 1))
-
+  
+  (use-package ivy-posframe
+    :after ivy
+    :init
+    (ivy-posframe-mode 1))
 #+end_src
 
 ** Counsel
