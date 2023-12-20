@@ -58,7 +58,7 @@
 
   users.users.geir = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "libvirt" "podman" ];
+    extraGroups = [ "wheel" "networkmanager" "libvirt" "podman" "ollama" ];
     packages = with pkgs; [
         bottom
     ];
@@ -73,6 +73,7 @@
   services.openssh.enable = true;
   services.openssh.settings.PermitRootLogin = "yes";
   services.openssh.settings.PasswordAuthentication = false; 
+
 
   # Enable Netdata
   services.netdata.enable = true;

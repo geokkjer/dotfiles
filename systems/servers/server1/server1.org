@@ -115,7 +115,7 @@
 
     users.users.geir = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "networkmanager" "libvirt" "podman" ];
+      extraGroups = [ "wheel" "networkmanager" "libvirt" "podman" "ollama" ];
       packages = with pkgs; [
           bottom
       ];
@@ -130,6 +130,7 @@
     services.openssh.enable = true;
     services.openssh.settings.PermitRootLogin = "yes";
     services.openssh.settings.PasswordAuthentication = false; 
+    
 
     # Enable Netdata
     services.netdata.enable = true;
@@ -148,10 +149,43 @@
 
 #+begin_src nix :tangle ollama.nix
   { config, pkgs, ... }:
+  let
+
+  in
   {
     environment.systemPackages = with pkgs; [
       ollama
     ];
+    systemd.services = {
+      ollama = {
+        description = "Ollama";
+        after = ["network-online.target"];
+        wantedBy = ["multi-user.target"];
+        environment = {
+          OLLAMA_HOST = "0.0.0.0";
+        };
+        serviceConfig = {
+          Type = "simple";
+          User = "ollama";
+          Group = "ollama";
+          Restart = "always";
+          RestartSec = "3";
+          ExecStart = ''
+                    ${pkgs.ollama}/bin/ollama serve
+                    '';
+        };
+      };
+    };
+
+    networking.firewall.allowedTCPPorts = [ 11434 ];
+
+    users.users.ollama = {
+      isSystemUser = true;
+      group = "ollama";
+      createHome = true; 
+      };
+
+    users.groups.ollama = {};
   }
 
 #+end_src
