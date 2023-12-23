@@ -51,6 +51,7 @@
   # Enable the KDE Plasma Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
+  programs.steam.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
@@ -105,8 +106,7 @@
     extraGroups = [ "networkmanager" "wheel" ];
     shell = pkgs.zsh;
     packages = with pkgs; [
-      steam
-      discord
+      discordo
       # Browsers
       firefox qutebrowser
       # Fonts
