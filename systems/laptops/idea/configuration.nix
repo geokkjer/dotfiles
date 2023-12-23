@@ -105,6 +105,8 @@
     extraGroups = [ "networkmanager" "wheel" ];
     shell = pkgs.zsh;
     packages = with pkgs; [
+      steam
+      discord
       # Browsers
       firefox qutebrowser
       # Fonts
@@ -145,7 +147,7 @@
      git unzip
      wget curl
      neofetch inxi mlocate
-     tailscale
+     tailscale bluez-tools
      # Languages
      zig
      python3 python3Packages.pip
