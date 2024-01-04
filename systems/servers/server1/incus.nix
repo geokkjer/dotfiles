@@ -1,4 +1,4 @@
-{ config, pkgs, ... }
+{ config, pkgs, ... }:
 {
   virtualisation.incus.enable = true;
 

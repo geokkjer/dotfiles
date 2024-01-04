@@ -312,7 +312,7 @@
 **** Incus - LXC
 
 #+begin_src nix :tangle incus.nix :mkdirp yes
-  { config, pkgs, ... }
+  { config, pkgs, ... }:
   {
     virtualisation.incus.enable = true;
 
