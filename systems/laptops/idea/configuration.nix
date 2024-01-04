@@ -8,6 +8,7 @@
       #./cosmic.nix
       ./tty.nix
       ./aliases.nix
+      ./fonts.nix
       ./k8s.nix
       ./tail.nix
     ];
@@ -110,8 +111,6 @@
       discordo teamviewer
       # Browsers
       firefox qutebrowser
-      # Fonts
-      fira-code fira-mono fira-code-symbols meslo-lgs-nf
       # Monitoring tools
       htop glances bottom fwupd
       # shells & terminals

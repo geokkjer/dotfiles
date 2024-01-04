@@ -1323,6 +1323,7 @@ As root or sudo
         #./cosmic.nix
         ./tty.nix
         ./aliases.nix
+        ./fonts.nix
         ./k8s.nix
         ./tail.nix
       ];
@@ -1425,8 +1426,6 @@ As root or sudo
         discordo teamviewer
         # Browsers
         firefox qutebrowser
-        # Fonts
-        fira-code fira-mono fira-code-symbols meslo-lgs-nf
         # Monitoring tools
         htop glances bottom fwupd
         # shells & terminals
@@ -1499,6 +1498,21 @@ As root or sudo
 #+end_src
 
 ** Nix services and configs
+*** Fonts
+
+#+begin_src nix :tangle fonts.nix
+  { config, pkgs, ... }:
+  {
+    fonts.packages = with pkgs; [
+      # Fonts
+      fira-code
+      fira-mono
+      fira-code-symbols
+      meslo-lgs-nf
+    ];
+  }
+
+#+end_src
 
 *** tty with colors
 
