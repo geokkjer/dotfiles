@@ -16,6 +16,5 @@
     grep = "rg";
     top = "btm --color gruvbox";
     # some tools
-
   };
 }

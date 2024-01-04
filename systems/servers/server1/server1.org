@@ -62,8 +62,10 @@
       [ # Include the results of the hardware scan.
         ./hardware-configuration.nix
         ./starship.nix
+        ./aliases.nix
         ./podman.nix
         ./libvirt.nix
+        ./incus.nix
         ./jellyfin.nix
         ./tailscale.nix
         ./calibre-web.nix
@@ -130,7 +132,7 @@
     services.openssh.enable = true;
     services.openssh.settings.PermitRootLogin = "yes";
     services.openssh.settings.PasswordAuthentication = false; 
-    
+
 
     # Enable Netdata
     services.netdata.enable = true;
@@ -170,6 +172,7 @@
           Group = "ollama";
           Restart = "always";
           RestartSec = "3";
+          StateDirectory = "ollama";
           ExecStart = ''
                     ${pkgs.ollama}/bin/ollama serve
                     '';
@@ -188,6 +191,63 @@
     users.groups.ollama = {};
   }
 
+#+end_src
+
+#+begin_src nix
+  { config, pkgs, lib, ... }:
+
+  with lib;
+
+  let
+      cfg = config.services.jellyfin;
+      in
+  {
+    options = {
+      services.jellyfin = {
+        enable = mkEnableOption "Jellyfin Media Server";
+
+        user = mkOption {
+          type = types.str;
+          default = "jellyfin";
+          description = "User account under which Jellyfin runs.";
+        };
+
+        group = mkOption {
+          type = types.str;
+          default = "jellyfin";
+          description = "Group under which jellyfin runs.";
+        };
+      };
+    };
+
+    config = mkIf cfg.enable {
+      systemd.services.jellyfin = {
+        description = "Jellyfin Media Server";
+        after = [ "network.target" ];
+        wantedBy = [ "multi-user.target" ];
+
+        serviceConfig = rec {
+          User = cfg.user;
+          Group = cfg.group;
+          StateDirectory = "jellyfin";
+          CacheDirectory = "jellyfin";
+          ExecStart = "${pkgs.jellyfin}/bin/jellyfin --datadir '/var/lib/${StateDirectory}' --cachedir '/var/cache/${CacheDirectory}'";
+          Restart = "on-failure";
+        };
+      };
+
+      users.users = mkIf (cfg.user == "jellyfin") {
+        jellyfin.group = cfg.group;
+      };
+
+      users.groups = mkIf (cfg.group == "jellyfin") {
+        jellyfin = {};
+      };
+
+    };
+
+    meta.maintainers = with lib.maintainers; [ minijackson ];
+  }
 #+end_src
 
 *** Tailscale
@@ -249,10 +309,18 @@
    }
 #+end_src
 
-**** LXC/LXC
+**** Incus - LXC
 
-#+begin_src nix
+#+begin_src nix :tangle incus.nix :mkdirp yes
+  { config, pkgs, ... }
+  {
+    virtualisation.incus.enable = true;
 
+    environment.systemPackages = with pkgs; [
+      incus
+      lxc
+    ];
+  }
 #+end_src
 
 *** container template
@@ -352,11 +420,34 @@
   }
 #+end_src
 
-** Configs
+** Shell
 
-*** Shell
+*** Aliases
 
-Starship
+#+begin_src nix :tangle aliases.nix :mkdirp yes
+  { config, pkgs, ... }:
+  {
+    environment.systemPackages = with pkgs; [
+      tldr
+      eza
+      bat
+      ripgrep
+    ];
+    environment.shellAliases = {
+      vi = "nvim";
+      vim = "nvim";
+      h = "tldr";
+      # oxidized
+      ls = "eza -l";
+      cat = "bat";
+      grep = "rg";
+      top = "btm --color gruvbox";
+      # some tools
+    };
+  }
+  #+end_src
+
+*** Starship
 
 #+begin_src nix :tangle starship.nix :mkdirp yes
   { pkgs, ... }:
@@ -368,22 +459,47 @@ Starship
 
 #+end_src
 
-Bash
+*** Bash
 
 #+begin_src conf-unix :tangle ~/.bashrc :mkdirp yes
   eval "$(starship init bash)"
   neofetch
 #+end_src
 
-Zsh
+*** Zsh
 
 #+begin_src nix
-  { pkgs, ... }:
+  { config, pkgs, ... }:
   {
-    
-  }
+    environment.systemPackages = with pkgs;
+      [
+        zsh
+        zsh-completions
+        nix-zsh-completions
+        direnv
+      ];
+
+    programs.zsh.enable = true;
+    programs.zsh.syntaxHighlighting.enable = true;
+    programs.zsh.autosuggestions.enable = true;
+    }
 #+end_src
 
 #+begin_src conf-unix :tangle ~/.zshrc
+  zstyle ':completion:*' completer _expand _complete _ignored
+  zstyle ':completion:*' matcher-list ''
+  zstyle :compinstall filename '/home/geir/.zshrc'
+
+  autoload -Uz compinit
+  compinit
+  HISTFILE=~/.histfile
+  HISTSIZE=10000
+  SAVEHIST=10000
+  setopt autocd extendedglob
+  unsetopt beep nomatch
+  bindkey -e
+
+  eval "$(starship init zsh)"
+  eval "$(direnv hook zsh)"
 
 #+end_src

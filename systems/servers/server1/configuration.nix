@@ -5,8 +5,10 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./starship.nix
+      ./aliases.nix
       ./podman.nix
       ./libvirt.nix
+      ./incus.nix
       ./jellyfin.nix
       ./tailscale.nix
       ./calibre-web.nix

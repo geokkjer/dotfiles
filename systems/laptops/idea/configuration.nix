@@ -5,11 +5,11 @@
       ./hardware-configuration.nix
       ./zsh.nix
       ./sway.nix
+      #./cosmic.nix
       ./tty.nix
       ./aliases.nix
       ./k8s.nix
       ./tail.nix
-      ./river.nix
     ];
 
   # Bootloader.
@@ -48,10 +48,11 @@
   services.xserver.enable = true;
   services.xserver.videoDrivers = [ "amdgpu" ];
 
-  # Enable the KDE Plasma Desktop Environment.
+  # Enable the Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  #services.xserver.desktopManager.gnome.enable = true;
   programs.steam.enable = true;
+  services.teamviewer.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
@@ -106,7 +107,7 @@
     extraGroups = [ "networkmanager" "wheel" ];
     shell = pkgs.zsh;
     packages = with pkgs; [
-      discordo
+      discordo teamviewer
       # Browsers
       firefox qutebrowser
       # Fonts

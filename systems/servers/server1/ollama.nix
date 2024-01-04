@@ -20,6 +20,7 @@ in
         Group = "ollama";
         Restart = "always";
         RestartSec = "3";
+        StateDirectory = "ollama";
         ExecStart = ''
                   ${pkgs.ollama}/bin/ollama serve
                   '';

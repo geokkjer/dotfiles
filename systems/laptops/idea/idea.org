@@ -4,7 +4,27 @@
 * Configs
 
 Here are some configs for other software I use .
+** Cosmic
 
+#+begin_src nix
+  { config, pkgs, ...}:
+
+  let
+    unstable = import
+      (builtins.fetchTarball https://github.com/nixos/nixpkgs/tarball/master)
+      # reuse the current configuration
+      { config = config.nixpkgs.config; };
+  in
+
+  {
+    environment.systemPackages = with pkgs; [
+      unstable.rustc
+      unstable.just
+      unstable.cosmic-icons
+      unstable.cosmic-settings
+    ];
+  }
+#+end_src
 ** River
 
 #+begin_src nix :tangle river.nix
@@ -1147,21 +1167,21 @@ colors:
 ** Zsh
 
 #+begin_src conf-unix :tangle ~/.zshrc
-      zstyle ':completion:*' completer _expand _complete _ignored
-      zstyle ':completion:*' matcher-list ''
-      zstyle :compinstall filename '/home/geir/.zshrc'
+  zstyle ':completion:*' completer _expand _complete _ignored
+  zstyle ':completion:*' matcher-list ''
+  zstyle :compinstall filename '/home/geir/.zshrc'
 
-      autoload -Uz compinit
-      compinit
-      HISTFILE=~/.histfile
-      HISTSIZE=10000
-      SAVEHIST=10000
-      setopt autocd extendedglob
-      unsetopt beep nomatch
-      bindkey -e
+  autoload -Uz compinit
+  compinit
+  HISTFILE=~/.histfile
+  HISTSIZE=10000
+  SAVEHIST=10000
+  setopt autocd extendedglob
+  unsetopt beep nomatch
+  bindkey -e
 
-      eval "$(starship init zsh)"
-      eval "$(direnv hook zsh)"
+  eval "$(starship init zsh)"
+  eval "$(direnv hook zsh)"
 
 #+end_src
 
@@ -1300,11 +1320,11 @@ As root or sudo
         ./hardware-configuration.nix
         ./zsh.nix
         ./sway.nix
+        #./cosmic.nix
         ./tty.nix
         ./aliases.nix
         ./k8s.nix
         ./tail.nix
-        ./river.nix
       ];
 
     # Bootloader.
@@ -1343,11 +1363,12 @@ As root or sudo
     services.xserver.enable = true;
     services.xserver.videoDrivers = [ "amdgpu" ];
 
-    # Enable the KDE Plasma Desktop Environment.
+    # Enable the Desktop Environment.
     services.xserver.displayManager.gdm.enable = true;
-    services.xserver.desktopManager.gnome.enable = true;
+    #services.xserver.desktopManager.gnome.enable = true;
     programs.steam.enable = true;
-    
+    services.teamviewer.enable = true;
+
     # Configure keymap in X11
     services.xserver = {
       layout = "no";
@@ -1401,7 +1422,7 @@ As root or sudo
       extraGroups = [ "networkmanager" "wheel" ];
       shell = pkgs.zsh;
       packages = with pkgs; [
-        discordo
+        discordo teamviewer
         # Browsers
         firefox qutebrowser
         # Fonts
@@ -1530,7 +1551,7 @@ As root or sudo
       vim = "nvim";
       h = "tldr";
       # oxidized
-      ls = "exa -l";
+      ls = "eza -l";
       cat = "bat";
       grep = "rg";
       top = "btm --color gruvbox";
