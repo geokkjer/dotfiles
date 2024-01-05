@@ -132,6 +132,7 @@
       libvterm libtool
       magic-wormhole
       protonvpn-cli
+      ytfzf
       #
       mpv
       # DevSecOps

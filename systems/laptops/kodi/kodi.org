@@ -1,0 +1,159 @@
+* Kodi
+
+Turn an old laptop into a Kodi media player
+
+* Specs
+
+model- Lenovo 
+cpu - 3250 2 cores
+gpu -
+ram -
+hd -
+
+* NixOS - Configuration
+
+** Install with zfs on root
+
+#+begin_src shell
+
+#+end_src
+
+** Hardware
+
+#+begin_src nix
+  { config, lib, pkgs, modulesPath, ... }:
+
+  {
+    imports =
+      [ (modulesPath + "/installer/scan/not-detected.nix")
+      ];
+
+    boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "usb_storage" "sd_mod" ];
+    boot.initrd.kernelModules = [ ];
+    boot.kernelModules = [ "kvm-amd" ];
+    boot.extraModulePackages = [ ];
+
+    fileSystems."/" =
+      { device = "zpool/root";
+        fsType = "zfs";
+      };
+
+    fileSystems."/nix" =
+      { device = "zpool/nix";
+        fsType = "zfs";
+      };
+
+    fileSystems."/var" =
+      { device = "zpool/var";
+        fsType = "zfs";
+      };
+
+    fileSystems."/home" =
+      { device = "zpool/home";
+        fsType = "zfs";
+      };
+
+    fileSystems."/boot" =
+      { device = "/dev/disk/by-uuid/C1F2-FAE6";
+        fsType = "vfat";
+      };
+
+    swapDevices = [ ];
+
+    networking.useDHCP = lib.mkDefault true;
+
+    nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+    hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  }
+#+end_src
+
+** NixOS configuration
+
+#+begin_src nix
+  { config, lib, pkgs, ... }:
+
+  {
+    imports =
+      [ # Include the results of the hardware scan.
+        ./hardware-configuration.nix
+      ];
+
+    # Use the Grub boot loader.
+    boot.loader.grub = {
+      enable = true;
+      zfsSupport = true;
+      efiSupport = true;
+      efiInstallAsRemovable = true;
+      mirroredBoots = [
+        { devices = [ "nodev"]; path = "/boot"; }
+      ];
+    };
+
+    networking.hostName = "kodi-nixos"; # Define your hostname.
+    networking.hostId = "989494a2";
+    networking.networkmanager.enable = true;  
+
+    time.timeZone = "Europe/Oslo";
+
+    i18n.defaultLocale = "en_US.UTF-8";
+    console = {
+      font = "Lat2-Terminus16";
+      keyMap = "no";
+    };
+
+    # Enable the X11 windowing system and Kodi
+    services.xserver.enable = true;
+    services.xserver.desktopManager.kodi.enable = true;
+    services.xserver.displayManager.autoLogin.enable = true;
+    services.xserver.displayManager.autoLogin.user = "kodi";
+
+    services.xserver.displayManager.lightdm.autoLogin.timeout = 3;
+
+    users.extraUsers.kodi.isNormalUser = true;
+    nixpkgs.config.kodi.enableAdvancedLauncher = true;
+
+
+
+    # Configure keymap in X11
+    services.xserver.xkb.layout = "no";
+    # services.xserver.xkb.options = "eurosign:e,caps:escape";
+
+
+    # Enable sound.
+    sound.enable = true;
+    hardware.pulseaudio.enable = true;
+
+    # Enable touchpad support (enabled default in most desktopManager).
+    services.xserver.libinput.enable = true;
+
+    # Define a user account. Don't forget to set a password with ‘passwd’.
+    users.users.geir = {
+       isNormalUser = true;
+       extraGroups = [ "wheel" ];  
+       packages = with pkgs; [
+       ];
+     };
+
+    # List packages installed in system profile. To search, run:
+    environment.systemPackages = with pkgs; [
+       neovim 
+       wget curl 
+       steamcontroller
+       htop glances bottom 
+     ];
+
+
+    # Enable the OpenSSH daemon.
+    services.openssh.enable = true;
+
+    # firewall settings
+    networking.firewall.allowedTCPPorts = [ 22 8080 ];
+    networking.firewall.allowedUDPPorts = [ 22 8080 ];
+    networking.firewall.enable = true;
+
+    system.stateVersion = "23.11"; 
+
+  }
+#+end_src
+
+** Services
