@@ -19,7 +19,6 @@
     nameservers = [ "127.0.0.1" "192.168.1.1" "1.1.1.1"  ];
     firewall.enable = false;
     interfaces = {
-
       enp1s0 = {
         useDHCP = true;
       };
@@ -31,93 +30,92 @@
         }];
       };  
   };
-  
-  #nftables = {
-  #    enable = true;
-  #    ruleset = ''
-  #      table ip filter {
-  #        chain input {
-  #          type filter hook input priority 0; policy drop;
 
-#            iifname { "enp3s0" } accept comment "Allow local network to access the router"
-#            iifname "enp1s0" ct state { established, related } accept comment "Allow established traffic"
-#            iifname "enp1s0" icmp type { echo-request, destination-unreachable, time-exceeded } counter accept comment "Allow select ICMP"
-#            iifname "enp1s0" counter drop comment "Drop all other unsolicited traffic from wan"
-#          }
-#          chain forward {
-#            type filter hook forward priority 0; policy drop;
-#            iifname { "enp3s0" } oifname { "enp1s0" } accept comment "Allow trusted LAN to WAN"
-#            iifname { "enp1s0" } oifname { "enp3s0" } ct state established, related accept comment "Allow established back to LANs"
-#          }
-#        }
+    nftables = {
+      enable = true;
+      ruleset = ''
+         table ip filter {
+         chain input {
+           type filter hook input priority 0; policy drop;
 
-#        table ip nat {
-#          chain postrouting {
-#            type nat hook postrouting priority 100; policy accept;
-#            oifname "enp1s0" masquerade
-#          } 
-#        }
+            iifname { "enp3s0" } accept comment "Allow local network to access the router"
+            iifname "enp1s0" ct state { established, related } accept comment "Allow established traffic"
+            iifname "enp1s0" icmp type { echo-request, destination-unreachable, time-exceeded } counter accept comment "Allow select ICMP"
+            iifname "enp1s0" counter drop comment "Drop all other unsolicited traffic from wan"
+          }
+          chain forward {
+            type filter hook forward priority 0; policy drop;
+            iifname { "enp3s0" } oifname { "enp1s0" } accept comment "Allow trusted LAN to WAN"
+            iifname { "enp1s0" } oifname { "enp3s0" } ct state established, related accept comment "Allow established back to LANs"
+          }
+       }
 
-#        table ip6 filter {
-#	        chain input {
-#            type filter hook input priority 0; policy drop;
-#          }
-#          chain forward {
-#            type filter hook forward priority 0; policy drop;
-#          }
-#        }
-#      '';
-#    };
+        table ip nat {
+          chain postrouting {
+            type nat hook postrouting priority 100; policy accept;
+            oifname "enp1s0" masquerade
+          } 
+        }
+
+        table ip6 filter {
+                chain input {
+            type filter hook input priority 0; policy drop;
+          }
+          chain forward {
+            type filter hook forward priority 0; policy drop;
+          }
+       }
+    '';
+    };
   };
   services = {
     openssh.enable = true;
-    
     dnsmasq = {
       enable = true;
       settings = {
         server = [ "192.168.1.1" "9.9.9.9" "8.8.8.8" "1.1.1.1" ];
         # sensible behaviours
-     	domain-needed = true;
-      	bogus-priv = true;
-      	no-resolv = true;
+        domain-needed = true;
+        bogus-priv = true;
+        no-resolv = true;
 
-      	# Cache dns queries.
-      	cache-size = 1000;
+        # Cache dns queries.
+        cache-size = 1000;
 
-      	dhcp-range = [ "enp3s0,192.168.1.50,192.168.1.254,24h" ];
-      	interface = "enp3s0";
-      	dhcp-host = "192.168.1.1";
+        dhcp-range = [ "enp3s0,192.168.1.50,192.168.1.254,24h" ];
+        interface = "enp3s0";
+        dhcp-host = "192.168.1.1";
 
-      	# local domains
-      	local = "/lan/";
-      	domain = "lan";
-      	expand-hosts = true;
+        # local domains
+        local = "/lan/";
+        domain = "lan";
+        expand-hosts = true;
 
-      	# don't use /etc/hosts as this would advertise surfer as localhost
-      	no-hosts = true;
-      	address = "/router.lan/192.168.1.1";
+        # don't use /etc/hosts as this would advertise surfer as localhost
+        no-hosts = true;
+        address = "/router.lan/192.168.1.1";
       };
     };
- 
-  #unbound = {
-  #  enable = true;
-  #  settings = {
-  #    server = {
-  #      interface = [ "127.0.0.1" "192.168.1.1" ];
-  #      access-control = [
-  #        "0.0.0.0/0 refuse"
-  #        "127.0.0.0/8 allow"
-  #        "192.168.1.0/24 allow"
-  #     ];
-  #  };
-  # };
-  #};
- }; 
-  # Set your time zone.
-  time.timeZone = "Europe/Oslo";
 
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
+  unbound = {
+    enable = true;
+    settings = {
+      server = {
+        interface = [ "127.0.0.1" "192.168.1.1" ];
+        access-control = [
+          "0.0.0.0/0 refuse"
+          "127.0.0.0/8 allow"
+          "192.168.1.0/24 allow"
+       ];
+    };
+   };
+  };
+ }; 
+ # Set your time zone.
+ time.timeZone = "Europe/Oslo";
+
+ # Select internationalisation properties.
+ i18n.defaultLocale = "en_US.UTF-8";
   console = {
     font = "Lat2-Terminus16";
     keyMap = "no";
