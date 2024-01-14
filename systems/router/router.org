@@ -201,39 +201,6 @@
 
 #+begin_src nix :tangle network.nix
 
-  { pkgs, config, ... }:
-  {
-    let
-      externalInterface = "enp2s0";
-      internalInterface = "enp3s0";
-      wifi = "wlp0";
-    in  
-      networking = {
-        useDHCP = false;
-        hostName = "router";
-        nameserver = [ "192.168.1.1" "9.9.9.9" ];
-        # Wired
-        interfaces = {
-          externalInterface = {
-            useDHCP = true; # wan
-          };
-          internalInterface = {
-            useDHCP = false; # lan
-            ipv4.addresses = [{
-              address = "192.168.1.1";
-              prefixLength = 24;
-            }];
-          };
-        };
-        # Wifi
-        # wpa_passphrase <SSID> <psk>
-        wifi = {
-        };
-        # Bridges
-
-      };
-  }
-
 #+end_src
 
 * Services
@@ -241,22 +208,7 @@
 
 #+begin_src nix  :tangle dhcp.nix
   { pkgs, config, ... }:
-  {
-    services.dhcpd4 = {
-      enable = true;
-      interfaces = [ "ens2" ];
-      extraConfig = ''
-                 option domain-name-servers 192.168.1.1, 1.1.1.1;
-                 option subnet-mask 255.255.255.0;
-                 subnet 192.168.1.0 netmask 255.255.255.0
-                {
-                 option broadcast-address 192.168.1.255;
-                 option routers 192.168.1.1;
-                 interface ens2;
-                 range 192.168.1.128 192.168.1.254
-                }
-                  '';
-    };
+ { 
   }
 
 #+end_src
@@ -266,24 +218,12 @@
 #+begin_src nix :tangle unbound.nix
   { pkgs, config, ... }:
   {
-   services.unbound = {
-     enable = true;
-     settings = {
-       server = {
-         interface = [ "127.0.0.1" "192.168.1.1" ];
-         access-control =  [
-           "0.0.0.0/0 refuse"
-           "127.0.0.0/8 allow"
-           "192.168.1.0/24 allow"
-         ];
-       };
-     };
-   };
-  }
+   }
 #+end_src
 
 * Sources
 
+[[https://github.com/ghostbuster91/blogposts/blob/main/router2023-part2/main.md][router 2023 part 2]]
 [[https://francis.begyn.be/blog/nixos-home-router][Naar]]
 [[https://dataswamp.org/~solene/2022-08-03-nixos-with-live-usb-router.html][Creating a NixOS live USB for a full featured APU router]]
 [[https://mcwhirter.com.au/craige/blog/2019/Setting_Up_Wireless_Networking_with_NixOS/][Setting Up Wireless Networking with NixOS]]
